@@ -13,11 +13,76 @@
 #include <semihosting.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+#ifdef CONFIG_USE_IRQ_SYNA
+
+#include <malloc.h>
+#include <asm/gic_v2.h>
+
+struct irq_action {
+	interrupt_handler_t *handler;
+	void *arg;
+	unsigned int count;
+};
+
+static struct irq_action *irq_handlers;
+static int irq_num = 0;
+static int spurious_irq_cnt;
 
 int interrupt_init(void)
 {
+	gic_v2_init((void *)GICD_BASE, (void *)GICC_BASE, &irq_num);
+	spurious_irq_cnt = 0;
+	irq_handlers = (struct irq_action *)malloc(irq_num * sizeof(struct irq_action));
+	memset(irq_handlers, 0, irq_num * sizeof(struct irq_action));
+
+	return 0;
+}
+
+void enable_interrupts(void)
+{
+	__asm__ __volatile__ ("msr	daifclr, #2" : : : "memory");
+	return;
+}
+
+int disable_interrupts(void)
+{
+	__asm__ __volatile__ ("msr	daifset, #2" : : : "memory");
+	return 0;
+}
+
+void irq_install_handler(int irq, interrupt_handler_t *handler, void *arg)
+{
+	disable_interrupts();
+
+	gic_v2_enable_irq(irq);
+
+	irq_handlers[irq].handler = handler;
+	irq_handlers[irq].arg = arg;
+	irq_handlers[irq].count = 0;
+
 	enable_interrupts();
 
+	return;
+}
+
+void irq_free_handler(int irq)
+{
+	disable_interrupts();
+
+	gic_v2_disable_irq(irq);
+
+	irq_handlers[irq].handler = NULL;
+	irq_handlers[irq].arg = NULL;
+	irq_handlers[irq].count = 0;
+
+	enable_interrupts();
+
+	return;
+}
+
+#else
+int interrupt_init(void)
+{
 	return 0;
 }
 
@@ -30,7 +95,7 @@ int disable_interrupts(void)
 {
 	return 0;
 }
-
+#endif
 static void show_efi_loaded_images(struct pt_regs *regs)
 {
 	efi_print_image_infos((void *)regs->elr);
@@ -209,6 +274,27 @@ void do_sync(struct pt_regs *pt_regs)
 /*
  * do_irq handles the Irq exception.
  */
+#ifdef CONFIG_USE_IRQ_SYNA
+void do_irq(struct pt_regs *pt_regs)
+{
+	int irq = gic_v2_get_irq_id();
+	if (irq == -EINVAL) {
+		spurious_irq_cnt++;
+		return;
+	} else if (irq < 0) {
+		efi_restore_gd();
+		printf("\"Irq\" handler, esr 0x%08lx\n", pt_regs->esr);
+		show_regs(pt_regs);
+		panic("Resetting CPU ...\n");
+	}
+	if (irq_handlers[irq].handler) {
+		irq_handlers[irq].handler(irq_handlers[irq].arg);
+		irq_handlers[irq].count++;
+	}
+	gic_v2_inactive_irq(irq);
+	return;
+}
+#else
 void do_irq(struct pt_regs *pt_regs)
 {
 	efi_restore_gd();
@@ -217,6 +303,7 @@ void do_irq(struct pt_regs *pt_regs)
 	show_efi_loaded_images(pt_regs);
 	panic("Resetting CPU ...\n");
 }
+#endif
 
 /*
  * do_fiq handles the Fiq exception.

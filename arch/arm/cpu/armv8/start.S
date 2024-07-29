@@ -129,6 +129,11 @@ pie_fixup_done:
 	orr	x1, x1, #HCR_EL2_AMO_EL2	/* Route SErrors to EL2 */
 	msr	hcr_el2, x1
 	set_vbar vbar_el2, x0
+#ifdef USE_IRQ_SYNA
+	mrs	x0, hcr_el2
+	orr	x0, x0, #0x38			/* HCR_EL2.AMO|IMO|FMO */
+	msr	hcr_el2, x0
+#endif
 	mov	x0, #0x33ff
 	msr	cptr_el2, x0			/* Enable FP/SIMD */
 	b	0f
