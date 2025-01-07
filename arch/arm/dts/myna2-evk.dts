@@ -1,0 +1,334 @@
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Copyright (C) 2020 Synaptics Incorporated
+ *
+ * Author: Cheng Lu <Cheng.Lu@synaptics.com>
+ *
+ */
+
+/dts-v1/;
+
+#include "myna2.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	model = "Synaptics Myna2 EVK";
+	compatible = "Synaptics,myna2", "Synaptics,asserial";
+
+	memory {
+		device_type = "memory";
+		reg = <0 0 0 0x80000000>;
+	};
+
+	chosen {
+		stdout-path = &uart0;
+        };
+
+	panel0-backlight {
+                compatible = "pwm-backlight";
+                status = "okay";
+                pwms = <&pwm0 0 1000000 0>;
+                brightness-levels = <0 36 72 108 144 180 212 255>;
+                default-brightness-level = <7>;
+                enable-gpios = <&portb 19 GPIO_ACTIVE_HIGH>;
+        };
+
+	regulators {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		usb0_vbus: regulator@0 {
+			compatible = "regulator-fixed";
+			regulator-name = "usb0_vbus";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			gpio = <&expander2 5 GPIO_ACTIVE_HIGH>;
+			enable-active-high;
+		};
+
+		xhci0_vbus: xhci0_vbus {
+			compatible = "regulator-fixed";
+			regulator-name = "xhci0_vbus";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			gpio = <&expander2 6 GPIO_ACTIVE_HIGH>;
+			enable-active-high;
+		};
+
+		vmmc_sdio: vmmc_sdio {
+			compatible = "regulator-fixed";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-name = "vmmc_sdio";
+			enable-active-high;
+			regulator-boot-on;
+			gpio = <&portb 0 GPIO_ACTIVE_HIGH>;
+		};
+
+	};
+
+	switch {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		rtl8363nb {
+			compatible = "dspg,rtl8363nb";
+			reset_gpio = <&expander3 6 GPIO_ACTIVE_HIGH>;
+			enable_phy_gpio = <&expander1 3 GPIO_ACTIVE_HIGH>;
+			reg = <29>;
+		};
+	};
+};
+
+&pinctrl {
+	emmc_pmux: emmc-pmux {
+		groups = "EMMC_RSTn", "EMMC_DATA0", "EMMC_DATA1", "EMMC_DATA2", "EMMC_DATA3", "EMMC_DATA4", "EMMC_DATA5", "EMMC_DATA6", "EMMC_DATA7", "EMMC_CLK", "EMMC_CMD";
+        function = "emmc";
+        };
+
+	sdio_pmux: sdio-pmux {
+		groups = "SDIO_CDn";
+		function = "sdio";
+	};
+
+	sdio_gpio_pmux: sdio_gpio-pmux {
+		/*groups = "SPI2_SS1n";*/
+		groups = "GPIO_A2", "SDIO_WP";
+		function = "gpio";
+	};
+
+	rgmii_pmux: rgmii-pmux {
+		groups = "GPIO_A0", "GPIO_A1", "RGMIITXC", "RGMIITD0", "RGMIITD1", "RGMIITD2", "RGMIITD3", "RGMIITXCTL", "RGMIIRXC", "RGMIIRD0", "RGMIIRD1", "RGMIIRD2", "RGMIIRD3", "RGMIIRXCTL", "RGMII_CLK_OUT";
+		function = "rgmii";
+	};
+
+	i2c1_pmux: i2c1-pmux {
+		groups = "TW1_SCL", "TW1_SDA";
+		function = "tw1";
+		drive-strength = <7>;
+	};
+
+	i2c2_pmux: i2c2-pmux {
+		groups = "TW2_SCL", "TW2_SDA";
+		function = "tw2";
+		drive-strength = <7>;
+	};
+
+	expander2_pmux: expander2-pmux {
+		groups = "PWM2";
+		function = "gpio";
+	};
+
+	pwm0_pmux: pwm0-pmux {
+                groups = "PWM0";
+                function = "gpio";
+        };
+
+	lcdc_pmux: lcdc-pmux {
+		groups = "LCDD0", "LCDD1", "LCDD2", "LCDD3", "LCDD4", "LCDD5", "LCDD6", "LCDD7",
+				 "LCDD8", "LCDD9", "LCDD10", "LCDD11", "LCDD12", "LCDD13", "LCDD14", "LCDD15",
+				 "LCDD16", "LCDD17", "LCDD18", "LCDD19", "LCDD20", "LCDD21", "LCDD22", "LCDD23";
+		function = "lcd";
+	};
+
+	lcdc_pmux1: lcdc-pmux1 {
+		groups = "LPCLK";
+		function = "lpclk";
+	};
+
+	lcdc_gpio_pmux: lcdc-gpio-pmux {
+		groups = "LCDGPIO0", "LCDGPIO1", "LCDGPIO2";
+		function = "lcdgpio";
+	};
+
+	lcdc_bl_gpio_pmux: lcdc-bl-gpio-pmux {
+                groups = "USB2_DRV_VBUS";
+                function = "gpio";
+        };
+};
+
+&i2c1 {
+	status = "okay";
+	pinctrl-0 = <&i2c1_pmux>;
+	pinctrl-names = "default";
+	clock-frequency = <100000>;
+
+	expander1: gpio@43 {
+		compatible = "fcs,fxl6408";
+		reg = <0x43>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	expander3: gpio@44 {
+		compatible = "fcs,fxl6408";
+		reg = <0x44>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+};
+
+&i2c2 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pmux>;
+
+	expander0: gpio@43 {
+		compatible = "fcs,fxl6408";
+		reg = <0x43>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	expander2: gpio@44 {
+		compatible = "fcs,fxl6408";
+		pinctrl-0 = <&expander2_pmux>;
+		pinctrl-names = "default";
+		reg = <0x44>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-parent = <&portb>;
+		interrupts = <12 IRQ_TYPE_NONE>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+		#address-cells = <0>;
+	};
+};
+
+&phy0 {
+	reg = <0>;
+};
+
+&gmac0 {
+	status = "okay";
+	max-speed = <1000>;
+	phy-mode = "rgmii";
+	pinctrl-names = "default";
+	pinctrl-0 = <&rgmii_pmux>;
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
+	};
+};
+
+&CPU_SLEEP_0 {
+	status = "disabled";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&sdhci0 {
+        status = "okay";
+};
+
+&sdhci1 {
+	status = "okay";
+	no-1-8-v;
+	vmmc-supply = <&vmmc_sdio>;
+	pinctrl-0 = <&sdio_pmux>, <&sdio_gpio_pmux>;
+	pinctrl-names = "default";
+};
+
+&usb_phy0 {
+	status = "okay";
+};
+
+&usb0 {
+	vbus-supply = <&usb0_vbus>;
+	status = "okay";
+};
+
+&spi0 {
+	status = "okay";
+	max-write-size = <128>;
+	clock-frequency = <100000000>;
+	spi-flash@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		memory-map = <0x0 0xf0000000 0x0 0x4000000>;
+		spi-max-frequency = <10000000>;
+        };
+};
+
+&xhci0 {
+	vbus-supply = <&xhci0_vbus>;
+	status = "okay";
+};
+
+&usb_phy1  {
+	status = "okay";
+};
+
+&pwm0 {
+        status = "okay";
+        pinctrl-0 = <&pwm0_pmux>;
+        pinctrl-names = "default";
+};
+
+&lcdc_fb {
+	status = "okay";
+	irqno = <62>;
+	pinctrl-0 = <&lcdc_pmux>, <&lcdc_pmux1>, <&lcdc_gpio_pmux>, <&lcdc_bl_gpio_pmux>;
+	pinctrl-names ="default", "default", "default", "default";
+	disp-mode = <2>;
+	disp1-bits_per_pixel = <24>;
+	disp1-busformat = <0>;
+	disp2-bits_per_pixel = <24>;
+	disp2-busformat = <0>;
+
+	lcdc_panel {
+                status= "okay";
+                compatible = "syna,lcdc_panel";
+                hact = <800>;
+                hfp = <210>;
+                hsa = <2>;
+                hbp = <46>;
+                vact = <480>;
+                vfp = <22>;
+                vsa = <2>;
+                vbp = <23>;
+                pixclockKhz = <33300>;
+                rgbswap = <1>;
+        };
+
+	dsi_panel {
+		status= "okay";
+
+		mipirst-gpio = <&expander1 7 GPIO_ACTIVE_LOW>;
+		ACTIVE_WIDTH = <800>;
+		HFP = <60>;
+		HSYNCWIDTH = <32>;
+		HBP = <60>;
+		ACTIVE_HEIGHT = <1280>;
+		VFP = <16>;
+		VSYNCWIDTH = <2>;
+		VBP = <14>;
+		FREQ = <75000>;
+
+		HTOTAL = <952>;
+		Lanes = <4>;
+		Vid_mode = <2>;
+		virtual_chan = <0>;
+		Clk_Lane_Polarity = <0>;
+		Data_Lane_Polarity = <0>;
+		Recv_ack = <0>;
+		Loosely_18 = <0>;
+		H_polarity = <1>;
+		V_Polarity = <1>;
+		Data_Polarity = <1>;
+		Eotp_tx = <1>;
+		Eotp_rx = <0>;
+		non-Continuous_clk = <1>;
+		dpi_lp_cmd = <1>;
+		Color_coding = <5>;
+		Chunks = <0>;
+		Null_Pkt = <0>;
+		Byte_clk = <56250>;
+	};
+};

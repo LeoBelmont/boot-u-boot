@@ -1,0 +1,12 @@
+config VIDEO_SYNA
+	bool "Enable Syna Display support"
+	depends on ARCH_SYNAPTICS
+	depends on VIDEO
+	help
+	  This enables support for Synaptics display for Edge Soc family
+
+config PANEL_CFG
+        string "Panel Config file"
+        depends on VIDEO_SYNA
+        help
+          Configures the panel information from Header file provided.
