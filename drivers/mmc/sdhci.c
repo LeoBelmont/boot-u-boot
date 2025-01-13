@@ -538,7 +538,11 @@ void sdhci_set_uhs_timing(struct sdhci_host *host)
 		break;
 	case MMC_HS_400:
 	case MMC_HS_400_ES:
+#ifdef CONFIG_MMC_DWCMSHC
+		reg |= SDHCI_CTRL_DWCMSHC_HS400;
+#else
 		reg |= SDHCI_CTRL_HS400;
+#endif
 		break;
 	default:
 		reg |= SDHCI_CTRL_UHS_SDR12;
