@@ -33,6 +33,9 @@
 #include <linux/printk.h>
 #include <power/regulator.h>
 #include "designware.h"
+#ifdef CONFIG_ETH_ROM_MAC
+#include "misc_syna.h"
+#endif
 
 static int dw_mdio_read(struct mii_dev *bus, int addr, int devad, int reg)
 {
@@ -820,6 +823,20 @@ static int designware_eth_remove(struct udevice *dev)
 #endif
 }
 
+#ifdef CONFIG_ETH_ROM_MAC
+int syna_read_rom_hwaddr(struct udevice *dev)
+{
+	struct eth_pdata *pdata = dev_get_plat(dev);
+
+	if (!pdata)
+	    return -ENOSYS;
+
+	get_mac(pdata->enetaddr);
+
+	return 0;
+}
+#endif
+
 const struct eth_ops designware_eth_ops = {
 	.start			= designware_eth_start,
 	.send			= designware_eth_send,
@@ -827,6 +844,9 @@ const struct eth_ops designware_eth_ops = {
 	.free_pkt		= designware_eth_free_pkt,
 	.stop			= designware_eth_stop,
 	.write_hwaddr		= designware_eth_write_hwaddr,
+#ifdef CONFIG_ETH_ROM_MAC
+	.read_rom_hwaddr	= syna_read_rom_hwaddr,
+#endif
 };
 
 int designware_eth_of_to_plat(struct udevice *dev)
@@ -871,6 +891,7 @@ static const struct udevice_id designware_eth_ids[] = {
 	{ .compatible = "st,stm32-dwmac" },
 	{ .compatible = "snps,arc-dwmac-3.70a" },
 	{ .compatible = "sophgo,cv1800b-dwmac" },
+	{ .compatible = "syna,ge-dwmac" },
 	{ }
 };
 
