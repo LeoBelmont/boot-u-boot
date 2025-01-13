@@ -1831,6 +1831,10 @@ static int sd_select_mode_and_width(struct mmc *mmc, uint card_caps)
 	bool uhs_en = false;
 #endif
 	uint caps;
+#ifdef CONFIG_ARCH_SYNAPTICS
+	char *ep = NULL;
+	int low_speed = 0;
+#endif
 
 #ifdef DEBUG
 	mmc_dump_capabilities("sd card", card_caps);
@@ -1851,6 +1855,13 @@ static int sd_select_mode_and_width(struct mmc *mmc, uint card_caps)
 
 	/* Restrict card's capabilities by what the host can do */
 	caps = card_caps & mmc->host_caps;
+
+#ifdef CONFIG_ARCH_SYNAPTICS
+	ep = env_get("force_sd_low_speed");
+	low_speed = ep ? (int)simple_strtol(ep, NULL, 10) : 0;
+	if (low_speed)
+		caps &= ~UHS_CAPS;
+#endif
 
 	if (!uhs_en)
 		caps &= ~UHS_CAPS;
@@ -2159,6 +2170,10 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 	int err = 0;
 	const struct mode_width_tuning *mwt;
 	const struct ext_csd_bus_width *ecbw;
+#ifdef CONFIG_ARCH_SYNAPTICS
+	char *ep = NULL;
+	int low_speed = 0;
+#endif
 
 #ifdef DEBUG
 	mmc_dump_capabilities("mmc", card_caps);
@@ -2174,6 +2189,15 @@ static int mmc_select_mode_and_width(struct mmc *mmc, uint card_caps)
 
 	/* Restrict card's capabilities by what the host can do */
 	card_caps &= mmc->host_caps;
+
+#ifdef CONFIG_ARCH_SYNAPTICS
+	ep = env_get("force_mmc_low_speed");
+	low_speed = ep ? (int)simple_strtol(ep, NULL, 10) : 0;
+	if (low_speed)
+		card_caps &= ~(MMC_CAP(MMC_HS_52) | MMC_CAP(MMC_DDR_52) |
+						MMC_CAP(MMC_HS_200) | MMC_CAP(MMC_HS_400) |
+						MMC_CAP(MMC_HS_400_ES));
+#endif
 
 	/* Only version 4 of MMC supports wider bus widths */
 	if (mmc->version < MMC_VERSION_4)
