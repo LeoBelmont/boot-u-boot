@@ -525,6 +525,7 @@ void lmb_dump_all(void)
 #endif
 }
 
+#ifndef CONFIG_ARCH_SYNAPTICS
 static void lmb_reserve_uboot_region(void)
 {
 	int bank;
@@ -562,10 +563,13 @@ static void lmb_reserve_uboot_region(void)
 		break;
 	}
 }
+#endif
 
 static void lmb_reserve_common(void *fdt_blob)
 {
+#ifndef CONFIG_ARCH_SYNAPTICS
 	lmb_reserve_uboot_region();
+#endif
 
 	if (CONFIG_IS_ENABLED(OF_LIBFDT) && fdt_blob)
 		boot_fdt_add_mem_rsv_regions(fdt_blob);
