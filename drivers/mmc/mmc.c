@@ -2871,11 +2871,16 @@ static int mmc_power_cycle(struct mmc *mmc)
 	if (ret)
 		return ret;
 
+#ifdef CONFIG_ARCH_SYNAPTICS
+	mdelay(20);
+#else
 	/*
 	 * SD spec recommends at least 1ms of delay. Let's wait for 2ms
 	 * to be on the safer side.
 	 */
 	udelay(2000);
+#endif
+
 	return mmc_power_on(mmc);
 }
 
