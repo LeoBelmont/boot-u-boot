@@ -17,6 +17,10 @@
 #include <net.h>
 #include <vsprintf.h>
 
+#ifdef CONFIG_ARCH_SYNAPTICS
+#include "misc_syna.h"
+#endif
+
 /**
  * fastboot_buf_addr - base address of the fastboot download buffer
  */
@@ -97,8 +101,12 @@ int __weak fastboot_set_reboot_flag(enum fastboot_reboot_reason reason)
 		[FASTBOOT_REBOOT_REASON_FASTBOOTD] = "boot-fastboot",
 		[FASTBOOT_REBOOT_REASON_RECOVERY] = "boot-recovery"
 	};
+#ifdef CONFIG_ARCH_SYNAPTICS
+	const int mmc_dev = get_mmc_active_dev();
+#else
 	const int mmc_dev = config_opt_enabled(CONFIG_FASTBOOT_FLASH_MMC,
 					       CONFIG_FASTBOOT_FLASH_MMC_DEV, -1);
+#endif
 
 	if (!IS_ENABLED(CONFIG_FASTBOOT_FLASH_MMC))
 		return -EINVAL;

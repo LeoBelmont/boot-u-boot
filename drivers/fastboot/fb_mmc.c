@@ -18,6 +18,10 @@
 #include <linux/compat.h>
 #include <android_image.h>
 
+#ifdef CONFIG_ARCH_SYNAPTICS
+#include "misc_syna.h"
+#endif
+
 #define BOOT_PARTITION_NAME "boot"
 
 struct fb_mmc_sparse {
@@ -78,7 +82,13 @@ static int do_get_part_info(struct blk_desc **dev_desc, const char *name,
 	int ret;
 
 	/* First try partition names on the default device */
+#ifdef CONFIG_ARCH_SYNAPTICS
+	int mmc_dev = get_mmc_active_dev();
+
+	*dev_desc = blk_get_dev("mmc", mmc_dev);
+#else
 	*dev_desc = blk_get_dev("mmc", CONFIG_FASTBOOT_FLASH_MMC_DEV);
+#endif
 	if (*dev_desc) {
 		ret = part_get_info_by_name(*dev_desc, name, info);
 		if (ret >= 0)
@@ -487,8 +497,14 @@ int fastboot_mmc_get_part_info(const char *part_name,
 
 static struct blk_desc *fastboot_mmc_get_dev(char *response)
 {
-	struct blk_desc *ret = blk_get_dev("mmc",
-					   CONFIG_FASTBOOT_FLASH_MMC_DEV);
+	struct blk_desc *ret = NULL;
+
+#ifdef CONFIG_ARCH_SYNAPTICS
+	int mmc_dev = get_mmc_active_dev();
+	ret = blk_get_dev("mmc", mmc_dev);
+#else
+	ret = blk_get_dev("mmc", CONFIG_FASTBOOT_FLASH_MMC_DEV);
+#endif
 
 	if (!ret || ret->type == DEV_TYPE_UNKNOWN) {
 		pr_err("invalid mmc device\n");
@@ -647,7 +663,14 @@ void fastboot_mmc_erase(const char *cmd, char *response)
 	struct blk_desc *dev_desc;
 	struct disk_partition info;
 	lbaint_t blks, blks_start, blks_size, grp_size;
-	struct mmc *mmc = find_mmc_device(CONFIG_FASTBOOT_FLASH_MMC_DEV);
+	struct mmc *mmc  = NULL;
+
+#ifdef CONFIG_ARCH_SYNAPTICS
+	int mmc_dev = get_mmc_active_dev();
+	mmc = find_mmc_device(mmc_dev);
+#else
+	mmc = find_mmc_device(CONFIG_FASTBOOT_FLASH_MMC_DEV);
+#endif
 
 #ifdef CONFIG_FASTBOOT_MMC_BOOT_SUPPORT
 	if (strcmp(cmd, CONFIG_FASTBOOT_MMC_BOOT1_NAME) == 0) {
