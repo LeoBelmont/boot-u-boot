@@ -376,4 +376,7 @@ U_BOOT_DRIVER(fxl6408_gpio) = {
 	.probe = fxl6408_probe,
 	.of_match = fxl6408_ids,
 	.plat_auto = sizeof(struct fxl6408_info),
+#ifdef CONFIG_ARCH_SYNAPTICS
+	.flags	= DM_FLAG_VITAL,
+#endif
 };
