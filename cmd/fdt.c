@@ -779,6 +779,14 @@ static int do_fdt(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
 			extrasize = 0;
 		fdt_shrink_to_minimum(working_fdt, extrasize);
 	}
+#ifdef CONFIG_CMD_SYNA_FDT_UPDATE
+	else if (strncmp(argv[1], "up", 2) == 0) {
+		struct fdt_header *blob = working_fdt;
+		extern int fdt_update(struct fdt_header *fdt);
+
+		return fdt_update(blob);
+	}
+#endif
 	else {
 		/* Unrecognized command */
 		return CMD_RET_USAGE;
@@ -1145,6 +1153,9 @@ U_BOOT_LONGHELP(fdt,
 	"fdt rsvmem delete <index>           - Delete a mem reserves\n"
 	"fdt chosen [<start> <size>]         - Add/update the /chosen branch in the tree\n"
 	"                                        <start>/<size> - initrd start addr/size\n"
+#ifdef CONFIG_CMD_SYNA_FDT_UPDATE
+	"fdt update                          - Update fdt items before booting Kernel\n"
+#endif
 #if defined(CONFIG_FIT_SIGNATURE)
 	"fdt checksign [<addr>]              - check FIT signature\n"
 	"                                      <addr> - address of key blob\n"
