@@ -674,3 +674,22 @@ U_BOOT_CMD(
 );
 
 #endif  /* CONFIG_CMD_LINK_LOCAL */
+
+#ifdef CONFIG_NET_SKIP_INIT
+static int do_net_init(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
+{
+	eth_initialize();
+#if defined(CONFIG_RESET_PHY_R)
+	debug("Reset Ethernet PHY\n");
+	reset_phy();
+#endif
+
+	return 0;
+}
+
+U_BOOT_CMD(
+	net_init, 2, 0, do_net_init,
+	"Init network\n",
+	""
+);
+#endif  /* CONFIG_NET_SKIP_INIT */

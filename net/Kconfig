@@ -3,6 +3,11 @@
 #
 
 if NET
+config NET_SKIP_INIT
+	bool "Skip net initialization to save boot time "
+	help
+	  Selecting this to skip network initialization in boot stage
+	  to save time.
 
 config ARP_TIMEOUT
 	int "Milliseconds before trying ARP again"
