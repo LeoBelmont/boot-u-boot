@@ -18,6 +18,10 @@
 #include <part.h>
 #include <search.h>
 #include <errno.h>
+#ifdef CONFIG_ARCH_SYNAPTICS
+#include "misc_syna.h"
+#endif
+
 #include <dm/ofnode.h>
 
 #define ENV_MMC_INVALID_OFFSET ((s64)-1)
@@ -50,6 +54,10 @@ DECLARE_GLOBAL_DATA_PTR;
      (CONFIG_SYS_MMC_ENV_PART == 1) && \
      (CONFIG_ENV_OFFSET == CONFIG_ENV_OFFSET_REDUND))
 #define ENV_MMC_HWPART_REDUND	1
+#endif
+
+#ifdef CONFIG_ARCH_SYNAPTICS
+uint mmc_get_env_part(struct mmc *mmc);
 #endif
 
 #if CONFIG_IS_ENABLED(OF_CONTROL)
@@ -121,10 +129,20 @@ static inline int mmc_offset_try_partition(const char *str, int copy, s64 *val)
 	struct blk_desc *desc;
 	lbaint_t len;
 	int ret;
-	char dev_str[4];
+	char dev_str[5];
 
+#ifdef CONFIG_ARCH_SYNAPTICS
+	int dev = mmc_get_env_dev();
+	struct mmc *mmc = find_mmc_device(dev);
+	uint part = mmc_get_env_part(mmc);
+
+	snprintf(dev_str, sizeof(dev_str), "%d.%d", dev, part);
+#else
 	snprintf(dev_str, sizeof(dev_str), "%d", mmc_get_env_dev());
+#endif
 	ret = blk_get_device_by_str("mmc", dev_str, &desc);
+
+
 	if (ret < 0)
 		return (ret);
 
