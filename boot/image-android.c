@@ -159,7 +159,11 @@ static void android_boot_image_v0_v1_v2_parse_hdr(const struct andr_boot_img_hdr
 	data->ramdisk_size = hdr->ramdisk_size;
 	end += ALIGN(hdr->ramdisk_size, hdr->page_size);
 
+#ifdef CONFIG_ARCH_SYNAPTICS
+	data->second_ptr = hdr->second_addr;
+#else
 	data->second_ptr = end;
+#endif
 	data->second_size = hdr->second_size;
 	end += ALIGN(hdr->second_size, hdr->page_size);
 
@@ -332,6 +336,9 @@ int android_image_get_kernel(const void *hdr,
 			*os_data = image_get_data(ihdr);
 		} else {
 			*os_data = img_data.kernel_ptr;
+#ifdef CONFIG_ARCH_SYNAPTICS
+			*os_data += 0x80;
+#endif
 		}
 	}
 	if (os_len) {
@@ -391,6 +398,9 @@ ulong android_image_get_kcomp(const void *hdr,
 		return -EINVAL;
 
 	p = (const void *)img_data.kernel_ptr;
+#ifdef CONFIG_ARCH_SYNAPTICS
+	p += 0x80;
+#endif
 	if (image_get_magic((struct legacy_img_hdr *)p) == IH_MAGIC)
 		return image_get_comp((struct legacy_img_hdr *)p);
 	else if (get_unaligned_le32(p) == LZ4F_MAGIC)
