@@ -292,12 +292,12 @@ int android_image_get_kernel(const void *hdr,
 	if (bootargs)
 		len += strlen(bootargs);
 
-	if (*img_data.kcmdline) {
+	if (img_data.kcmdline) {
 		printf("Kernel command line: %s\n", img_data.kcmdline);
 		len += strlen(img_data.kcmdline) + (len ? 1 : 0); /* +1 for extra space */
 	}
 
-	if (*img_data.kcmdline_extra) {
+	if (img_data.kcmdline_extra) {
 		printf("Kernel extra command line: %s\n", img_data.kcmdline_extra);
 		len += strlen(img_data.kcmdline_extra) + (len ? 1 : 0); /* +1 for extra space */
 	}
@@ -312,13 +312,13 @@ int android_image_get_kernel(const void *hdr,
 	if (bootargs)
 		strcpy(newbootargs, bootargs);
 
-	if (*img_data.kcmdline) {
+	if (img_data.kcmdline) {
 		if (*newbootargs) /* If there is something in newbootargs, a space is needed */
 			strcat(newbootargs, " ");
 		strcat(newbootargs, img_data.kcmdline);
 	}
 
-	if (*img_data.kcmdline_extra) {
+	if (img_data.kcmdline_extra) {
 		if (*newbootargs) /* If there is something in newbootargs, a space is needed */
 			strcat(newbootargs, " ");
 		strcat(newbootargs, img_data.kcmdline_extra);
@@ -651,7 +651,9 @@ bool android_image_get_dtb_by_index(ulong hdr_addr, ulong vendor_boot_img,
 	ulong dtb_addr;		/* address of DTB blob with specified index  */
 	u32 i;			/* index iterator */
 
-	android_image_get_dtb_img_addr(hdr_addr, vendor_boot_img, &dtb_img_addr);
+	if (android_image_get_dtb_img_addr(hdr_addr, vendor_boot_img, &dtb_img_addr) == false)
+		return false;
+
 	/* Check if DTB area of boot image is in DTBO format */
 	if (android_dt_check_header(dtb_img_addr)) {
 		return android_dt_get_fdt_by_index(dtb_img_addr, index, addr,
