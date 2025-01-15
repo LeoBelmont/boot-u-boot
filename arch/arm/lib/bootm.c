@@ -38,6 +38,10 @@
 #endif
 #include <asm/setup.h>
 
+#ifdef CONFIG_SYNA_SUBOOT
+#include "tee_client.h"
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 static struct tag *params;
@@ -300,6 +304,10 @@ static void boot_jump_linux(struct bootm_headers *images, int flag)
 	debug("## Transferring control to Linux (at address %lx)...\n",
 		(ulong) kernel_entry);
 	bootstage_mark(BOOTSTAGE_ID_RUN_OS);
+
+#ifdef CONFIG_SYNA_SUBOOT
+	tee_enter_boot_stage(TZ_BOOT_STAGE_LINUX, TZ_BOOT_MODE_NORMAL);
+#endif
 
 	announce_and_cleanup(fake);
 
