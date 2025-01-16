@@ -132,8 +132,13 @@ phys_size_t env_get_bootm_size(void)
 	if (s)
 		return simple_strtoull(s, NULL, 16);
 
+#if defined(CONFIG_ARCH_SYNAPTICS) && defined(CONFIG_NR_DRAM_BANKS)
+	start = gd->bd->bi_dram[0].start;
+	size = gd->bd->bi_dram[0].size;
+#else
 	start = gd->ram_base;
 	size = gd->ram_size;
+#endif
 
 	if (start + size > gd->ram_top)
 		size = gd->ram_top - start;
