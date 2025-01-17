@@ -124,6 +124,7 @@ int write_sparse_image(struct sparse_storage *info,
 	int fill_buf_num_blks;
 	int i;
 	int j;
+	int k = 0;
 
 	fill_buf_num_blks = CONFIG_IMAGE_SPARSE_FILLBUF_SIZE / info->blksz;
 
@@ -214,6 +215,8 @@ int write_sparse_image(struct sparse_storage *info,
 			if (IS_ERR_VALUE(blks))
 				return -1;
 
+			if ((k++ % 500) == 0)
+				printf(".");
 			blk += blks;
 			bytes_written += ((u64)blkcnt) * info->blksz;
 			total_blocks += chunk_header->chunk_sz;
@@ -272,6 +275,8 @@ int write_sparse_image(struct sparse_storage *info,
 					free(fill_buf);
 					return -1;
 				}
+				if ((k++ % 500) == 0)
+					printf(".");
 				blk += blks;
 				i += j;
 			}
@@ -307,7 +312,7 @@ int write_sparse_image(struct sparse_storage *info,
 
 	debug("Wrote %d blocks, expected to write %d blocks\n",
 	      total_blocks, sparse_header->total_blks);
-	printf("........ wrote %llu bytes to '%s'\n", bytes_written, part_name);
+	printf("\nwrote %llu bytes to '%s'\n", bytes_written, part_name);
 
 	if (total_blocks != sparse_header->total_blks) {
 		info->mssg("sparse image write failure", response);
