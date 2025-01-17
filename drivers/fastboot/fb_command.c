@@ -340,6 +340,11 @@ void fastboot_data_complete(char *response)
  */
 static void __maybe_unused flash(char *cmd_parameter, char *response)
 {
+	if (strcmp("ram", cmd_parameter) == 0) {
+		printf("data save to ram 0x%x, size 0x%x\n", (u32)(uintptr_t)fastboot_buf_addr, image_size);
+		fastboot_okay(NULL, response);
+		return;
+	}
 	if (IS_ENABLED(CONFIG_FASTBOOT_FLASH_MMC))
 		fastboot_mmc_flash_write(cmd_parameter, fastboot_buf_addr,
 					 image_size, response);
