@@ -47,6 +47,10 @@
 #include <linux/math64.h>
 #include <linux/err.h>
 
+#ifdef CONFIG_MMC_WRITE
+#include "misc_syna.h"
+#endif
+
 static void default_log(const char *ignored, char *response) {}
 
 static lbaint_t write_sparse_chunk_raw(struct sparse_storage *info,
@@ -125,6 +129,10 @@ int write_sparse_image(struct sparse_storage *info,
 	int i;
 	int j;
 	int k = 0;
+#ifdef CONFIG_MMC_WRITE
+	uint32_t erased_mem_cont = get_mmc_erased_mem_cont(get_mmc_active_dev());
+	int skip_fill = 0;
+#endif
 
 	fill_buf_num_blks = CONFIG_IMAGE_SPARSE_FILLBUF_SIZE / info->blksz;
 
@@ -229,6 +237,18 @@ int write_sparse_image(struct sparse_storage *info,
 				info->mssg("Bogus chunk size for chunk type FILL", response);
 				return -1;
 			}
+
+#ifdef CONFIG_MMC_WRITE
+			skip_fill = (*(uint32_t *)data == erased_mem_cont) ? 1 : 0;
+
+			if (skip_fill) {
+				data = (char *)data + sizeof(uint32_t);
+				blk += blkcnt;
+				total_blocks += chunk_data_sz / sparse_header->blk_sz;
+				debug("skip FILL for %lu blks\n", blkcnt);
+				continue;
+			}
+#endif
 
 			fill_buf = (uint32_t *)
 				   memalign(ARCH_DMA_MINALIGN,
