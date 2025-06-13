@@ -2108,6 +2108,10 @@ config ARCH_ASPEED
 	select OF_CONTROL
 	imply CMD_DM
 
+config ARCH_SYNAPTICS
+	bool "Synaptics SOCs"
+	select ARM64
+
 config TARGET_DURIAN
 	bool "Support Phytium Durian Platform"
 	select ARM64
@@ -2365,6 +2369,8 @@ source "arch/arm/cpu/armv7/Kconfig"
 source "arch/arm/cpu/armv8/Kconfig"
 
 source "arch/arm/mach-imx/Kconfig"
+
+source "arch/arm/mach-synaptics/Kconfig"
 
 source "arch/arm/mach-nexell/Kconfig"
 
