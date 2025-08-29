@@ -24,8 +24,6 @@
 #include <linux/types.h>
 #include <linux/compat.h>
 #include <dm.h>
-#include <fdtdec.h>
-#include <libfdt.h>
 #include <video.h>
 #include <backlight.h>
 #include "vpp_api.h"
@@ -67,15 +65,23 @@
 	}						\
 }
 
-#define FDTO_SIZE 0x2000
-#define FDT_MAX_SIZE 0x8000  /* Max size to increase FDT into - 32KB is usually enough */
-#define BASE_DTB_WORKING_MEMORY	0x10000000 /* Memory for overlay'd DTB - hopefully safe !?!*/
-
 #define ROOTFS_A "rootfs_a"
 #define ROOTFS_B "rootfs_b"
 
 #define DSI_PANEL_DTS_PATH	"/soc/drm/dsi_panel"
-#define DEFAULT_PANEL_DTBO_PATH "/boot"
+#define RES_CONFIG_FILE		"/boot/res.txt"
+#define RES_CONFIG_KEY		"DISP1_RESID="
+#define DISPLAY_MODE_CONFIG_KEY	"DISP1_MODE="
+#define DISP1_BPP_CONFIG_KEY	"DISP1_BPP="
+#define DISP1_COLORFORMAT_CONFIG_KEY	"DISP1_COLORFORMAT="
+
+/* Configuration variable structure for table-driven parsing */
+typedef struct {
+	int *var_ptr;
+	char *var_name;
+	char var_desc[64];
+	long val, min_val, max_val;
+} cfg_vars_type;
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -104,84 +110,6 @@ static int berlin_fb_sync(struct udevice *dev)
 }
 
 extern int f_mmc_get_part_index(int mmc_dev, char *part_name);
-
-/* Function to overlay the uboot working FDT with the DTBO
- * corresponding to the "dtbo" environment variable
- * Need to call this as early in the uboot init stage as possible
- */
-int setup_uboot_fdt_overlay(void)
-{
-	void *fdto_addr;
-	char cmd[512];
-	char *s, *path = DEFAULT_PANEL_DTBO_PATH;
-	int part_index, ret=1;
-	const void *blob = gd->fdt_blob;
-	void *new_fdt = (void *) BASE_DTB_WORKING_MEMORY;
-
-	/* Check if "dtbo" uboot env available */
-	s = env_get("dtbo");
-
-	fdto_addr = malloc(FDTO_SIZE);
-	if (!fdto_addr) {
-		printf("failed to malloc memory!\n");
-		/* Malloc failed, use panelcfg.h as default */
-		return -1;
-	}
-
-	if (0 == get_current_slot())
-		part_index = f_mmc_get_part_index(get_mmc_active_dev(), ROOTFS_A);
-	else
-		part_index = f_mmc_get_part_index(get_mmc_active_dev(), ROOTFS_B);
-
-	/* Use the panel DTBO path from defconfig if defined and available */
-#ifdef CONFIG_PANEL_DTBO_PATH
-	if (CONFIG_PANEL_DTBO_PATH[0] != '\0')
-		path = CONFIG_PANEL_DTBO_PATH;
-#endif
-
-	if(s) {
-		sprintf(cmd, "ext4load mmc %x:%x %p %s/%s", get_mmc_active_dev(), part_index, fdto_addr, path, s);
-		ret = run_command(cmd, 0);
-	}
-
-	/* ret is initialized to 1 - this will handle case if "s" is empty
-	 * If "s" is non-empty but invalid, run_command() will return 1 for error
-	 * Both these cases we check for CONFIG_DEFAULT_PANEL_DTBO */
-	if (ret) {
-#ifdef CONFIG_DEFAULT_PANEL_DTBO
-		if(CONFIG_DEFAULT_PANEL_DTBO[0] != '\0') {
-			s = CONFIG_DEFAULT_PANEL_DTBO;
-			sprintf(cmd, "ext4load mmc %x:%x %p %s/%s", get_mmc_active_dev(), part_index, fdto_addr, path, s);
-			ret = run_command(cmd, 0);
-		}
-#endif
-		if (ret) {
-			printf("failed to load fdto (cmd: %s)!\n", cmd);
-			/* Failed to load DTBO, use panelcfg.h as default */
-			goto err;
-		}
-	}
-
-	ret = fdt_open_into(blob, new_fdt, FDT_MAX_SIZE);
-	if (ret) {
-		printf("Failed to resize FDT: %s\n", fdt_strerror(ret));
-		/* Failed to resize FDT, use panelcfg.h as default */
-		goto err;
-	}
-
-	ret = fdt_overlay_apply(new_fdt, fdto_addr);
-	if (ret) {
-		printf("ERROR: Failed to apply overlay: %s\n", fdt_strerror(ret));
-		/* Failed to overlay DTBO, use panelcfg.h as default */
-		goto err;
-	}
-
-	/* Now the overlay applied successfully, update global blob */
-	gd->fdt_blob = new_fdt;
-err:
-	free(fdto_addr);
-	return ret;
-}
 
 int syna_parse_lcdc_dt(struct udevice *dev)
 {
@@ -761,6 +689,8 @@ static int syna_load_logo_push_frame(struct berlin_fb_priv *priv, int width,
 	printf("Loading logo %dx%d on display %d\n", width, height, displayID);
 	return ret;
 }
+
+extern int setup_uboot_fdt_overlay(void);
 
 static int do_show_logo(cmd_tbl_t *cmdtp, int flag, int argc,
 			char *const argv[])
