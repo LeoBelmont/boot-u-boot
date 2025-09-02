@@ -3,4 +3,5 @@ config SYNA_PWM
 	depends on ARCH_SYNAPTICS
 	depends on DM_PWM
 	help
-	  This enables PWM framework driver for Synaptics SoCs.
+	  Enabling this config will include the support for the Pulse Width Modulation (PWM)
+	  controller on Synaptics SoCs.

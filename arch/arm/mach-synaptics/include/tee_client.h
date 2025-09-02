@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef __TEE_CLIENT_H_
 #define __TEE_CLIENT_H_
@@ -34,6 +34,6 @@ TEEC_Result tee_register_ta(void *pta, size_t size);
 unsigned long tee_verify_image(int num, ...);
 unsigned long tee_enter_boot_stage(int stage, int mode);
 unsigned long tee_get_mem_region_list(void *region, unsigned long max_num,
-		unsigned long attr_mask, unsigned long attr_val);
+				      unsigned long attr_mask, unsigned long attr_val);
 #endif /* __TEE_CLIENT_H_ */
 

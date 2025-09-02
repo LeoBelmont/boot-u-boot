@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _TEE_CLIENT_CONST_H_
 #define _TEE_CLIENT_CONST_H_
@@ -55,7 +55,8 @@ enum {
 /*! The requested operation should exist but is not yet implemented. */
 	TEEC_ERROR_NOT_IMPLEMENTED	= 0xFFFF0009,
 /*! The requested operation is valid but is not supported in this
- * Implementation. */
+ * Implementation.
+ */
 	TEEC_ERROR_NOT_SUPPORTED	= 0xFFFF000A,
 /*! Expected data was missing. */
 	TEEC_ERROR_NO_DATA		= 0xFFFF000B,
@@ -82,10 +83,12 @@ enum {
  */
 enum TEEC_SharedMemFlags {
 /*! The Shared Memory can carry data from the Client Application
- * to the Trusted Application. */
+ * to the Trusted Application.
+ */
 	TEEC_MEM_INPUT			= 0x00000001,
 /*! The Shared Memory can carry data from the Trusted Application
- * to the Client Application. */
+ * to the Client Application.
+ */
 	TEEC_MEM_OUTPUT			= 0x00000002,
 };
 
@@ -104,25 +107,30 @@ enum TEEC_ParamType {
 	TEEC_VALUE_OUTPUT		= 0x00000002,
 /*! The Parameter is a TEEC_Value tagged as both as input and output,
  * i.e., for which both the behaviors of TEEC_VALUE_INPUT and
- * TEEC_VALUE_OUTPUT apply. */
+ * TEEC_VALUE_OUTPUT apply.
+ */
 	TEEC_VALUE_INOUT		= 0x00000003,
 /*! The Parameter is a TEEC_TempMemoryReference describing a region of memory
  * which needs to be temporarily registered for the duration of the Operation
-and is tagged as input. */
+and is tagged as input.
+ */
 	TEEC_MEMREF_TEMP_INPUT		= 0x00000005,
 /*! Same as TEEC_MEMREF_TEMP_INPUT, but the Memory Reference is tagged as
  * output. The Implementation may update the size field to reflect the
- * required output size in some use cases. */
+ * required output size in some use cases.
+ */
 	TEEC_MEMREF_TEMP_OUTPUT		= 0x00000006,
 /*! A Temporary Memory Reference tagged as both input and output,
  * i.e., for which both the behaviors of TEEC_MEMREF_TEMP_INPUT and
- * TEEC_MEMREF_TEMP_OUTPUT apply. */
+ * TEEC_MEMREF_TEMP_OUTPUT apply.
+ */
 	TEEC_MEMREF_TEMP_INOUT		= 0x00000007,
 /*! The Parameter is a Registered Memory Reference that refers to the
  * entirety of its parent Shared Memory block. The parameter structure is a
  * TEEC_MemoryReference. In this structure, the Implementation MUST read
  * only the parent field and MAY update the size field when the
- * operation completes. */
+ * operation completes.
+ */
 	TEEC_MEMREF_WHOLE		= 0x0000000C,
 /*! A Registered Memory Reference structure that refers to a partial region
  * of its parent Shared Memory block and is tagged as input.

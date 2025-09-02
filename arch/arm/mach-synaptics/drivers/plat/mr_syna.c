@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <string.h>
 #include <linux/compiler.h>
@@ -47,7 +47,9 @@ void init_ion_cacheable_mempool(void)
 			mstart = (unsigned long)(mem[i].base);
 			size = mem[i].size;
 
-			/* ION_CMA must be one of Non-secure and Cacheable pool, Usually it is the same pool */
+			/* ION_CMA must be one of Non-secure and Cacheable pool,
+			 * Usually it is the same pool
+			 */
 			if (TEE_MR_ION_IS_CMA(&mem[i]) && TEE_MR_USER_IS_ION(&mem[i]) && size) {
 				cma_pool_start = mem[i].base;
 				cma_pool_size = mem[i].size;
@@ -224,7 +226,7 @@ int get_reserved_mem(struct mem_region *reserved_mem, int *reserved_num)
 			//ion is overlap with system, then set the reserved memory
 			if (mem[i].base >= sys_start && mem[i].base < sys_end) {
 				debug("memory layout find overlap, 0x%x, 0x%x, (0x%x:0x%x)\n",
-					mem[i].base, mem[i].size, sys_start, sys_end);
+				      mem[i].base, mem[i].size, sys_start, sys_end);
 				if (mem[i].size <= (sys_end - mem[i].base)) {
 					reserved_mem[num].base = mem[i].base;
 					reserved_mem[num].size = mem[i].size;

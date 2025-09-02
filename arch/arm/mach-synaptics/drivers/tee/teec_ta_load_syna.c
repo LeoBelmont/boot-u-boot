@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 #include <malloc.h>
 #include <log.h>
 #include "mmc.h"
@@ -54,7 +54,7 @@ static void read_preload_ta(void)
 	struct img_header *img_hdr = NULL;
 	int mmc_dev = 0;
 
-	if (ta_buff && (ta_num > 0))
+	if (ta_buff && ta_num > 0)
 		return;
 
 	if (get_mmc_num() <= 0) {
@@ -93,7 +93,7 @@ static void read_preload_ta(void)
 		return;
 	}
 
-	if (1 != blk_dread(dev_desc, blinfo.start, 1, buf)) {
+	if (blk_dread(dev_desc, blinfo.start, 1, buf) != 1) {
 		printf("fail to read image info!\n");
 		free(buf);
 		return;
@@ -110,7 +110,7 @@ static void read_preload_ta(void)
 	ta_start += (img_info->image_offset + img_info->image_size
 				+ PRELOAD_TA_ALIGNMENT - 1) / PRELOAD_TA_ALIGNMENT;
 
-	if (1 != blk_dread(dev_desc, ta_start, 1, buf)) {
+	if (blk_dread(dev_desc, ta_start, 1, buf) != 1) {
 		printf("fail to read image header!\n");
 		free(buf);
 		return;
@@ -179,7 +179,9 @@ int teeci_loadsecuremodule(const struct tee_optee_ta_uuid *destination, void *ta
 		if (img_hdr->chunk[i].id == id) {
 			*ta_size = img_hdr->chunk[i].size;
 			if (ta) {
-				memcpy(ta, (void *)(ta_buff + img_hdr->chunk[i].offset), img_hdr->chunk[i].size);
+				memcpy(ta,
+				       (void *)(ta_buff + img_hdr->chunk[i].offset),
+				       img_hdr->chunk[i].size);
 			}
 			return 0;
 		}

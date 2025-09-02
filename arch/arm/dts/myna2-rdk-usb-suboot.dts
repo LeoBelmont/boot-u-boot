@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 /dts-v1/;
 
@@ -69,7 +69,9 @@
 
 &pinctrl {
 	emmc_pmux: emmc-pmux {
-		groups = "EMMC_RSTn", "EMMC_DATA0", "EMMC_DATA1", "EMMC_DATA2", "EMMC_DATA3", "EMMC_DATA4", "EMMC_DATA5", "EMMC_DATA6", "EMMC_DATA7", "EMMC_CLK", "EMMC_CMD";
+		groups = "EMMC_RSTn", "EMMC_DATA0", "EMMC_DATA1", "EMMC_DATA2",
+			"EMMC_DATA3", "EMMC_DATA4", "EMMC_DATA5", "EMMC_DATA6",
+			"EMMC_DATA7", "EMMC_CLK", "EMMC_CMD";
 		function = "emmc";
 	};
 
@@ -79,7 +81,9 @@
 	};
 
 	rgmii_pmux: rgmii-pmux {
-		groups = "GPIO_A0", "GPIO_A1", "RGMIITXC", "RGMIITD0", "RGMIITD1", "RGMIITD2", "RGMIITD3", "RGMIITXCTL", "RGMIIRXC", "RGMIIRD0", "RGMIIRD1", "RGMIIRD2", "RGMIIRD3", "RGMIIRXCTL", "RGMII_CLK_OUT";
+		groups = "GPIO_A0", "GPIO_A1", "RGMIITXC", "RGMIITD0", "RGMIITD1",
+			"RGMIITD2", "RGMIITD3", "RGMIITXCTL", "RGMIIRXC", "RGMIIRD0",
+			"RGMIIRD1", "RGMIIRD2", "RGMIIRD3", "RGMIIRXCTL", "RGMII_CLK_OUT";
 		function = "rgmii";
 	};
 
@@ -96,8 +100,9 @@
 
 	lcdc_pmux: lcdc-pmux {
 		groups = "LCDD0", "LCDD1", "LCDD2", "LCDD3", "LCDD4", "LCDD5", "LCDD6", "LCDD7",
-				 "LCDD8", "LCDD9", "LCDD10", "LCDD11", "LCDD12", "LCDD13", "LCDD14", "LCDD15",
-				 "LCDD16", "LCDD17", "LCDD18", "LCDD19", "LCDD20", "LCDD21", "LCDD22", "LCDD23";
+			"LCDD8", "LCDD9", "LCDD10", "LCDD11", "LCDD12", "LCDD13", "LCDD14",
+			"LCDD15", "LCDD16", "LCDD17", "LCDD18", "LCDD19", "LCDD20", "LCDD21",
+			"LCDD22", "LCDD23";
 		function = "lcd";
 	};
 

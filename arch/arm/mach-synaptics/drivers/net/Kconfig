@@ -1,5 +1,11 @@
 config PHY_SUNPLUS
 	bool  "SUNPLUS Ethernet PHY support"
+	help
+	  Select this option if your board uses a Sunplus PHY and requires proper
+	  initialization and management through the standard PHY framework.
 
 config ETH_ROM_MAC
 	bool  "Get MAC address from chip info"
+	help
+	  Enable this config to retrieve the Ethernet MAC address from non-volatile memory
+	  or chip-specific ROM during initialization.

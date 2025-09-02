@@ -25,14 +25,16 @@ config USB_FUNCTION_FASTBOOT
 	select FASTBOOT
 	select USB_GADGET_DOWNLOAD
 	help
-	  This enables the USB part of the fastboot gadget.
+	  Select this option if you want to use Fastboot over USB on
+	  platforms with USB gadget capabilities
 
 config UDP_FUNCTION_FASTBOOT
 	depends on NET
 	select FASTBOOT
 	bool "Enable fastboot protocol over UDP"
 	help
-	  This enables the fastboot protocol over UDP.
+	  Select this option to enable support for running the Fastboot protocol
+	  over a UDP/IP.
 
 config UDP_FUNCTION_FASTBOOT_PORT
 	depends on UDP_FUNCTION_FASTBOOT
@@ -46,7 +48,8 @@ config TCP_FUNCTION_FASTBOOT
 	select FASTBOOT
 	bool "Enable fastboot protocol over TCP"
 	help
-	  This enables the fastboot protocol over TCP.
+	  Select this option to enable support for running the Fastboot protocol over a TCP/IP
+	  connection.
 
 if FASTBOOT
 

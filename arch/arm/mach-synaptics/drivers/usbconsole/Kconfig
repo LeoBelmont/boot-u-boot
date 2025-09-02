@@ -1,4 +1,5 @@
 config USBCONSOLE
 	bool "Synaptics usb console"
 	help
-	  Use synaptics usb console
+	  Select this option to enable support for the Synaptics USB console
+	  for debugging

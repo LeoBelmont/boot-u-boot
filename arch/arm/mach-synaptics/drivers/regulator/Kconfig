@@ -2,4 +2,6 @@ config REGULATOR_RASPBERRYPI_TOUCHSCREEN_ATTINY
 	bool "Enable regulator on waveshare raspberry pi touchscreen"
 	depends on VIDEO_SYNA
 	help
-	  This enables regulator on waveshare raspberry pi touchscreen.
+	  Select this option if you are using a Waveshare Raspberry Pi
+	  touchscreen display that includes ATtiny-based power control and
+	  want the kernel to manage its voltage regulators.

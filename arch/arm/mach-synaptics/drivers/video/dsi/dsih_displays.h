@@ -20,20 +20,20 @@
 #define WAKE_UP
 #define WAKE_UP_SEND_VIDEO
 
-void copy_dpi_param_changes(dsih_dpi_video_t * from_param,
-				dsih_dpi_video_t * to_param);
+void copy_dpi_param_changes(dsih_dpi_video_t *from_param,
+			    dsih_dpi_video_t *to_param);
 
-void copy_edpi_param_changes(dsih_cmd_mode_video_t * from_param,
-				 dsih_cmd_mode_video_t * to_param);
+void copy_edpi_param_changes(dsih_cmd_mode_video_t *from_param,
+			     dsih_cmd_mode_video_t *to_param);
 
 int dsi_screen_init(struct mipi_dsi_dev *dev, int screen, int video_mode);
 
-int pre_video_mode(struct mipi_dsi_dev *dev, unsigned screen, int lanes);
+int pre_video_mode(struct mipi_dsi_dev *dev, unsigned int screen, int lanes);
 
-int pre_command_mode(struct mipi_dsi_dev *dev, unsigned screen, int lanes);
+int pre_command_mode(struct mipi_dsi_dev *dev, unsigned int screen, int lanes);
 
-int dsi_panel_send_cmd (unsigned int cmdsize, unsigned char *pcmd);
+int dsi_panel_send_cmd(unsigned int cmdsize, unsigned char *pcmd);
 
-void dsi_register_device (void *mipi);
+void dsi_register_device(void *mipi);
 
 #endif	//MIPI_DISPLAYS_H_

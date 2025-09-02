@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifdef CONFIG_SYNA_SPI_SUBOOT
 #include <part.h>
@@ -34,7 +34,8 @@
 int get_current_slot(void);
 int try_abmode(int abmode_sel);
 
-void fb_mmc_flash_read_from_offset(const char *cmd, void *read_buffer, unsigned int read_bytes, unsigned int offset);
+void fb_mmc_flash_read_from_offset(const char *cmd, void *read_buffer, unsigned int read_bytes,
+				   unsigned int offset);
 void fb_mmc_flash_read(const char *cmd, void *read_buffer, unsigned int read_bytes);
 int f_mmc_save_part_table(int mmc_dev);
 int f_mmc_get_hwpart_from_table(const char *part_name);
@@ -42,5 +43,6 @@ int f_mmc_get_part_from_table(const char *part_name);
 
 #ifdef CONFIG_SYNA_SPI_SUBOOT
 struct mtd_info *fb_spi_setup_mtd_dev(void);
-int syna_mtdparts_get_info_by_name(struct mtd_info *mtd, const char *name, struct disk_partition *info);
+int syna_mtdparts_get_info_by_name(struct mtd_info *mtd, const char *name,
+				   struct disk_partition *info);
 #endif

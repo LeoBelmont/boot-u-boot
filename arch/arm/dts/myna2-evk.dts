@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2020 Synaptics Incorporated
  *
@@ -22,16 +22,16 @@
 
 	chosen {
 		stdout-path = &uart0;
-        };
+	};
 
 	panel0-backlight {
-                compatible = "pwm-backlight";
-                status = "okay";
-                pwms = <&pwm0 0 1000000 0>;
-                brightness-levels = <0 36 72 108 144 180 212 255>;
-                default-brightness-level = <7>;
-                enable-gpios = <&portb 19 GPIO_ACTIVE_HIGH>;
-        };
+		compatible = "pwm-backlight";
+		status = "okay";
+		pwms = <&pwm0 0 1000000 0>;
+		brightness-levels = <0 36 72 108 144 180 212 255>;
+		default-brightness-level = <7>;
+		enable-gpios = <&portb 19 GPIO_ACTIVE_HIGH>;
+	};
 
 	regulators {
 		compatible = "simple-bus";
@@ -84,9 +84,11 @@
 
 &pinctrl {
 	emmc_pmux: emmc-pmux {
-		groups = "EMMC_RSTn", "EMMC_DATA0", "EMMC_DATA1", "EMMC_DATA2", "EMMC_DATA3", "EMMC_DATA4", "EMMC_DATA5", "EMMC_DATA6", "EMMC_DATA7", "EMMC_CLK", "EMMC_CMD";
-        function = "emmc";
-        };
+		groups = "EMMC_RSTn", "EMMC_DATA0", "EMMC_DATA1", "EMMC_DATA2",
+			"EMMC_DATA3", "EMMC_DATA4", "EMMC_DATA5", "EMMC_DATA6",
+			"EMMC_DATA7", "EMMC_CLK", "EMMC_CMD";
+		function = "emmc";
+	};
 
 	sdio_pmux: sdio-pmux {
 		groups = "SDIO_CDn";
@@ -100,7 +102,10 @@
 	};
 
 	rgmii_pmux: rgmii-pmux {
-		groups = "GPIO_A0", "GPIO_A1", "RGMIITXC", "RGMIITD0", "RGMIITD1", "RGMIITD2", "RGMIITD3", "RGMIITXCTL", "RGMIIRXC", "RGMIIRD0", "RGMIIRD1", "RGMIIRD2", "RGMIIRD3", "RGMIIRXCTL", "RGMII_CLK_OUT";
+		groups = "GPIO_A0", "GPIO_A1", "RGMIITXC", "RGMIITD0",
+			"RGMIITD1", "RGMIITD2", "RGMIITD3", "RGMIITXCTL",
+			"RGMIIRXC", "RGMIIRD0", "RGMIIRD1", "RGMIIRD2", "RGMIIRD3",
+			"RGMIIRXCTL", "RGMII_CLK_OUT";
 		function = "rgmii";
 	};
 
@@ -122,14 +127,15 @@
 	};
 
 	pwm0_pmux: pwm0-pmux {
-                groups = "PWM0";
-                function = "gpio";
-        };
+		groups = "PWM0";
+		function = "gpio";
+	};
 
 	lcdc_pmux: lcdc-pmux {
 		groups = "LCDD0", "LCDD1", "LCDD2", "LCDD3", "LCDD4", "LCDD5", "LCDD6", "LCDD7",
-				 "LCDD8", "LCDD9", "LCDD10", "LCDD11", "LCDD12", "LCDD13", "LCDD14", "LCDD15",
-				 "LCDD16", "LCDD17", "LCDD18", "LCDD19", "LCDD20", "LCDD21", "LCDD22", "LCDD23";
+			"LCDD8", "LCDD9", "LCDD10", "LCDD11", "LCDD12", "LCDD13", "LCDD14",
+			"LCDD15", "LCDD16", "LCDD17", "LCDD18", "LCDD19", "LCDD20", "LCDD21",
+			"LCDD22", "LCDD23";
 		function = "lcd";
 	};
 
@@ -144,9 +150,9 @@
 	};
 
 	lcdc_bl_gpio_pmux: lcdc-bl-gpio-pmux {
-                groups = "USB2_DRV_VBUS";
-                function = "gpio";
-        };
+		groups = "USB2_DRV_VBUS";
+		function = "gpio";
+	};
 };
 
 &i2c1 {
@@ -222,7 +228,7 @@
 };
 
 &sdhci0 {
-        status = "okay";
+	status = "okay";
 };
 
 &sdhci1 {
@@ -253,7 +259,7 @@
 		reg = <0>;
 		memory-map = <0x0 0xf0000000 0x0 0x4000000>;
 		spi-max-frequency = <10000000>;
-        };
+	};
 };
 
 &xhci0 {
@@ -266,9 +272,9 @@
 };
 
 &pwm0 {
-        status = "okay";
-        pinctrl-0 = <&pwm0_pmux>;
-        pinctrl-names = "default";
+	status = "okay";
+	pinctrl-0 = <&pwm0_pmux>;
+	pinctrl-names = "default";
 };
 
 &drm {
@@ -283,19 +289,19 @@
 	disp2-busformat = <0>;
 
 	lcdc_panel {
-                status= "okay";
-                compatible = "syna,lcdc_panel";
-                hact = <800>;
-                hfp = <210>;
-                hsa = <2>;
-                hbp = <46>;
-                vact = <480>;
-                vfp = <22>;
-                vsa = <2>;
-                vbp = <23>;
-                pixclockKhz = <33300>;
-                rgbswap = <1>;
-        };
+		status= "okay";
+		compatible = "syna,lcdc_panel";
+		hact = <800>;
+		hfp = <210>;
+		hsa = <2>;
+		hbp = <46>;
+		vact = <480>;
+		vfp = <22>;
+		vsa = <2>;
+		vbp = <23>;
+		pixclockKhz = <33300>;
+		rgbswap = <1>;
+	};
 
 	dsi_panel {
 		status= "okay";

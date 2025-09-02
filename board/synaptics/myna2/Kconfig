@@ -10,13 +10,15 @@ config SYS_BOARD_FPGA
 	bool "Run on FPGA board"
 	default n
 	help
-	  Say Y here to support FPGA.
+	  Select this option to enable support for running the U-Boot build
+	  on an FPGA based version
 
 config SYS_BOARD_VELOCE
 	bool "Run on VELOCE board"
 	default n
 	select SYS_BOARD_FPGA
 	help
-	  Say Y here to support VELOCE.
+	  Select this option to enable support for running the U-Boot build
+	  on the VELOCE platform
 
 endif

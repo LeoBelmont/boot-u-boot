@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #define _VPP_CFG_C_
 
@@ -29,10 +29,10 @@
 #include "vpp_cfg.h"
 
 RESOLUTION_INFO m_resinfo_table[MAX_NUM_RESS] = {
-
 /* { active_width, active_height, width, height, hfrontporch, hsyncwidth,
-     hbackporch, vfrontporch, vsyncwidth, vbackporch, type, scan, frame_rate,
-     flag_3d, freq, pts_per_cnt_4 } */
+ * hbackporch, vfrontporch, vsyncwidth, vbackporch, type, scan, frame_rate,
+ * flag_3d, freq, pts_per_cnt_4 }
+ */
 
 	/* RES_NTSC_M*/ {720, 480, 858, 525, 19, 62, 57, 4, 3, 15,
 				TYPE_SD, SCAN_INTERLACED, FRAME_RATE_59P94, 0,

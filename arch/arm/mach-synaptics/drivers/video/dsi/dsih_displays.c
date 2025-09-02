@@ -18,10 +18,10 @@
 #include "dsih_dphy.h"
 #include <linux/printk.h>
 
-static struct mipi_dsi_dev *mipi_dev = NULL;
+static struct mipi_dsi_dev *mipi_dev;
 
-void copy_dpi_param_changes(dsih_dpi_video_t * from_param,
-				dsih_dpi_video_t * to_param)
+void copy_dpi_param_changes(dsih_dpi_video_t *from_param,
+			    dsih_dpi_video_t *to_param)
 {
 	to_param->no_of_lanes = from_param->no_of_lanes;
 	to_param->non_continuous_clock = from_param->non_continuous_clock;
@@ -52,8 +52,8 @@ void copy_dpi_param_changes(dsih_dpi_video_t * from_param,
 	to_param->dpi_lp_cmd_en = from_param->dpi_lp_cmd_en;
 }
 
-void copy_edpi_param_changes(dsih_cmd_mode_video_t * from_param,
-				 dsih_cmd_mode_video_t * to_param)
+void copy_edpi_param_changes(dsih_cmd_mode_video_t *from_param,
+			     dsih_cmd_mode_video_t *to_param)
 {
 	to_param->color_coding = from_param->color_coding;
 	to_param->virtual_channel = from_param->virtual_channel;
@@ -73,26 +73,25 @@ void copy_edpi_param_changes(dsih_cmd_mode_video_t * from_param,
 /****************************************/
 /*	look up tables					*/
 /****************************************/
-int pre_video_mode(struct mipi_dsi_dev *dev, unsigned mode, int lanes)
+int pre_video_mode(struct mipi_dsi_dev *dev, unsigned int mode, int lanes)
 {
 	dsi_get_transition_times(dev);
 	return 0;
 }
 
-int pre_command_mode(struct mipi_dsi_dev *dev, unsigned mode, int lanes)
+int pre_command_mode(struct mipi_dsi_dev *dev, unsigned int mode, int lanes)
 {
 	return 0;
 }
 
-
-void dsi_register_device (void *mipi)
+void dsi_register_device(void *mipi)
 {
-	mipi_dev = (struct mipi_dsi_dev*) mipi;
+	mipi_dev = (struct mipi_dsi_dev *)mipi;
 }
 
-int dsi_panel_send_cmd (unsigned int cmdsize, unsigned char *pcmd)
+int dsi_panel_send_cmd(unsigned int cmdsize, unsigned char *pcmd)
 {
-    int i = 0, retval = 0;
+	int i = 0, retval = 0;
 
 	if (!mipi_dev) {
 		pr_err("MIPI not init/registered\n");
@@ -100,57 +99,57 @@ int dsi_panel_send_cmd (unsigned int cmdsize, unsigned char *pcmd)
 	}
 
 	mipi_dsih_cmd_mode(mipi_dev, 1);
-	while (i < cmdsize)
-	{
+	while (i < cmdsize) {
 		/*Op-code*/
-		switch (pcmd[i])
-		{
-			case DSI_CMD_DELAY:
-				{
-					unsigned int delay;
-					delay = pcmd[i+1] |
-						(pcmd[i+2] << 8) |
-						(pcmd[i+3] << 16) |
-						(pcmd[i+4] << 24);
-					udelay(delay);
-					i+=5;
-				}
-				break;
+		switch (pcmd[i]) {
+		case DSI_CMD_DELAY:
+			{
+				unsigned int delay;
 
-			case DSI_CMD_BYTE_WRITE:
-			case DSI_CMD_SHORT_WRITE:
-			case GEN_CMD_BYTE_WRITE:
-			case GEN_CMD_SHORT_WRITE:
-				{
-					mipi_dsih_gen_wr_packet(mipi_dev, 0,
+				delay = pcmd[i + 1] |
+					(pcmd[i + 2] << 8) |
+					(pcmd[i + 3] << 16) |
+					(pcmd[i + 4] << 24);
+				udelay(delay);
+				i += 5;
+			}
+			break;
+
+		case DSI_CMD_BYTE_WRITE:
+		case DSI_CMD_SHORT_WRITE:
+		case GEN_CMD_BYTE_WRITE:
+		case GEN_CMD_SHORT_WRITE:
+			{
+				mipi_dsih_gen_wr_packet(mipi_dev, 0,
 							pcmd[i],
-							&pcmd[i+2],
-							pcmd[i+1]);
-					i = i + pcmd[i+1] + 2;
-				}
-				break;
+							&pcmd[i + 2],
+							pcmd[i + 1]);
+				i = i + pcmd[i + 1] + 2;
+			}
+			break;
 
-			case GEN_CMD_LONG_WRITE:
-			case DSI_CMD_LONG_WRITE:
-				{
-					unsigned char dsi_cmd[MAX_DSI_LONG_WRITE_PARAMS];
-					dsi_cmd[0] = pcmd[i+1];
-					dsi_cmd[1] = 0;
-					memcpy(&dsi_cmd[2], &pcmd[i+2], dsi_cmd[0]);
-					mipi_dsih_gen_wr_packet(mipi_dev, 0,
+		case GEN_CMD_LONG_WRITE:
+		case DSI_CMD_LONG_WRITE:
+			{
+				unsigned char dsi_cmd[MAX_DSI_LONG_WRITE_PARAMS];
+
+				dsi_cmd[0] = pcmd[i + 1];
+				dsi_cmd[1] = 0;
+				memcpy(&dsi_cmd[2], &pcmd[i + 2], dsi_cmd[0]);
+				mipi_dsih_gen_wr_packet(mipi_dev, 0,
 							pcmd[i],
 							dsi_cmd,
-							pcmd[i+1]+2);
-					i = i + pcmd[i+1] + 2;
-				}
-				break;
+							pcmd[i + 1] + 2);
+				i = i + pcmd[i + 1] + 2;
+			}
+			break;
 
-			default:
-				{
-					retval = -1;
-					pr_err("Unsupported Command[%d]\n", pcmd[i]);
-				}
-				break;
+		default:
+			{
+				retval = -1;
+				pr_err("Unsupported Command[%d]\n", pcmd[i]);
+			}
+			break;
 		}
 
 		if (retval == -1)
