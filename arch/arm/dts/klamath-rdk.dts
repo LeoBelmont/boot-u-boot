@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -28,7 +28,7 @@
 #include <dt-bindings/gpio/gpio.h>
 
 / {
-	model = "Synaptics KLAMATH FPGA";
+	model = "Synaptics KLAMATH RDK";
 	compatible = "Synaptics,klamath", "Synaptics,asserial";
 
 	memory {
@@ -39,26 +39,20 @@
 	chosen {
 		stdout-path = &sm_uart0;
 	};
-};
 
-&pinctrl {
-	mdio_pmux: mdio-pmux {
-		groups = "GPIO31", "GPIO32";
-		function = "rgmii";
-	};
-
-	eth0_pmux: eth0-pmux {
-		groups = "GPIO33", "GPIO34", "GPIO37", "GPIO38", "GPIO41", "GPIO43", "GPIO45";
-		function = "rmii1";
-	};
-
-	sd0_pmux: sd0-pmux {
-		groups = "GPIO12", "GPIO22", "GPIO46", "GPIO47";
-		function = "sdio1";
+	regulators {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <0>;
 	};
 };
 
 &sysmgr_pinctrl {
+	i2c0_pmux: i2c0-pmux {
+		groups = "SM_GPIO12", "SM_GPIO13";
+		function = "tw0";
+	};
+
 	xspi0_pmux: xspi0-pmux {
 		groups = "SM_GPIO18", "SM_GPIO19", "SM_GPIO20", "SM_GPIO21",
 				 "SM_GPIO22", "SM_GPIO23", "SM_GPIO24", "SM_GPIO25",
@@ -68,8 +62,21 @@
 	};
 };
 
-&uartclk {
-		clock-frequency = <48000000>;
+&i2c0 {
+	status = "okay";
+	pinctrl-0 = <&i2c0_pmux>;
+	pinctrl-names = "default";
+	clock-frequency = <100000>;
+	i2c-sda-hold-time-ns = <449>;
+	i2c-scl-rising-time-ns = <120>;
+	i2c-scl-falling-time-ns = <20>;
+
+	expander0: gpio@43 {
+		compatible = "fcs,fxl6408";
+		reg = <0x43>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
 };
 
 &sm_uart0 {
@@ -78,31 +85,22 @@
 
 &sdhci0 {
 	status = "okay";
+	pad_sn = <10>;
+	pad_sp = <10>;
 	mmc-ddr-1_8v;
 	mmc-hs200-1_8v;
 	mmc-hs400-1_8v;
 	fixed-voltage;
 };
 
-/*
-&sdhci1 {
-	status = "okay";
-	pinctrl-0 = <&sd0_pmux>;
-	pinctrl-names = "default";
-	broken-cd;
-	no-mmc;
-	no-sdio;
-	no-1-8-v;
-};
-*/
-
-&usb_phy0 {
+&usb_phy1 {
 	status = "okay";
 };
 
-&usb0 {
+&usb1 {
 	status = "okay";
 };
+
 
 &xspi0 {
 	status = "okay";
@@ -113,7 +111,6 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "jedec,spi-nor";
-		//compatible = "spi-nand";
 		reg = <0>;
 		spi-max-frequency = <10000000>;
 	};
