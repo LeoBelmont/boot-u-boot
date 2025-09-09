@@ -592,6 +592,16 @@ int probe_new_regulators(void)
 	ofnode i2c_node, regulator_node, parent_node;
 	int index = 0, ret;
 	struct driver *drv;
+	struct udevice *dev;
+
+	ofnode n = ofnode_path("/soc/lcdc-pinmux");
+
+	if (ofnode_valid(n)) {
+		/* Probe the pinmux MISC device */
+		uclass_get_device_by_ofnode(UCLASS_MISC, n, &dev);
+	} else {
+		debug("Invalid lcdc-pinmux path\n");
+	}
 
 	parent_node = ofnode_path("/soc/apb@f7e80000");
 

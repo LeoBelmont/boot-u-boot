@@ -347,6 +347,10 @@
 			status = "disabled";
 		};
 
+		lcdc_pinmux: lcdc-pinmux {
+			status = "disabled";
+		};
+
 		socapb: apb@f7e80000 {
 			compatible = "simple-bus";
 			#address-cells = <1>;

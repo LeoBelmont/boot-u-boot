@@ -85,6 +85,7 @@ ifdef CONFIG_TARGET_MYNA2
     obj-y += asxxx/lcdc_display.o
     obj-y += hal_vpp_ntz.o
     obj-$(CONFIG_SYNA_DRM_BRIDGE_LT9611) += bridge/lt9611.o
+    obj-y += lcdc_pinmux.o
 endif
 
 PLATFORM_CPPFLAGS += $(B_CHIP_CFLAGS)
