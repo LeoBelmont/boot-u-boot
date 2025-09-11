@@ -33,6 +33,8 @@
 #include "OSAL_api.h"
 #include "fastboot_syna.h"
 #include "vpp_priv.h"
+#include "tee_client.h"
+#include "mem_init.h"
 
 #ifdef CONFIG_GENX_ENABLE
 #include "genimg.h"
@@ -44,6 +46,11 @@
 #define MAX_PARTITION		32
 #define MAX_LOGO_NAMES		3
 #define MAX_PARTITION_NAME_SIZE	8
+
+#define MAX_PAGESIZE            8192
+#define IMAGE_TYPE_FAST_LOGO    0x27
+#define MIN_FASTLOGO_IMG_SIZE   (0.5 * 1024 * 1024)
+#define MAX_FASTLOGO_IMG_SIZE   (64 * 1024 * 1024)
 
 #ifndef CONFIG_GENX_ENABLE
 #define GENX_IMAGE_HEADER_FASTLOGO_SIZE		0
@@ -166,83 +173,129 @@ static fastlogo_info_t *check_validate_logo(int width, int height, UINT8 *pHEADE
 	return NULL;
 }
 
-int syna_load_logo_info (int width, int height, VBUF_INFO *pVppBuf, FASTLOGO_INFO *fl_info)
+int syna_load_logo_info(int width, int height, VBUF_INFO *p_vpp_buf, FASTLOGO_INFO *fl_info)
 {
-	UINT8 *pReadBuffer, *plogobuffer, *pHeader, *pLogoHeader;
-	bool is_partition_found = 0;
+	int ret = -1;
+	unsigned char *buff = NULL;
+	unsigned char *img_buff = NULL;
+	unsigned int block_size;
+	unsigned int pad_size;
+	int total_header_size;
+
+	struct img_header *img_hdr;
+	u32 read_size, img_size, logo_size;
+
+	struct img_info *img_info;
 	fastlogo_info_t *fl_header;
-	unsigned int blocksize = syna_get_blksize();
-	int ab_mode = BOOTSEL_INVALID;
-	const char *pt_name = NULL;
+	UINT8 *read_buffer, *logo_buffer, *header, *logo_header = NULL;
+	int ab_mode;
+	const char *pt_name;
 
-	ab_mode = get_current_slot();
-	if (ab_mode != BOOTSEL_A && ab_mode != BOOTSEL_B)
-		printf("fastlogo: No bootable slots found for fastlogo loading, ...!!\n");
-	else
-		pt_name = (ab_mode == BOOTSEL_A) ?  LOGO_A_NAME : LOGO_B_NAME;
-
-	if (pt_name) {
-		pHeader = (UINT8 *)malloc(LOGO_HEADER_SIZE + (blocksize * 2));
-
-		debug("fastlogo: logo partition name %s blksize %d\n", pt_name, blocksize);
-		pLogoHeader = pHeader;
-
-		pHeader = syna_emmc_read_from_offset(pt_name,
-				GENX_IMAGE_HEADER_FASTLOGO_SIZE,
-				LOGO_HEADER_SIZE, pHeader, fl_info);
-
-		if (!pHeader) {
-			printf("fastlogo: Header read failed in partition - %s\n", pt_name);
-			return -1;
-		}
-
-		fl_header = check_validate_logo(width, height, pHeader);
-		if (fl_header)
-			is_partition_found = 1;
-	}
-
-	if (is_partition_found) {
-		pReadBuffer = (UINT8 *)malloc((fl_header->stride *
-					fl_header->height) + (blocksize * 2));
-		if (!pReadBuffer) {
-			printf("fastlogo: Mem Allocation for FB fail\n");
-			return -ENOMEM;
-		}
-
-#ifdef CONFIG_MMC
-		plogobuffer = syna_emmc_read_from_offset(pt_name,
-				fl_header->offset + GENX_IMAGE_HEADER_FASTLOGO_SIZE,
-				(fl_header->stride * fl_header->height),
-				pReadBuffer, fl_info);
-#else
-		//Only support fastlogo on emmc image
+	if (!(IS_ENABLED(CONFIG_MMC))) {
+		//Only support fastlogo on emmc image, fail for SPI/RAM
 		printf("fastlogo: Not supported!!!!!!!!\n");
-		plogobuffer = NULL;
-#endif
-
-		if (!plogobuffer) {
-			printf("fastlogo: read failed\n");
-			return -1;
-		}
-
-		pVppBuf->m_srcfmt = LOGO_SRC_FMT;
-		pVppBuf->m_bytes_per_pixel = (LOGO_SRC_FMT == SRCFMT_YUV422) ? 2 : 3;
-		pVppBuf->m_pbuf_start = plogobuffer;
-		pVppBuf->m_content_width = fl_header->width;
-		pVppBuf->m_content_height = fl_header->height;
-		pVppBuf->m_buf_stride =  fl_header->stride;
-		pVppBuf->m_buf_size =  pVppBuf->m_buf_stride * pVppBuf->m_content_height;
-		pVppBuf->m_active_width = fl_header->width;
-		pVppBuf->m_active_height = fl_header->height;
-		//Indicate the bitdepth of the frame, if 8bit, is 8, if 10bit, is 10
-		pVppBuf->m_bits_per_pixel = pVppBuf->m_bytes_per_pixel * 8;
-
-		pVppBuf->m_order = 0;
-		free(pLogoHeader);
-	} else {
-		printf("fastlogo: logo partition not found\n");
 		return -1;
 	}
 
-	return 0;
+	ab_mode = get_current_slot();
+	if (ab_mode != BOOTSEL_A && ab_mode != BOOTSEL_B) {
+		printf("fastlogo: No bootable slots found for fastlogo loading, ...!!\n");
+		return -1;
+	}
+
+	pt_name = (ab_mode == BOOTSEL_A) ?  LOGO_A_NAME : LOGO_B_NAME;
+
+	block_size = syna_get_blksize();
+	pad_size = block_size * 2;
+	total_header_size = GENX_IMAGE_HEADER_FASTLOGO_SIZE + LOGO_HEADER_SIZE + pad_size;
+	logo_header = (UINT8 *)malloc_ion_cacheable(total_header_size);
+
+	debug("fastlogo: logo partition name %s header-size:%d, [blk/pad]_size %d/%d\n",
+	      pt_name, total_header_size, block_size, pad_size);
+	printf("fastlogo: logo partition name %s header-size:%d, [blk/pad]_size %d/%d\n",
+	       pt_name, total_header_size, block_size, pad_size);
+
+	header = syna_emmc_read_from_offset(pt_name, 0,
+					    total_header_size, logo_header, fl_info);
+
+	if (!header) {
+		printf("fastlogo: Header read failed in partition - %s\n", pt_name);
+		goto error_out1;
+	}
+
+	img_info = (struct img_info *)header;
+	if (img_info->magic != IMG_INFO_MAGIC) {
+		printf("fastlogo: incorrect magic in image info  0x%08x\n", img_info->magic);
+		goto error_out1;
+	}
+
+	/* find out fastlogo image read size */
+	img_size = img_info->image_size;
+	img_size = ALIGN(img_size, 16);
+	read_size = img_size + PREPEND_IMAGE_INFO_SIZE;
+
+	/* check read size  */
+	if (read_size > MAX_FASTLOGO_IMG_SIZE || read_size < MIN_FASTLOGO_IMG_SIZE) {
+		printf("fastlogo: img_size is invalid - %u\n", read_size);
+		goto error_out1;
+	}
+
+	img_buff = malloc_ion_cacheable(read_size + pad_size);
+	buff = syna_emmc_read_from_offset(pt_name, 0, read_size, img_buff, fl_info);
+	if (!buff) {
+		printf("fastlogo: image read failed in partition - %s\n", pt_name);
+		goto error_out2;
+	}
+
+	img_hdr = (void *)(img_buff + PREPEND_IMAGE_INFO_SIZE);
+
+	/* verify image */
+	ret = tee_verify_image(5, (void *)img_hdr, img_size,
+			       (void *)img_hdr, img_size, IMAGE_TYPE_FAST_LOGO);
+	if (ret <= 0) {
+		printf("fastlogo: Verify FASTLOGO image failed! ret=0x%x\n", ret);
+		goto error_out2;
+	} else {
+		printf("fastlogo: Verify FASTLOGO image passed! ret=0x%x\n", ret);
+		//reset return value
+		ret = 0;
+	}
+
+	header = img_buff + GENX_IMAGE_HEADER_FASTLOGO_SIZE;
+	fl_header = check_validate_logo(width, height, header);
+	if (!fl_header) {
+		printf("fastlogo: No matching logo found for WxH:[%d]x[%d]\n",
+		       width, height);
+		ret = -1;
+		goto error_out2;
+	}
+
+	printf("fastlogo: matching logo found WxH:%dx%d->%dx%d\n",
+	       width, height, fl_header->width, fl_header->height);
+	logo_buffer = fl_header->offset + header;
+	logo_size = (fl_header->stride * fl_header->height) + pad_size;
+	read_buffer = (UINT8 *)malloc(logo_size);
+	memcpy(read_buffer, logo_buffer, logo_size);
+
+	p_vpp_buf->m_srcfmt = LOGO_SRC_FMT;
+	p_vpp_buf->m_bytes_per_pixel = (LOGO_SRC_FMT == SRCFMT_YUV422) ? 2 : 3;
+	p_vpp_buf->m_pbuf_start = read_buffer;
+	p_vpp_buf->m_content_width = fl_header->width;
+	p_vpp_buf->m_content_height = fl_header->height;
+	p_vpp_buf->m_buf_stride =  fl_header->stride;
+	p_vpp_buf->m_buf_size =  p_vpp_buf->m_buf_stride * p_vpp_buf->m_content_height;
+	p_vpp_buf->m_active_width = fl_header->width;
+	p_vpp_buf->m_active_height = fl_header->height;
+	//Indicate the bitdepth of the frame, if 8bit, is 8, if 10bit, is 10
+	p_vpp_buf->m_bits_per_pixel = p_vpp_buf->m_bytes_per_pixel * 8;
+	p_vpp_buf->m_order = 0;
+
+error_out2:
+	if (img_buff)
+		free_ion_cacheable(img_buff);
+error_out1:
+	if (logo_header)
+		free_ion_cacheable(logo_header);
+
+	return ret;
 }
