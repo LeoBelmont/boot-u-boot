@@ -67,12 +67,12 @@ void TZ_MV_VPP_Enable_Interrupt(struct berlin_fb_priv *priv)
 	MV_VPP_Enable_IRQ();
 }
 
-int TZ_MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,
-			    int display)
+int TZ_MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *p_vpp_buf,
+			    int display, int width, int height)
 {
 	int ret;
 
-	ret = MV_VPP_pushframe(pVppBuf, display);
+	ret = MV_VPP_pushframe(p_vpp_buf, display, width, height);
 	if (ret) {
 		printf("Frame push failed\n");
 		return ret;

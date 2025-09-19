@@ -29,31 +29,20 @@
 #include <dm.h>
 #include "vpp_api.h"
 
+#define	VPP_SUPPORT_SCALAR		1
+
 typedef enum {
 	DISPLAY_1,
 	DISPLAY_2,
 	MAX_NUM_DISPLAY
 } ENUM_DISPLAY_ID;
 
-typedef struct fastlogo_info_t {
-	u32 status : 1;   // Successfully displayed logo or not
-	u32 partition : 5; //logo from partition A/B
-	u32 cpcb0ResId : 8;     //CpCb0 resolution -- may be additional bits for depth/format
-	u32 cpcb1ResId : 8;     //CpCb1 resolution
-	u32 reserved : 9;
-} FASTLOGO_INFO;
-
-typedef union  avio_fastlogo_info_u {
-	u32 fl_disp_info;
-	struct fastlogo_info_t u;
-} avio_fastlogo_info;
-
 int syna_get_display_modeinfo(struct berlin_fb_priv *priv, int *width,
 			      int *height, int display, avio_fastlogo_info *dispinfo);
 
 int MV_VPPOBJ_SetFormat(struct vpp_config_params *vpp_config_param);
 int MV_VPPOBJ_Config_Display(struct vpp_config_params *vpp_config_param);
-int MV_VPP_pushframe(VBUF_INFO *pVppBuf, INT planeID);
+int MV_VPP_pushframe(VBUF_INFO *p_vpp_buf, INT plane_id, int width, int height);
 void MV_VPP_Enable_IRQ(void);
 void MV_VPP_Disable_IRQ(void);
 int MV_VPPOBJ_Mipi_LoadInfoTable(struct vpp_config_params *vpp_config_param);

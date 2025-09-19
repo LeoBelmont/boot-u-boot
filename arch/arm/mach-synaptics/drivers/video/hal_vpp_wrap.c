@@ -94,11 +94,11 @@ void wrap_MV_VPP_Enable_Interrupt(struct berlin_fb_priv *priv)
 	wrap_MV_VPP_CallFunc(vpp_fops.MV_VPP_Enable_Interrupt, priv);
 }
 
-int wrap_MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,
-			      int display)
+int wrap_MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *p_vpp_buf,
+			      int display, int width, int height)
 {
 	wrap_MV_VPP_CallFuncAndReturn(vpp_fops.MV_VPP_Display_Frame,
-				      priv, pVppBuf, display);
+				      priv, p_vpp_buf, display, width, height);
 }
 
 void wrap_MV_VPP_Stop(void)

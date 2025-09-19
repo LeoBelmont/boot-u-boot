@@ -50,6 +50,7 @@
 #include <dm/device-internal.h>
 #include <dm/util.h>
 #include <dm/lists.h>
+#include <fs.h>
 
 #define READ_OF_NODE(key, param) {				\
 	prop = fdt_getprop(blob, offset, #param, &len);		\
@@ -104,9 +105,10 @@ struct gpio_desc enable_gpio;
 static int berlin_fb_sync(struct udevice *dev)
 {
 	struct berlin_fb_priv *priv = dev_get_priv(dev);
-	VBUF_INFO *pVppBuf = NULL;
+	VBUF_INFO *p_vpp_buf = NULL;
 
-	return MV_VPP_Display_Frame(priv, pVppBuf, DISPLAY_1);
+	/* Not supported Yet */
+	return -1;
 }
 
 extern int f_mmc_get_part_index(int mmc_dev, char *part_name);
@@ -410,6 +412,8 @@ int syna_read_config(struct udevice *dev)
 		return ret;
 	}
 
+	read_boot_file(priv);
+
 	return ret;
 }
 
@@ -463,6 +467,39 @@ struct driver *find_compat_driver(const char *target_compat)
 	}
 	return NULL;
 }
+
+/**
+ * parse_cfg_int - Parse integer configuration value from buffer
+ * @buf: Buffer containing configuration data
+ * @key: Configuration key to search for (e.g., "DISP1_RESID=")
+ * @val: Pointer to store parsed integer value
+ *
+ * Returns: 0 on success, -1 if key not found, other negative values on error
+ */
+static int parse_cfg_int(char *buf, char *key, long *val, long min_val, long max_val)
+{
+	char *p;
+
+	if (!buf || !key || !val) {
+		printf("Invalid parameters to %s\n", __func__);
+		return -1;
+	}
+
+	p = strstr(buf, key);
+	if (!p) {
+		/* Key not found - this is not an error, parameter is optional */
+		return -1;
+	}
+
+	*val = simple_strtol(p + strlen(key), NULL, 10);
+	if (*val < min_val || *val >= max_val) {
+		printf("Invalid value for %s: %ld (min=%ld, max=%ld)\n", key,
+			 *val, min_val, max_val);
+		return -EINVAL;
+	}
+	return 0;
+}
+
 int probe_new_regulators(void)
 {
 	ofnode i2c_node, regulator_node, parent_node;
@@ -567,6 +604,7 @@ int enable_all_panel_compatible_regulators(void)
 	}
 	return 0;
 }
+
 static int berlin_fb_probe(struct udevice *dev)
 {
 	struct berlin_fb_priv *priv = dev_get_priv(dev);
@@ -657,36 +695,34 @@ U_BOOT_CMD(
 );
 
 static int syna_load_logo_push_frame(struct berlin_fb_priv *priv, int width,
-				     int height, int displayID)
+				     int height, int display_id)
 {
-	VBUF_INFO *pVppBuf;
+	VBUF_INFO *p_vpp_buf;
 	int ret;
-	int partnum;
 
-	/* Optee TA requirement, align pVppBuf memory to 4K bytes */
-	pVppBuf = (VBUF_INFO*)VPP_ALLOC_ALLIGNED(sizeof(VBUF_INFO), PAGE_SIZE);
-	if (!pVppBuf)
+	/* Optee TA requirement, align p_vpp_buf memory to 4K bytes */
+	p_vpp_buf = (VBUF_INFO *)VPP_ALLOC_ALLIGNED(sizeof(VBUF_INFO), PAGE_SIZE);
+	if (!p_vpp_buf)
 		return -ENOMEM;
 
-	memset(pVppBuf, 0, sizeof(VBUF_INFO));
+	memset(p_vpp_buf, 0, sizeof(VBUF_INFO));
 
-	ret = syna_load_logo_info(width, height, pVppBuf, &partnum);
+	ret = syna_load_logo_info(width, height, p_vpp_buf, &fastlogo_display_info.u);
 	if (ret != 0) {
 		printf("Reading image from EMMC failed\n");
 		return ret;
 	}
 
-	fastlogo_display_info.u.partition = partnum;
-	flush_dcache_range((uintptr_t)pVppBuf,
-			   (uintptr_t)(((char *)pVppBuf) + sizeof(VBUF_INFO)));
+	flush_dcache_range((uintptr_t)p_vpp_buf,
+			   (uintptr_t)(((char *)p_vpp_buf) + sizeof(VBUF_INFO)));
 
-	ret = MV_VPP_Display_Frame(priv, pVppBuf, displayID);
+	ret = MV_VPP_Display_Frame(priv, p_vpp_buf, display_id, width, height);
 	if (ret) {
 		printf("Failed to display logo\n");
 		return ret;
 	}
 
-	printf("Loading logo %dx%d on display %d\n", width, height, displayID);
+	printf("Loading logo %dx%d on display %d\n", width, height, display_id);
 	return ret;
 }
 
@@ -726,13 +762,8 @@ static int do_show_logo(cmd_tbl_t *cmdtp, int flag, int argc,
 
 	MV_VPP_Enable_Interrupt(priv);
 
-/* Fastlogo seamless transition is supported only in MYNA2 */
-#ifdef CONFIG_TARGET_MYNA2
 	/* Update fastlogo status for smooth transition Handling */
 	fastlogo_display_info.u.status =  1;
-#else
-	fastlogo_display_info.u.status =  0;
-#endif
 
 	ret = uclass_get_device(UCLASS_PANEL_BACKLIGHT, 0, &backlight);
 	if (!ret)
@@ -751,6 +782,102 @@ static int do_show_logo(cmd_tbl_t *cmdtp, int flag, int argc,
 	MV_VPP_Stop();
 
 	return 0;
+}
+
+int read_boot_file(struct berlin_fb_priv *priv)
+{
+	static char buf[1024]; /* Static buffer for max 1K file */
+	char cmd[32]; /* Increased buffer size for safety */
+	loff_t actread;
+	char *p;
+	int ret;
+	int part_index;
+	/* Configuration variables table */
+	cfg_vars_type cfg_vars[] = {
+		{&priv->vpp_config_param.display_mode, DISPLAY_MODE_CONFIG_KEY,
+			"Display Mode", 0, VOUT_DISP_SINGLE_MODE_PRI,
+			VOUT_DISP_MODE_MAX},
+		{&priv->vpp_config_param.disp1_res_id, RES_CONFIG_KEY,
+			"Resolution", 0, RES_720P30, MAX_NUM_RESS},
+		{&priv->vpp_config_param.disp1_bpp, DISP1_BPP_CONFIG_KEY,
+			"BIT_DEPTH", 0, FIRST_OUTPUT_BIT_DEPTH,
+			MAX_NUM_OUTPUT_BIT_DEPTHS},
+		{&priv->vpp_config_param.disp1_outformat, DISP1_COLORFORMAT_CONFIG_KEY,
+			"COLORFORMAT", 0, FIRST_OUTPUT_COLOR_FMT,
+			MAX_NUM_OUTPUT_COLOR_FMTS},
+	};
+	int cfg_count = ARRAY_SIZE(cfg_vars);
+	int i;
+
+	/* Get partition index based on current slot */
+	if (get_current_slot() == 0)
+		part_index = f_mmc_get_part_index(get_mmc_active_dev(), ROOTFS_A);
+	else
+		part_index = f_mmc_get_part_index(get_mmc_active_dev(), ROOTFS_B);
+
+	if (part_index < 0) {
+		printf("Failed to get partition index\n");
+		return CMD_RET_FAILURE;
+	}
+
+	/* Format device:partition string with bounds checking */
+	ret = snprintf(cmd, sizeof(cmd), "%x:%x", get_mmc_active_dev(), part_index);
+	if (ret >= sizeof(cmd)) {
+		printf("Device string too long\n");
+		return CMD_RET_FAILURE;
+	}
+
+	/* Set block device */
+	ret = fs_set_blk_dev("mmc", cmd, FS_TYPE_EXT);
+	if (ret) {
+		printf("Failed to set block device %s\n", cmd);
+		return CMD_RET_FAILURE;
+	}
+
+	/* Read file directly into static buffer */
+	ret = fs_read(RES_CONFIG_FILE, (ulong)buf, 0, 0, &actread);
+	if (ret) {
+		printf("Failed to read file %s: ret=%d\n", RES_CONFIG_FILE, ret);
+		return CMD_RET_FAILURE;
+	}
+
+	/* Validate we got some data */
+	if (actread == 0) {
+		printf("File %s is empty\n", RES_CONFIG_FILE);
+		return CMD_RET_FAILURE;
+	}
+
+	/* Ensure null termination (protect against buffer overflow) */
+	if (actread >= sizeof(buf))
+		actread = sizeof(buf) - 1;
+
+	buf[actread] = '\0';
+
+	/* If mode is not same, dont update the format from linux*/
+	if (!parse_cfg_int(buf, cfg_vars[0].var_name,
+			    &cfg_vars[0].val, cfg_vars[0].min_val,
+			    cfg_vars[0].max_val)) {
+		if (priv->vpp_config_param.display_mode != cfg_vars[0].val)
+			return CMD_RET_SUCCESS;
+	} else {
+		return CMD_RET_FAILURE;
+	}
+
+	/* Parse all configuration parameters using table-driven approach */
+	for (i = 1; i < cfg_count; i++) {
+		if (parse_cfg_int(buf, cfg_vars[i].var_name,
+				   &cfg_vars[i].val, cfg_vars[i].min_val,
+				   cfg_vars[i].max_val))
+			return CMD_RET_FAILURE;
+	}
+
+	/* Copy and use the value from file */
+	for (i = 0; i < cfg_count; i++) {
+		*cfg_vars[i].var_ptr = cfg_vars[i].val;
+		debug("VPP boot config: %s set to %d\n", cfg_vars[i].var_desc, cfg_vars[i].val);
+	}
+
+	return CMD_RET_SUCCESS;
 }
 
 U_BOOT_CMD(

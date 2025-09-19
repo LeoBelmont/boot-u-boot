@@ -27,6 +27,7 @@
 
 #include "com_type.h"
 #include "string.h"
+#include <linux/types.h>
 
 #define GaloisMemSet            memset
 #define GaloisFree(x)            (void)0
@@ -51,6 +52,8 @@ void * GaloisMalloc(unsigned int size);
 void * VPP_ALLOC(unsigned int  uiSize);
 void *VPP_ALLOC_ALLIGNED(unsigned int size, unsigned int alignment);
 void * VPP_TZ_ALLOC(unsigned int  uiSize);
+
+int VPP_GET_RSV_MEM_REGION(u64 *start, u64 *size);
 
 #define MV_OSAL_Mutex_Create(...)      SUCCESS
 #define AMP_SHM_GetVirtualAddress(...) SUCCESS

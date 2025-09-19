@@ -68,7 +68,7 @@ void syna_lcdc_Disable_IRQ(int intrno)
 }
 
 int lcdc_push_frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,
-		    int display)
+		    int display, int width, int height)
 {
 	SYNA_LCDC_PANEL lcdcConfig = {0};
 	PANEL_TIMING_INFO *pTimingInfo;

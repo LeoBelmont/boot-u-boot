@@ -42,7 +42,7 @@ struct vpp_fops {
 	int (*MV_VPP_Mipi_LoadConfig)(struct berlin_fb_priv *priv);
 	void (*MV_VPP_Enable_Interrupt)(struct berlin_fb_priv *priv);
 	int (*MV_VPP_Display_Frame)(struct berlin_fb_priv *priv,
-				    VBUF_INFO *pVppBuf, int display);
+				    VBUF_INFO *p_vpp_buf, int display, int width, int height);
 	void (*MV_VPP_Stop)(void);
 	void (*MV_VPP_DeInit)(struct berlin_fb_priv *priv);
 };
@@ -59,8 +59,8 @@ int wrap_MV_VPP_Config_Display(struct berlin_fb_priv *priv);
 int wrap_MV_VPP_Mipi_LoadInfoTable(struct berlin_fb_priv *priv);
 int wrap_MV_VPP_Mipi_LoadConfig(struct berlin_fb_priv *priv);
 void wrap_MV_VPP_Enable_Interrupt(struct berlin_fb_priv *priv);
-int wrap_MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,
-			      int display);
+int wrap_MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *p_vpp_buf,
+			      int display, int width, int height);
 void wrap_MV_VPP_Stop(void);
 void wrap_MV_VPP_DeInit(struct berlin_fb_priv *priv);
 

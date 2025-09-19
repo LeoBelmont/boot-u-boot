@@ -24,6 +24,14 @@
 
 #include "OSAL_api.h"
 #include "compat.h"
+//#include <common.h>
+#include <linux/types.h>
+
+// VPP reserved memory region name
+#define VPP_RSV_REGION_NAME "vpp"
+
+// External function declaration
+extern int get_mem_region_by_name(u64 *start, u64 *size, char *zone_name);
 
 extern void * malloc_ion_noncacheable(int size);
 extern void * malloc_ion_cacheable(int size);
@@ -87,3 +95,30 @@ void * VPP_TZ_ALLOC(unsigned int  uiSize)
     return pPtr;
 }
 
+/**
+ * VPP_GET_RSV_MEM_REGION - Get VPP reserved memory region information
+ * @start: Pointer to store the start address of the memory region
+ * @size: Pointer to store the size of the memory region
+ *
+ * This function provides an API interface to get the VPP reserved memory
+ * region information.
+ *
+ * Returns: 0 on success, -1 on failure
+ */
+int VPP_GET_RSV_MEM_REGION(u64 *start, u64 *size)
+{
+	int result;
+
+	if (!start || !size) {
+		printf("Error: %s - invalid parameters\n", __func__);
+		return -1;
+	}
+
+	result = get_mem_region_by_name(start, size, VPP_RSV_REGION_NAME);
+	if (!result)
+		debug("VPP reserved memory found: base=0x%llx, size=0x%llx\n", *start, *size);
+	else
+		printf("VPP reserved memory not found %d\n", result);
+
+	return result;
+}

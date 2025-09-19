@@ -2617,6 +2617,21 @@ typedef struct VPP_INTR_INFO_T {
     UINT32 uiDisplayMode;
 } VPP_INTR_INFO;
 
+typedef struct fastlogo_info_t {
+	u32 status : 1;     // Successfully displayed logo or not
+	u32 devnum : 1;     // Device number (0 or 1)
+	u32 hw_partition : 3;   // Partition type (0=DEFAULT, 4=GP1, 5=GP2 etc)
+	u32 sw_partition : 5;  // Partition identifier (partition number)
+	u32 cpcb0_res_id : 8; // CpCb0 resolution -- may be additional bits for depth/format
+	u32 cpcb1_res_id : 8; // CpCb1 resolution
+	u32 reserved : 6;   // Reserved for future use
+} FASTLOGO_INFO;
+
+typedef union  avio_fastlogo_info_u {
+	u32 fl_disp_info;
+	struct fastlogo_info_t u;
+} avio_fastlogo_info;
+
 typedef void (*VPP_INTR_CALLBACK_T)(VPP_INTR_INFO *);
 
 #define VPP_CLKGATE_SIG_MAX_WORDS    (sizeof(VPP_CLK_GATE_SIGNATURE)/sizeof(UINT32))
@@ -4371,6 +4386,7 @@ int MV_VPPOBJ_SetNgptvParams(int handle, int iPlaneId, UINT32 *params, UINT32 pa
 
 int MV_VPPOBJ_SetOfflineParams(int handle,int iPlaneId,int bpp,int srcfmt);
 
+int MV_VPPOBJ_GetHDMISinkFeatureMap(int handle, VPP_HDMI_SINK_CAPS *p_sink_feature_map);
 #ifdef __cplusplus
 }
 #endif

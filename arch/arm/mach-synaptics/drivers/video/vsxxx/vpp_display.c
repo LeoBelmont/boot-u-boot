@@ -229,7 +229,7 @@ int MV_VPPOBJ_SetFormat(struct vpp_config_params *vpp_config_param)
 	return -EINVAL;
 }
 
-int MV_VPP_pushframe(VBUF_INFO *pVppBuf, INT planeID)
+int MV_VPP_pushframe(VBUF_INFO *p_vpp_buf, INT plane_id, int width, int height)
 {
 	VPP_WIN showlogo_win;
 	unsigned int size;
@@ -238,31 +238,35 @@ int MV_VPP_pushframe(VBUF_INFO *pVppBuf, INT planeID)
 	if (isr_enabled)
 		MV_VPP_Disable_IRQ();
 
-	MV_VPPOBJ_SetPlaneMute(0, planeID, 0);
+	MV_VPPOBJ_SetPlaneMute(0, plane_id, 0);
 
-	pVppBuf->m_active_left = 0;
-	pVppBuf->m_active_top = 0;
+	p_vpp_buf->m_active_left = 0;
+	p_vpp_buf->m_active_top = 0;
 
-	size = pVppBuf->m_buf_stride * pVppBuf->m_active_height;
+	size = p_vpp_buf->m_buf_stride * p_vpp_buf->m_active_height;
 	showlogo_win.x = 0;
 	showlogo_win.y = 0;
-	showlogo_win.width  = pVppBuf->m_active_width;
-	showlogo_win.height = pVppBuf->m_active_height;
+	showlogo_win.width  = width;
+	showlogo_win.height = height;
 
-	MV_VPPOBJ_OpenDispWindow(0, planeID, &showlogo_win, &showlogo_attr);
+	/* Set the Display window based on resolution */
+	MV_VPPOBJ_OpenDispWindow(0, plane_id, &showlogo_win, &showlogo_attr);
 
-	MV_VPPOBJ_SetRefWindow(0, planeID, &showlogo_win);
+	/* Set the Reference window based on Frameinfo */
+	showlogo_win.width  = p_vpp_buf->m_active_width;
+	showlogo_win.height = p_vpp_buf->m_active_height;
+	MV_VPPOBJ_SetRefWindow(0, plane_id, &showlogo_win);
 
-	flush_dcache_range((uintptr_t)pVppBuf->m_pbuf_start,
-			(uintptr_t)(((char *)pVppBuf->m_pbuf_start) + size));
+	flush_dcache_range((uintptr_t)p_vpp_buf->m_pbuf_start,
+			   (uintptr_t)(((char *)p_vpp_buf->m_pbuf_start) + size));
 
-	MV_VPPOBJ_SetDisplayMode(0, planeID, DISP_FRAME);
-	build_frames(pVppBuf, pVppBuf->m_srcfmt, INPUT_BIT_DEPTH_8BIT,
-		     pVppBuf->m_active_left, pVppBuf->m_active_top,
-		     pVppBuf->m_active_width, pVppBuf->m_active_height,
+	MV_VPPOBJ_SetDisplayMode(0, plane_id, DISP_FRAME);
+	build_frames(p_vpp_buf, p_vpp_buf->m_srcfmt, INPUT_BIT_DEPTH_8BIT,
+		     p_vpp_buf->m_active_left, p_vpp_buf->m_active_top,
+		     p_vpp_buf->m_active_width, p_vpp_buf->m_active_height,
 		     1, 0, 0);
 
-	ret = MV_VPPOBJ_DisplayFrame(0, planeID, pVppBuf);
+	ret = MV_VPPOBJ_DisplayFrame(0, plane_id, p_vpp_buf);
 	if (ret != 0) {
 		printf("Diaplay frame failed\n");
 	}
@@ -273,7 +277,7 @@ int MV_VPP_pushframe(VBUF_INFO *pVppBuf, INT planeID)
 	return ret;
 }
 
-int MV_VPP_push_nullframe(int width, int height, int stride, INT planeID)
+int MV_VPP_push_nullframe(int width, int height, int stride, INT plane_id)
 {
 	VBUF_INFO *vbuf;
 	UINT32 size;
@@ -297,7 +301,7 @@ int MV_VPP_push_nullframe(int width, int height, int stride, INT planeID)
 	size = vbuf->m_buf_stride * vbuf->m_active_height;
 	flush_dcache_range((uintptr_t)pbuf, (uintptr_t)(((char *)pbuf) + size));
 
-	ret = MV_VPP_pushframe(vbuf, planeID);
+	ret = MV_VPP_pushframe(vbuf, plane_id, width, height);
 	if (ret) {
 		printf("Push frame failed\n");
 		return ret;
@@ -352,11 +356,11 @@ int syna_get_display_modeinfo(struct berlin_fb_priv *priv, int *width,
 
 	if (display == DISPLAY_1) {
 		resinfo = m_resinfo_table[priv->vpp_config_param.disp1_res_id];
-		dispinfo->u.cpcb0ResId = priv->vpp_config_param.disp1_res_id;
+		dispinfo->u.cpcb0_res_id = priv->vpp_config_param.disp1_res_id;
 	} else if (IS_MODE_DUAL(priv->vpp_config_param.display_mode) &&
 			 (display == DISPLAY_2)) {
 		resinfo = m_resinfo_table[priv->vpp_config_param.disp2_res_id];
-		dispinfo->u.cpcb1ResId = priv->vpp_config_param.disp2_res_id;
+		dispinfo->u.cpcb1_res_id = priv->vpp_config_param.disp2_res_id;
 	} else {
 		return -EINVAL;
 	}
@@ -367,25 +371,12 @@ int syna_get_display_modeinfo(struct berlin_fb_priv *priv, int *width,
 	return 0;
 }
 
-void MV_VPPOBJ_MuteDisplay(int mute)
-{
-	if (isr_enabled)
-		MV_VPP_Disable_IRQ();
-		MV_VPPOBJ_SetPlaneMute(0, PLANE_GFX1, mute);
-		MV_VPPOBJ_SetPlaneMute(0, PLANE_MAIN, mute);
-		MV_VPPOBJ_SetPlaneMute(0, PLANE_PIP, mute);
-	if (isr_enabled)
-		MV_VPP_Enable_IRQ();
-}
-
 void MV_VPPOBJ_StopDisplay(void)
 {
 	loop_isr_count = 0;
 
 	while(loop_isr_count < WAIT_LOOP_COUNT)
 		mdelay(2);
-
-	MV_VPPOBJ_MuteDisplay(1);
 }
 
 void MV_VPPOBJ_DestroyDisplay(void)
@@ -394,5 +385,5 @@ void MV_VPPOBJ_DestroyDisplay(void)
 
 	MV_VPP_Disable_IRQ();
 
-	MV_VPPOBJ_Destroy(0);
+	MV_VPPOBJ_Stop(0);
 }

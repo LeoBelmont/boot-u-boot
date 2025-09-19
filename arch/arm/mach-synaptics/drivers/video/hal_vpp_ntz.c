@@ -73,10 +73,10 @@ void NTZ_MV_VPP_Enable_Interrupt(struct berlin_fb_priv *priv)
 	syna_lcdc_Enable_IRQ(priv->lcdc_config_data->irqno);
 }
 
-int NTZ_MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,
-			     int display)
+int NTZ_MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *p_vpp_buf,
+			     int display, int width, int height)
 {
-	return lcdc_push_frame(priv, pVppBuf, display);
+	return lcdc_push_frame(priv, p_vpp_buf, display, width, height);
 }
 
 void NTZ_MV_VPP_Stop(void)

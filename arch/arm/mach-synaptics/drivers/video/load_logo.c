@@ -32,6 +32,7 @@
 #include "misc_syna.h"
 #include "OSAL_api.h"
 #include "fastboot_syna.h"
+#include "vpp_priv.h"
 
 #ifdef CONFIG_GENX_ENABLE
 #include "genimg.h"
@@ -70,7 +71,7 @@ typedef struct {
 
 typedef struct {
 	unsigned int versionNum;
-	unsigned int logoNum;
+	unsigned int logo_num;
 	fastlogo_info_t info[];
 } fastlogo_header_t;
 
@@ -129,13 +130,14 @@ static bool syna_is_partition_exit(const char *partition_name)
 }
 
 void *syna_emmc_read_from_offset(const char *partition_name, unsigned int offset,
-				 unsigned int size, void *buff, int *partnum)
+				unsigned int size, void *buff, FASTLOGO_INFO *fastlogo_display_info)
 {
 	struct blk_desc *dev_desc;
 	disk_partition_t info;
 	lbaint_t start_blk, blk_cnt;
 	int mmc_dev = get_mmc_boot_dev();
 	struct mmc *mmc = find_mmc_device(mmc_dev);
+	int part_type;
 
 	if (!mmc) {
 		printf("invalid mmc device\n");
@@ -148,13 +150,16 @@ void *syna_emmc_read_from_offset(const char *partition_name, unsigned int offset
 		return NULL;
 	}
 
-	blk_dselect_hwpart(dev_desc, get_mmc_part_by_name(mmc_dev, partition_name));
-
-	if (part_get_info_by_name(dev_desc, partition_name, &info) < 0) {
+	part_type = get_mmc_part_by_name(mmc_dev, partition_name);
+	blk_dselect_hwpart(dev_desc, part_type);
+	if (part_get_info_by_name(dev_desc, partition_name, &info) == -1) {
 		printf("cannot find partition: '%s'\n", partition_name);
 		return NULL;
 	}
-	*partnum = f_mmc_get_part_index(mmc_dev, partition_name);
+
+	fastlogo_display_info->hw_partition = part_type;
+	fastlogo_display_info->sw_partition = f_mmc_get_part_index(mmc_dev, partition_name);
+	fastlogo_display_info->devnum = dev_desc->devnum;
 
 	start_blk = info.start + (offset / dev_desc->blksz);
 	blk_cnt = size / dev_desc->blksz + 2;
@@ -168,18 +173,27 @@ static fastlogo_info_t* check_validate_logo(int width, int height, UINT8* pHEADE
 	fastlogo_header_t *fl_header_info = (fastlogo_header_t*)pHEADER;
 	int i;
 
-	for (i = 0; i < fl_header_info->logoNum; i++) {
+	for (i = 0; i < fl_header_info->logo_num; i++) {
 		debug("number of logo %d w[%d] H[%d] O[%d] st[%d]\n",
-			fl_header_info->logoNum,
-			fl_header_info->info[i].width,
-			fl_header_info->info[i].height,
-			fl_header_info->info[i].offset,
-			fl_header_info->info[i].stride);
+		      fl_header_info->logo_num,
+		      fl_header_info->info[i].width,
+		      fl_header_info->info[i].height,
+		      fl_header_info->info[i].offset,
+		      fl_header_info->info[i].stride);
 
-		if ((fl_header_info->info[i].width == width) &&
-			(fl_header_info->info[i].height == height)) {
+#ifdef VPP_SUPPORT_SCALAR
+		if (fl_header_info->info[i].width > 0 &&
+		    fl_header_info->info[i].width <= width &&
+		    fl_header_info->info[i].height > 0 &&
+		    fl_header_info->info[i].height <= height) {
 			return &fl_header_info->info[i];
 		}
+#else
+		if (fl_header_info->info[i].width == width &&
+		    fl_header_info->info[i].height == height) {
+			return &fl_header_info->info[i];
+		}
+#endif
 	}
 
 	return NULL;

@@ -57,18 +57,24 @@ INT MV_VPPOBJ_Init(VPP_INIT_PARM *vpp_init_parm)
 {
 #if defined (VPP_ENABLE_INTERNAL_MEM_MGR)
 
-	AMP_SHM_HANDLE shmHandle;
+	AMP_SHM_HANDLE shm_handle;
 	int result;
+	u64 start, size;
 
 	VppInitialize();
 
-	shmHandle = VPP_ALLOC_ALLIGNED(SHM_SHARE_SZ, PAGE_SIZE);
-	if (!shmHandle) {
-		return MV_VPP_ENOMEM;
+	//Pass the vpp/vpp_rsv region to TA for its exclusive use
+	if (!VPP_GET_RSV_MEM_REGION(&start, &size)) {
+		vpp_init_parm->uiShmPA = (UINT32)start;
+		vpp_init_parm->uiShmSize = SHM_SHARE_SZ;
+	} else {
+		//vpp/vpp_rsv carveout does not exist, Then allocate from other carve-out
+		shm_handle = VPP_ALLOC_ALLIGNED(SHM_SHARE_SZ, PAGE_SIZE);
+		if (!shm_handle)
+			return MV_VPP_ENOMEM;
+		vpp_init_parm->uiShmPA = (UINT32)shm_handle;
+		vpp_init_parm->uiShmSize = SHM_SHARE_SZ;
 	}
-
-	vpp_init_parm->uiShmPA = (UINT32)shmHandle;
-	vpp_init_parm->uiShmSize=SHM_SHARE_SZ;
 
 #ifdef VPP_ENABLE_FLUSH_CACHE
 	vpp_init_parm->iHDMIEnable = 1;
@@ -419,4 +425,22 @@ INT MV_VPPOBJ_Destroy(INT handle)
     VppDestroy();
 
     return (MV_VPP_OK);
+}
+
+/***************************************************
+ * FUNCTION: Get HDMI Sink Feature Map
+ * PARAMS: handle - VPP object handle
+ *         p_sink_feature_map - pointer to HDMI sink capabilities structure
+ * RETURN: MV_VPP_OK - succeed
+ *         MV_VPP_ENODEV - no device
+ *         MV_EBADPARAM - invalid parameters
+ *         MV_EUNCONFIG - VPP not configured
+ ***************************************************/
+INT MV_VPPOBJ_GetHDMISinkFeatureMap(INT handle, VPP_HDMI_SINK_CAPS *p_sink_feature_map)
+{
+	if (!p_sink_feature_map)
+		return MV_VPP_EBADPARAM;
+
+	return VppInvokePassShm_Helper(p_sink_feature_map, GET_HDMI_SINKCAPS,
+					sizeof(VPP_HDMI_SINK_CAPS));
 }

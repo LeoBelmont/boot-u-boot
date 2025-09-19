@@ -147,12 +147,12 @@ void MV_VPP_Enable_Interrupt(struct berlin_fb_priv *priv)
 	wrap_MV_VPP_Enable_Interrupt(priv);
 }
 
-int MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,
-			 int display)
+int MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *p_vpp_buf,
+			 int display, int width, int height)
 {
 	int ret;
 
-	ret = wrap_MV_VPP_Display_Frame(priv, pVppBuf, display);
+	ret = wrap_MV_VPP_Display_Frame(priv, p_vpp_buf, display, width, height);
 	if (ret) {
 		printf("VPP Display %d Frame failed = %d - \n", display, ret);
 	}
