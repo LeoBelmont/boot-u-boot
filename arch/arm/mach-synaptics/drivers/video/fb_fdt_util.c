@@ -95,7 +95,7 @@ static int process_custom_dtbos(const char *dtbo_env, const char *path,
 				 int mmc_dev, int part_index,
 				 void *fdto_addr, void *new_fdt)
 {
-	char *copy, *tok;
+	char *copy, *tok, atleast_one_overlay_success = 0;
 	int ret = -1; /* Assume failure initially */
 
 	copy = strdup(dtbo_env);
@@ -117,11 +117,15 @@ static int process_custom_dtbos(const char *dtbo_env, const char *path,
 						  part_index, fdto_addr, new_fdt);
 			if (ret == 0) {
 				/* Success - at least one overlay applied */
-				break;
+				atleast_one_overlay_success = 1;
 			}
 		}
 		tok = strtok(NULL, " ,");
 	}
+
+	/* return success if at least one overlay applied */
+	if(atleast_one_overlay_success)
+		ret = 0;
 
 cleanup:
 	free(copy);
