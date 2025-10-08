@@ -74,7 +74,6 @@ static int attiny_regulator_of_to_plat(struct udevice *dev)
 
 static int attiny_i2c_write(struct udevice *dev, uint8_t buf, uint8_t reg)
 {
-	struct dm_i2c_chip *chip = dev_get_parent_plat(dev);
 	int ret;
 
 	ret = dm_i2c_write(dev, reg, &buf, 1);
@@ -144,8 +143,8 @@ static int attiny_regulator_set_enable(struct udevice *dev, bool enable)
 
 static int attiny_regulator_probe(struct udevice *dev)
 {
-	uint8_t data, wdata;
-	int ret, i;
+	uint8_t data;
+	int ret;
 
 	ret = attiny_i2c_read(dev, &data, REG_ID);
 	if (ret) {
