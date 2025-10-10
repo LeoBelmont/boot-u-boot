@@ -40,6 +40,7 @@ void fb_mmc_flash_read(const char *cmd, void *read_buffer, unsigned int read_byt
 int f_mmc_save_part_table(int mmc_dev);
 int f_mmc_get_hwpart_from_table(const char *part_name);
 int f_mmc_get_part_from_table(const char *part_name);
+int f_mmc_get_part_index(int mmc_dev, const char *part_name);
 
 #ifdef CONFIG_SYNA_SPI_SUBOOT
 struct mtd_info *fb_spi_setup_mtd_dev(void);

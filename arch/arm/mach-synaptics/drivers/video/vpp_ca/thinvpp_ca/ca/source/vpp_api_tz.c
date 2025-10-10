@@ -69,7 +69,7 @@ INT MV_VPPOBJ_Init(VPP_INIT_PARM *vpp_init_parm)
 		vpp_init_parm->uiShmSize = SHM_SHARE_SZ;
 	} else {
 		//vpp/vpp_rsv carveout does not exist, Then allocate from other carve-out
-		shm_handle = VPP_ALLOC_ALLIGNED(SHM_SHARE_SZ, PAGE_SIZE);
+		shm_handle = (uintptr_t) VPP_ALLOC_ALLIGNED(SHM_SHARE_SZ, PAGE_SIZE);
 		if (!shm_handle)
 			return MV_VPP_ENOMEM;
 		vpp_init_parm->uiShmPA = (UINT32)shm_handle;

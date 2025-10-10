@@ -37,13 +37,13 @@
 #endif
 
 #define IO32WR(X, Y) BFM_HOST_Bus_Write32(Y, X);
-#define IO32RD(X, Y) X = *((volatile int*)(Y));
+#define IO32RD(X, Y) X = *((volatile int*)(uintptr_t)(Y));
 
 #define	bTST(x, b)			(((x) >> (b)) & 1)
 
 #define MEMMAP_AVIO_BCM_REG_BASE (MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_BCM_REG_BASE)
 
-#define xdbg
+#define xdbg(fmt, ...) do { } while (0)
 #undef IO32CFG
 #define IO32CFG(cfgQ, i, a, d) do { \
 		if (cfgQ) { \
@@ -490,95 +490,6 @@ void	hbo_queue_clear_done(
 /**	ENDOFFUNCTION: hbo_queue_clear_done **/
 }
 
-/******************************************************************************************************************
-*	Function: hbo_queue_read
-*	Description: Read a number of 64b data & pop FIFO from HBO SRAM.
-*	Return:			UNSG32						-	Number of 64b data being read (=n), or (when cfgQ==NULL)
-*													0 if there're not sufficient data in FIFO
-******************************************************************************************************************/
-UNSG32	hbo_queue_read(
-					void *hdl, /*!	Handle to HDL_hbo !*/
-					SIGN32 id, /*!	Queue ID in $HBO !*/
-					SIGN32 n, /*!	Number 64b entries to read !*/
-					T64b data[], /*!	To receive read data !*/
-					UNSG32 *ptr /*!	Pass in current FIFO pointer (in 64b word),
-								 & receive updated new pointer,
-								 Pass NULL to read from HW
-								!*/
-					)
-{
-	HDL_hbo *hbo = (HDL_hbo*)hdl;
-	SIGN32 i;
-	UNSG32 p, base, depth;
-
-	base = hbo->mem + hbo->base[id]; depth = hbo->fifoCtl.depth[id];
-	i = hbo_queue_query(hdl, id, SemaQueryMap_ADDR_master_consumer, &p);
-	if(i < n)
-		return 0;
-
-	if(ptr) p = *ptr;
-	for(i = 0; i < n; i ++) {
-		IO32RD(data[i][0], base + p*8);
-		IO32RD(data[i][1], base + p*8 + 4);
-		ModInc(p, 1, depth);
-				}
-	hbo_queue_pop(hdl, id, n);
-	if(ptr) *ptr = p;
-	return n;
-/**	ENDOFFUNCTION: hbo_queue_read **/
-}
-
-/******************************************************************************************************************
-*	Function: hbo_queue_write
-*	Description: Write a number of 64b data & push FIFO to HBO SRAM.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ, or (when cfgQ==NULL)
-*													0 if there're not sufficient space in FIFO
-******************************************************************************************************************/
-UNSG32	hbo_queue_write(
-					void		*hdl, /*!	Handle to HDL_hbo !*/
-					SIGN32		id, /*!	Queue ID in $HBO !*/
-					SIGN32		n, /*!	Number 64b entries to write !*/
-					T64b		data[], /*!	Write data !*/
-					T64b		cfgQ[], /*!	Pass NULL to directly update HBO, or
-										Pass non-zero to receive programming sequence
-										in (adr,data) pairs
-										!*/
-					UNSG32 *ptr /*!	Pass in current FIFO pointer (in 64b word),
-										 & receive updated new pointer,
-										 Pass NULL to read from HW
-										 !*/
-					)
-{
-	HDL_hbo				*hbo = (HDL_hbo*)hdl;
-	SIGN32 i, p, depth;
-	UNSG32 base, j = 0;
-
-	base = hbo->mem + hbo->base[id]; depth = hbo->fifoCtl.depth[id];
-	if(!ptr) {
-		i = hbo_queue_query(hdl, id, SemaQueryMap_ADDR_master_producer, &p);
-		if(i > depth - n)
-			return 0;
-	} else {
-		p = *ptr;
-}
-
-	for(i = 0; i < n; i ++) {
-		IO32CFG(cfgQ, j, base + p*8, data[i][0]);
-		IO32CFG(cfgQ, j, base + p*8 + 4, data[i][1]);
-		ModInc(p, 1, depth);
-				}
-	if(!cfgQ)
-		hbo_queue_push(hdl, id, n);
-	else {
-		T32SemaHub_PUSH	push;
-		push.u32 = 0; push.uPUSH_ID = id; push.uPUSH_delta = n;
-		IO32CFG(cfgQ, j, hbo->fifoCtl.ra + RA_SemaHub_PUSH, push.u32);
-				}
-	if(ptr) *ptr = p;
-	return j;
-/**	ENDOFFUNCTION: hbo_queue_write **/
-}
-
 /**	ENDOFSECTION
 */
 
@@ -660,7 +571,7 @@ UNSG32	dhub_channel_cfg(
 	HDL_dhub *dhub = (HDL_dhub*)hdl;
 	HDL_hbo *hbo = &(dhub->hbo);
 	T32dHubChannel_CFG	cfg;
-	UNSG32 i = 0, a, busyStatus, cmdID = dhub_id2hbo_cmdQ(id), dataID = dhub_id2hbo_data(id);
+	UNSG32 i = 0, a, cmdID = dhub_id2hbo_cmdQ(id), dataID = dhub_id2hbo_data(id);
 
 	xdbg ("hal_dhub::  value of id is %0d \n" , id ) ;
 	xdbg ("hal_dhub::  value of baseCmd   is %0d \n" , baseCmd ) ;
@@ -677,7 +588,6 @@ UNSG32	dhub_channel_cfg(
 		hbo_queue_clear(hbo,  cmdID);
 		hbo_queue_enable(hbo, dataID, 0, NULL);
 		hbo_queue_clear(hbo, dataID);
-		busyStatus = hbo_queue_busy(hbo);
 	}
 	a = dhub->ra + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel);
 	IO32CFG(cfgQ, i, a + RA_dHubChannel_START, 0);
@@ -831,53 +741,6 @@ void	dhub_channel_clear_done(
 /**	ENDOFFUNCTION: dhub_channel_clear_done **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_write_cmd
-*	Description: Write a 64b command for a dHub channel.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ if success, or
-*													0 if there're not sufficient space in FIFO
-******************************************************************************************************************/
-UNSG32	dhub_channel_write_cmd(
-					void *hdl, /*! Handle to HDL_dhub !*/
-					SIGN32 id, /*! Channel ID in $dHubReg !*/
-					UNSG32 addr, /*! CMD: buffer address !*/
-					SIGN32 size, /*! CMD: number of bytes to transfer !*/
-					SIGN32 semOnMTU, /*! CMD: semaphore operation at CMD/MTU (0/1) !*/
-					SIGN32 chkSemId, /*! CMD: non-zero to check semaphore !*/
-					SIGN32 updSemId, /*! CMD: non-zero to update semaphore !*/
-					SIGN32 interrupt, /*! CMD: raise interrupt at CMD finish !*/
-					T64b cfgQ[], /*! Pass NULL to directly update dHub, or
-									Pass non-zero to receive programming sequence
-									in (adr,data) pairs
-									!*/
-					UNSG32 *ptr /*!	Pass in current cmdQ pointer (in 64b word),
-								 & receive updated new pointer,
-								 Pass NULL to read from HW
-								!*/
-					)
-{
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
-	HDL_hbo *hbo = &(dhub->hbo);
-	SIE_dHubCmd cmd;
-	SIGN32 i;
-
-	cmd.ie_HDR.u32dHubCmdHDR_DESC = 0;
-	i = size >> dhub->MTUb[id];
-	if((i << dhub->MTUb[id]) < size)
-		cmd.ie_HDR.uDESC_size = size;
-	else {
-		cmd.ie_HDR.uDESC_sizeMTU = 1;
-		cmd.ie_HDR.uDESC_size = i;
-						}
-	cmd.ie_HDR.uDESC_chkSemId = chkSemId; cmd.ie_HDR.uDESC_updSemId = updSemId;
-	cmd.ie_HDR.uDESC_semOpMTU = semOnMTU; cmd.ie_HDR.uDESC_interrupt = interrupt;
-	cmd.uMEM_addr = addr;
-
-	return hbo_queue_write(hbo, dhub_id2hbo_cmdQ(id), 1, (T64b*)&cmd, cfgQ, ptr);
-/**	ENDOFFUNCTION: dhub_channel_write_cmd **/
-}
-
-
 void	dhub_channel_generate_cmd(
 					void *hdl, /*! Handle to HDL_dhub !*/
 					SIGN32 id, /*! Channel ID in $dHubReg !*/
@@ -914,81 +777,9 @@ void	dhub_channel_generate_cmd(
 	pcmd = (SIGN32 *) (&cmd);
 	pData[0] = pcmd[0];
 	pData[1] = pcmd[1];
-/**	ENDOFFUNCTION: dhub_channel_write_cmd **/
+/**	ENDOFFUNCTION: dhub_channel_generate_cmd **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_big_write_cmd
-*	Description: Write a sequence of 64b command for a dHub channel.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ if success, or
-*													0 if there're not sufficient space in FIFO
-******************************************************************************************************************/
-UNSG32	dhub_channel_big_write_cmd(
-					void *hdl, /*!	Handle to HDL_dhub !*/
-					SIGN32 id, /*!	Channel ID in $dHubReg !*/
-					UNSG32 addr, /*!	CMD: buffer address !*/
-					SIGN32 size, /*!	CMD: number of bytes to transfer !*/
-					SIGN32 semOnMTU, /*!	CMD: semaphore operation at CMD/MTU (0/1) !*/
-					SIGN32 chkSemId, /*!	CMD: non-zero to check semaphore !*/
-					SIGN32 updSemId, /*!	CMD: non-zero to update semaphore !*/
-					SIGN32 interrupt, /*!	CMD: raise interrupt at CMD finish !*/
-					T64b cfgQ[], /*! Pass NULL to directly update dHub, or
-									Pass non-zero to receive programming sequence
-									in (adr,data) pairs
-								 !*/
-					UNSG32 *ptr /*!	Pass in current cmdQ pointer (in 64b word),
-									& receive updated new pointer,
-									Pass NULL to read from HW
-								!*/
-					)
-{
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
-	HDL_hbo *hbo = &(dhub->hbo);
-	SIE_dHubCmd cmd;
-	SIGN32 i;
-	SIGN32 j, jj;
-
-	i = size >> dhub->MTUb[id];
-	//size < 64K
-	if( size<(1<<16) )
-	{
-		j = dhub_channel_write_cmd(hdl, id, addr, size, semOnMTU, chkSemId, updSemId, interrupt, cfgQ, ptr);
-	}
-	else {
-		SIGN32 size0, size1;
-		size0 = 0xffff << dhub->MTUb[id];
-		j = 0;
-
-		//size > 128x64k
-		while( i > 0xffff )
-		{
-			jj = dhub_channel_write_cmd(hdl, id, addr, size0, semOnMTU, chkSemId, updSemId, 0, cfgQ, ptr);
-
-			if (cfgQ) cfgQ += jj;
-			j += jj;
-
-			i -= 0xffff;
-			size -= size0;
-			addr += size0;
-		}
-
-		if( (i << dhub->MTUb[id]) == size )
-		{
-			j += dhub_channel_write_cmd(hdl, id, addr, size, semOnMTU, chkSemId, updSemId, interrupt, cfgQ, ptr);
-		}
-		else
-		{
-			size0 = i << dhub->MTUb[id];
-			j += dhub_channel_write_cmd(hdl, id, addr, size0, semOnMTU, chkSemId, updSemId, 0, cfgQ, ptr);
-			if (cfgQ) cfgQ += j;
-			addr += size0;
-			size1 = size - size0;
-			j += dhub_channel_write_cmd(hdl, id, addr, size1, semOnMTU, chkSemId, updSemId, interrupt, cfgQ, ptr);
-		}
-	}
-
-	return (j);
-}
 /**	ENDOFSECTION
 */
 
@@ -1108,7 +899,7 @@ void	dhub2d_channel_clear(
 					)
 {
 	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
-	UNSG32 i = 0, a;
+	UNSG32 a;
 	a = dhub2d->ra + RA_dHubReg2D_ARR + id*sizeof(SIE_dHubCmd2D);
 
 	IO32WR(1, a + RA_dHubCmd2D_CLEAR);
@@ -1142,7 +933,6 @@ UNSG32	dhub2nd_channel_cfg(
 {
 	HDL_dhub2d			*dhub2d = (HDL_dhub2d*)hdl;
 	SIE_dHubCmd2ND		cmd;
-	SIGN32 semId_enable;
 	T32dHubChannel_ROB_MAP stdHubChannelRob_Map;
 	UNSG32 a, j = 0;
 
@@ -1170,11 +960,6 @@ UNSG32	dhub2nd_channel_cfg(
 
 	cmd.uMEM_addr = addr;
 	IO32CFG(cfgQ, j, a + RA_dHubCmd2ND_MEM, cmd.u32dHubCmd2ND_MEM);
-
-	if (0 == updSemId)
-		semId_enable = 0;
-	else
-		semId_enable = 1;
 
 	cmd.u32dHubCmd2ND_DESC = 0;
 	cmd.uDESC_burst = burst;
@@ -1243,7 +1028,7 @@ void	dhub2nd_channel_clear(
 					)
 {
 	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
-	UNSG32 i = 0, a;
+	UNSG32 a;
 	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id*sizeof(SIE_dHubCmd2ND);
 
 	IO32WR( 1, a + RA_dHubCmd2ND_CLEAR);
@@ -1282,73 +1067,6 @@ void	dhub2d_channel_clear_done(void *hdl, /*! Handle to HDL_dhub2d !*/
 	} while(d);
 
 	/**	ENDOFFUNCTION: dhub2d_channel_clear_done **/
-}
-
-UNSG32  dhub2d_channel_cfg_vipBcm(
-					void *hdl, /*! Handle to HDL_dhub2d !*/
-					SIGN32 id, /*! Channel ID in $dHubReg2D !*/
-					UNSG32 addr, /*! CMD: 2D-buffer address !*/
-					SIGN32 stride, /*! CMD: line stride size in bytes !*/
-					SIGN32 width, /*! CMD: buffer width in bytes !*/
-					SIGN32 height, /*! CMD: buffer height in lines !*/
-					SIGN32 semLoop, /*! CMD: loop size (1~4) of semaphore operations !*/
-					SIGN32 semOnMTU, /*! CMD: semaphore operation at CMD/MTU (0/1) !*/
-					SIGN32 chkSemId[], /*! CMD: semaphore loop pattern - non-zero to check !*/
-					SIGN32 updSemId[], /*! CMD: semaphore loop pattern - non-zero to update !*/
-					SIGN32 interrupt, /*! CMD: raise interrupt at CMD finish !*/
-					SIGN32 enable, /*! 0 to disable, 1 to enable !*/
-					UNSG32 pbcmbuf /*! Pass NULL to directly init dHub2D, or
-														Pass non-zero to receive programming sequence
-														in (adr,data) pairs
-														!*/
-					)
-{
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
-	HDL_dhub *dhub = &(dhub2d->dhub);
-	SIE_dHubCmd2D cmd;
-	SIE_dHubCmdHDR hdr;
-	SIGN32 i, size = width;
-	UNSG32 a, j = 0;
-	UNSG32 *end;
-
-	a = dhub2d->ra + RA_dHubReg2D_ARR + id*sizeof(SIE_dHubCmd2D);
-
-	VIP_BCMBUF_Write(pbcmbuf, a+ RA_dHubCmd2D_START, 0);
-
-	cmd.uMEM_addr = addr;
-	cmd.uDESC_stride = stride; cmd.uDESC_numLine = height;
-	cmd.uDESC_hdrLoop = semLoop; cmd.uDESC_interrupt = interrupt;
-
-	VIP_BCMBUF_Write(pbcmbuf, a + RA_dHubCmd2D_MEM, cmd.u32dHubCmd2D_MEM);
-	VIP_BCMBUF_Write(pbcmbuf, a + RA_dHubCmd2D_DESC, cmd.u32dHubCmd2D_DESC);
-
-	hdr.u32dHubCmdHDR_DESC = 0;
-	i = size >> dhub->MTUb[id];
-	if((i << dhub->MTUb[id]) < size)
-		hdr.uDESC_size = size;
-	else {
-		hdr.uDESC_sizeMTU = 1;
-		hdr.uDESC_size = i;
-						}
-	hdr.uDESC_semOpMTU = semOnMTU;
-	for(i = 0; i < semLoop; i ++) {
-		if (chkSemId) {
-			hdr.uDESC_chkSemId = chkSemId[i];
-		}
-		if (updSemId) {
-			hdr.uDESC_updSemId = updSemId[i];
-		}
-		VIP_BCMBUF_Write(pbcmbuf, a + RA_dHubCmd2D_HDR + i*sizeof(SIE_dHubCmdHDR), hdr.u32dHubCmdHDR_DESC);
-	}
-	VIP_BCMBUF_Write(pbcmbuf, a + RA_dHubCmd2D_START, enable);
-	return j;
-/** ENDOFFUNCTION: dhub2d_channel_cfg **/
-}
-
-UNSG32 dhub_channel_enable_InverseScan_vppBcm(void *hdl, SIGN32 id,
-	SIGN32 iMode, UNSG32 pbcmbuf)
-{
-	return 0;
 }
 
 void BCM_SCHED_Open(void)
@@ -1401,63 +1119,19 @@ int BCM_SCHED_AutoPushCmd(UNSG32 QID, UNSG8 uchEnable)
 	return 0;
 }
 
-/******************************************************************************************************************
-*       Function: dhub_channel_enable_InverseScan
-*       Description: Inverse scan for dHub channel enable/disable.
-*       Return:                 UNSG32                                          -       Number of (adr,pair) added to cfgQ
-******************************************************************************************************************/
-
-UNSG32 dhub_channel_enable_InverseScan(void *hdl, //Dhub Handle
-										SIGN32 id, //Channel Number
-										SIGN32 iMode, //Mode of scanninf
-										T64b cfgQ[]) //Prepared command is update dto cfgQ,
-										//Pass NULL to write directly to Dhub.
-{
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
-	T32dHubChannel_CFG cfg;
-	UNSG32 i = 0, a, uiRegValue = 0;
-	a = dhub->ra + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel);
-
-	//Get the configuration of channel
-	getDhubChannelInfo(hdl, id, &cfg);
-
-	switch(iMode)
-	{
-		//Normal Scanning
-		case 0:
-			cfg.uCFG_hScan = 0; cfg.uCFG_vScan = 0;
-			break;
-		//Only H inverse scan
-		case 1:
-			cfg.uCFG_hScan = 1;
-			break;
-		//Only V inverse Scan
-		case 2:
-			cfg.uCFG_vScan = 1;
-			break;
-		case 3:
-			//Both HV inverse
-			cfg.uCFG_hScan = 1; cfg.uCFG_vScan = 1;
-			break;
-	}
-
-	IO32CFG(cfgQ, i, a + RA_dHubChannel_CFG, cfg.u32);
-	return i;
-}
-
-int BCM_SCHED_PushCmd(UNSG32 QID, UNSG32 *pCmd, UNSG32 *cfgQ)
+int BCM_SCHED_PushCmd(UNSG32 QID, SIGN32 *pCmd, UNSG32 *cfgQ)
 {
 	UNSG32 value, addr, j;
 
 	if ((QID > BCM_SCHED_Q18) || !pCmd)
 		return -1; /* parameter error */
 
-		if (!cfgQ) {
-			GA_REG_WORD32_READ(MEMMAP_AVIO_BCM_REG_BASE + RA_AVIO_BCM_FULL_STS, &value);
-			if (value & (1 << QID)) {
-				return 0; /* Q FIFO is full */
-			}
+	if (!cfgQ) {
+		GA_REG_WORD32_READ(MEMMAP_AVIO_BCM_REG_BASE + RA_AVIO_BCM_FULL_STS, &value);
+		if (value & (1 << QID)) {
+			return 0; /* Q FIFO is full */
 		}
+	}
 
 	if (pCmd) {
 		j = 0;
@@ -1668,7 +1342,7 @@ void  dhub2d_channel_enable_bcmbuf(
 	)
 {
 	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
-	UNSG32 i = 0, a;
+	UNSG32 a;
 	a = dhub2d->ra + RA_dHubReg2D_ARR + id*sizeof(SIE_dHubCmd2D);
 
 	/*save the data to the buffer*/
@@ -1821,8 +1495,6 @@ void dhub2nd_channel_clear_seq_bcm(void *hdl, SIGN32 id, BCMBUF *pbcmbuf)
 #ifdef __LINUX_KERNEL__
 #include <linux/module.h>
 EXPORT_SYMBOL(dhub2d_channel_cfg);
-EXPORT_SYMBOL(dhub_channel_big_write_cmd);
-EXPORT_SYMBOL(dhub_channel_write_cmd);
 EXPORT_SYMBOL(semaphore_intr_enable);
 EXPORT_SYMBOL(semaphore_cfg);
 EXPORT_SYMBOL(dhub_semaphore);
@@ -1842,5 +1514,4 @@ EXPORT_SYMBOL(hbo_queue_enable);
 EXPORT_SYMBOL(hbo_queue_clear_done);
 EXPORT_SYMBOL(dhub2d_hdl);
 EXPORT_SYMBOL(BCM_SCHED_AutoPushCmd);
-EXPORT_SYMBOL(dhub_channel_enable_InverseScan);
 #endif

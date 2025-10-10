@@ -27,6 +27,11 @@
 #include <fdtdec.h>
 #include <libfdt.h>
 #include <string.h>
+#include "misc_syna.h"
+#include "fastboot_syna.h"
+#include <command.h>
+#include <malloc.h>
+#include <env.h>
 
 #define FDTO_SIZE 0x2000
 #define FDT_MAX_SIZE 0x8000  /* Max size to increase FDT into - 32KB is usually enough */
@@ -131,8 +136,6 @@ cleanup:
 	free(copy);
 	return ret;
 }
-
-extern int f_mmc_get_part_index(int mmc_dev, char *part_name);
 
 /**
  * setup_uboot_fdt_overlay - Setup and apply device tree overlays

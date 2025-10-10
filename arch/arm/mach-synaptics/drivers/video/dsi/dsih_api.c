@@ -15,6 +15,8 @@
 #include "dsih_api.h"
 #include "dsih_hal.h"
 #include "dsih_dphy.h"
+#include <linux/delay.h>
+#include <string.h>
 
 #define PRECISION_FACTOR 1000
 #define VIDEO_PACKET_OVERHEAD 6 /* HEADER (4 bytes) + CRC (2 bytes) */

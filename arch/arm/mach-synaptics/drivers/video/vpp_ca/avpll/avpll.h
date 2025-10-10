@@ -38,7 +38,7 @@ typedef struct __VPLL_CONFIG__ {
 	int Dm;
 	int Dn;
 	float dummy;
-	double frac;
+	unsigned long long frac;
 	float vco_freq;
 	int Dp;
 	float vpll_freq;

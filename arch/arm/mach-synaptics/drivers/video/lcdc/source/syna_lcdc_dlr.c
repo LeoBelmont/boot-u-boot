@@ -180,9 +180,9 @@ static void syna_lcdc_dlr_start2DDMA(struct syna_lcdc_dev *dev, VBUF_INFO *pinfo
 	unsigned int stride;
 	unsigned int width_byte;
 
-	start_addr = pinfo->m_pbuf_start;
-	width_byte = (pinfo->m_content_width * pinfo->m_bits_per_pixel) / 8;
-	stride = (width_byte * 16 + 15) / 16; /*16-byte alignment*/
+	start_addr = (uintptr_t) pinfo->m_pbuf_start;
+	width_byte = (pinfo->m_content_width * pinfo->m_bits_per_pixel)/8;
+	stride = (width_byte * 16 + 15)/16; /*16-byte alignment*/
 
 	if (dev->bcm_enable) {
 		cfgQ_shadow = (void *)CURR_VBI_DMA_CFGQ->addr;

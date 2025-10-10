@@ -160,7 +160,7 @@ int get_vco(unsigned int pllbase)
 	debug( " current DN FRAC is: %d\n", n_frac);
 
 	unsigned long long nx = n_int +1 + (unsigned long long)n_frac/(1<<24);
-	debug( " current N.X is: %f\n", nx);
+	debug( " current N.X is: %#llx\n", nx);
 	/* calculate VCO based on register value
 	   per ABI SPEC page2, figure 1, there is a default, unchangeable /4 divider
 	   to tne input of feedback divider module, so we need to muliply that back */
@@ -464,16 +464,16 @@ int diag_config_pll_ssc(unsigned int pllbase, int ssc_freq, int ssc_amp, int ssc
 			wssc_amp=4.0;
 		}
 
-		debug( "written SSC depth is: %.1f,  input SSC depth is: %.1f\n", wssc_amp, (unsigned long long)ssc_amp/10);
+		debug( "written SSC depth is: %#llx,  input SSC depth is: %#llx\n", wssc_amp, (unsigned long long)ssc_amp/10);
 		fpfd=diag_config_pll_getfpfd(pllbase);
 		// per SPEC page 8, exmaple in Table5B, SSC_freq = Fpfd/SSMF[3:0]
 		// ssc_freq input in KHz, so to transform to Mhz, we need to divide by
 		// 1000
 		ssc_freqd=(unsigned long long)ssc_freq/1000;
 		ssc_div=rounding(fpfd/ssc_freqd);
-		debug( "Calculated FPFD frequency is: %.2f\n", fpfd);
-		debug( "Calculated SSCD frequency is: %.2f\n", ssc_freqd);
-		debug( "Calculated SSC frequency is: %.2f\n", fpfd/ssc_div);
+		debug( "Calculated FPFD frequency is: %#llx\n", fpfd);
+		debug( "Calculated SSCD frequency is: %#llx\n", ssc_freqd);
+		debug( "Calculated SSC frequency is: %#llx\n", fpfd/ssc_div);
 		// select SSMF base on SSC_DIV
 		// binary search, closest
 		ssfreq=bsearch(divs, ssc_div);
@@ -635,7 +635,7 @@ int diag_change_pll(E_PLL_SRC pll, int freq, int freq1, int ssc, int ssc_freq,
 		divqf=dp1-1;
 
 		debug( " calculated DIVFI is: %d\n", INT_N);
-		debug( " calculated fraction is: %f\n", FRAC_N);
+		debug( " calculated fraction is: %#llx\n", FRAC_N);
 		debug( " calculated DIVFF is: %d\n", frac);
 		debug( " calculated DIVQ and DIVQF is: %d %d\n", divq, divqf);
 	}

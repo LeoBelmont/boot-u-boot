@@ -35,6 +35,9 @@
 #include "vpp_priv.h"
 #include "vbuf.h"
 #include "vpp.h"
+#include <irq_func.h>
+#include <cpu_func.h>
+#include <malloc.h>
 
 #define WAIT_LOOP_COUNT 50
 

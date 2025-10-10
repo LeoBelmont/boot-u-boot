@@ -5,6 +5,7 @@
 #include <dm.h>
 #include <i2c.h>
 #include <panel.h>
+#include <linux/delay.h>
 
 struct ws_panel_priv {
 	int addr;
@@ -64,47 +65,6 @@ static int ws_panel_i2c_write(struct udevice *dev, uint8_t buf, uint8_t reg)
 	} else {
 		udelay(5000);
 	}
-
-	return ret;
-}
-
-static int ws_panel_i2c_read(struct udevice *dev, uint8_t *buf, uint8_t reg)
-{
-	struct ws_panel_priv *priv = dev_get_priv(dev);
-	uint8_t addr_buf[1] = { reg };
-	uint8_t data_buf[1] = { 0, };
-	struct i2c_msg msgs[1];
-	int ret;
-
-	/* Write register address */
-	msgs[0].addr = priv->addr;
-	msgs[0].flags = 0;
-	msgs[0].len = ARRAY_SIZE(addr_buf);
-	msgs[0].buf = addr_buf;
-
-	ret = dm_i2c_xfer(dev, msgs, ARRAY_SIZE(msgs));
-	if (ret) {
-		printf("ws_panel_i2c_read reg Failed @addr[0x%x] Reg: 0x%x, ret:%d\n",
-				priv->addr, reg, ret);
-		return ret;
-	}
-
-	udelay(5000);
-
-	/* Read data from register */
-	msgs[0].addr = priv->addr;
-	msgs[0].flags = I2C_M_RD;
-	msgs[0].len = 1;
-	msgs[0].buf = data_buf;
-
-	ret = dm_i2c_xfer(dev, msgs, ARRAY_SIZE(msgs));
-	if (ret) {
-		printf("ws_panel_i2c_read data Failed @addr[0x%x] Reg: 0x%x, ret:%d\n",
-				priv->addr, reg, ret);
-		return ret;
-	}
-
-	*buf = data_buf[0];
 
 	return ret;
 }

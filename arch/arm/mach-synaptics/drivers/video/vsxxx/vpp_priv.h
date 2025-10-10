@@ -26,7 +26,6 @@
 #define _VPP_PRIV_H
 
 #include <linux/types.h>
-#include <dm.h>
 #include "vpp_api.h"
 
 #define	VPP_SUPPORT_SCALAR		1

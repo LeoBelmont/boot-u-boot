@@ -63,8 +63,6 @@ enum {
 	FDT_UPDATE_OVERLAY = BIT(4),
 };
 
-extern int f_mmc_get_part_index(int mmc_dev, char *part_name);
-
 static void setup_cma_param(char *bootargs)
 {
 	char tmp_buf[128];

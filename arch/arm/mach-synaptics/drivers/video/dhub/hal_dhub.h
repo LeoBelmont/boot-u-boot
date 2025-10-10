@@ -332,43 +332,8 @@ void hbo_queue_clear_done(void *hdl,	/*!     Handle to HDL_hbo ! */
 					   ! */
 	);
 
-/********************************************************************************************
-*	Function: hbo_queue_read
-*	Description: Read a number of 64b data & pop FIFO from HBO SRAM.
-*	Return:	UNSG32		Number of 64b data being read (=n), or (when cfgQ==NULL)
-*				0 if there're not sufficient data in FIFO
-*********************************************************************************************/
-UNSG32 hbo_queue_read(void *hdl,	/*!     Handle to HDL_hbo ! */
-			  SIGN32 id,	/*!     Queue ID in $HBO ! */
-			  SIGN32 n,	/*!     Number 64b entries to read ! */
-			  T64b data[],	/*!     To receive read data ! */
-			  UNSG32 *ptr	/*!     Pass in current FIFO pointer (in 64b word),
-					   & receive updated new pointer,
-					   Pass NULL to read from HW
-				   ! */
-	);
-
 UNSG32 hbo_queue_getspace(void *hdl, SIGN32 id);
 UNSG32 hbo_queue_getdepth(void *hdl, SIGN32 id);
-/********************************************************************************************
-*	Function: hbo_queue_write
-*	Description: Write a number of 64b data & push FIFO to HBO SRAM.
-*	Return:	UNSG32		Number of (adr,pair) added to cfgQ, or (when cfgQ==NULL)
-*				0 if there're not sufficient space in FIFO
-*********************************************************************************************/
-UNSG32 hbo_queue_write(void *hdl,	/*!     Handle to HDL_hbo ! */
-			   SIGN32 id,	/*!     Queue ID in $HBO ! */
-			   SIGN32 n,	/*!     Number 64b entries to write ! */
-			   T64b data[],	/*!     Write data ! */
-			   T64b cfgQ[],	/*!     Pass NULL to directly update HBO, or
-					   Pass non-zero to receive programming sequence
-					   in (adr,data) pairs
-					   ! */
-			   UNSG32 *ptr	/*!     Pass in current FIFO pointer (in 64b word),
-					   & receive updated new pointer,
-					   Pass NULL to read from HW
-					   ! */
-	);
 /**	ENDOFSECTION
 */
 
@@ -549,29 +514,6 @@ void dhub_channel_clear_done(void *hdl,	/*!     Handle to HDL_dhub ! */
 					   ! */
 	);
 
-/********************************************************************************************
-*	Function: dhub_channel_write_cmd
-*	Description: Write a 64b command for a dHub channel.
-*	Return:		UNSG32		Number of (adr,pair) added to cfgQ if success, or
-*					0 if there're not sufficient space in FIFO
-*********************************************************************************************/
-UNSG32 dhub_channel_write_cmd(void *hdl,	/*!     Handle to HDL_dhub ! */
-				  SIGN32 id,	/*!     Channel ID in $dHubReg ! */
-				  UNSG32 addr,	/*!     CMD: buffer address ! */
-				  SIGN32 size,	/*!     CMD: number of bytes to transfer ! */
-				  SIGN32 semOnMTU,	/*!     CMD: semaphore operation at CMD/MTU (0/1) ! */
-				  SIGN32 chkSemId,	/*!     CMD: non-zero to check semaphore ! */
-				  SIGN32 updSemId,	/*!     CMD: non-zero to update semaphore ! */
-				  SIGN32 interrupt,	/*!     CMD: raise interrupt at CMD finish ! */
-				  T64b cfgQ[],	/*!     Pass NULL to directly update dHub, or
-						   Pass non-zero to receive programming sequence
-						   in (adr,data) pairs
-						   ! */
-				  UNSG32 *ptr	/*!     Pass in current cmdQ pointer (in 64b word),
-						   & receive updated new pointer,
-						   Pass NULL to read from HW
-						   ! */
-	);
 /**	ENDOFSECTION
 */
 
@@ -584,30 +526,6 @@ void dhub_channel_generate_cmd(void *hdl,	/*!     Handle to HDL_dhub ! */
 				   SIGN32 updSemId,	/*!     CMD: non-zero to update semaphore ! */
 				   SIGN32 interrupt,	/*!     CMD: raise interrupt at CMD finish ! */
 				   SIGN32 *pData);
-
-/********************************************************************************************
-*       Function: dhub_channel_big_write_cmd
-*       Description: Write a sequence of 64b command for a dHub channel.
-*       Return:	UNSG32		Number of (adr,pair) added to cfgQ if success, or
-*                                                      0 if there're not sufficient space in FIFO
-*********************************************************************************************/
-UNSG32 dhub_channel_big_write_cmd(void *hdl,	/*!     Handle to HDL_dhub ! */
-				  SIGN32 id,	/*!     Channel ID in $dHubReg ! */
-				  UNSG32 addr,	/*!     CMD: buffer address ! */
-				  SIGN32 size,	/*!     CMD: number of bytes to transfer ! */
-				  SIGN32 semOnMTU,	/*!     CMD: semaphore operation at CMD/MTU (0/1) ! */
-				  SIGN32 chkSemId,	/*!     CMD: non-zero to check semaphore ! */
-				  SIGN32 updSemId,	/*!     CMD: non-zero to update semaphore ! */
-				  SIGN32 interrupt,	/*!     CMD: raise interrupt at CMD finish ! */
-				  T64b cfgQ[],	/*!     Pass NULL to directly update dHub, or
-						   Pass non-zero to receive programming sequence
-						   in (adr,data) pairs
-						   ! */
-				  UNSG32 *ptr	/*!     Pass in current cmdQ pointer (in 64b word),
-						   & receive updated new pointer,
-						   Pass NULL to read from HW
-						   ! */
-	);
 
 /**	SECTION - API definitions for $dHubReg2D
 */
@@ -755,17 +673,10 @@ typedef enum {
 void BCM_SCHED_Open(void);
 void BCM_SCHED_Close(void);
 void BCM_SCHED_SetMux(UNSG32 QID, UNSG32 TrigEvent);
-int BCM_SCHED_PushCmd(UNSG32 QID, UNSG32 *pCmd, UNSG32 *cfgQ);
+int BCM_SCHED_PushCmd(UNSG32 QID, SIGN32 *pCmd, UNSG32 *cfgQ);
 void BCM_SCHED_GetEmptySts(UNSG32 QID, UNSG32 *EmptySts);
 
 int BCM_SCHED_AutoPushCmd(UNSG32 QID, UNSG8 uchEnable);
-
-/******************************************************************************
-*       Function: dhub_channel_enable_InverseScan
-*       Description: Enable the inverse scan at loader.
-******************************************************************************/
-UNSG32 dhub_channel_enable_InverseScan(void *hdl, SIGN32 id,
-					   SIGN32 iMode, T64b cfgQ[]);
 
 void dhub2d_channel_clear_seq(void *hdl, SIGN32 id);
 void dhub2d_channel_start_seq(void *hdl, SIGN32 id);

@@ -166,6 +166,45 @@ int VppReset(void)
 	return param.u.value.a;
 }
 
+int VppInvokePassShm_Helper(void *pBuffer, VPP_SHM_ID shmCmdId, UINT32 sBufferSize)
+{
+	struct tee_invoke_arg arg;
+	struct tee_param param[4];
+	struct tee_shm *VbufShm;
+	int ret;
+
+	memset(&arg, 0, sizeof(arg));
+	arg.func = VPP_PASSSHM;
+	arg.session = session;
+
+	ret = tee_shm_register(tee_dev, (void*)pBuffer, sBufferSize, 0, &VbufShm);
+	if (ret) {
+		printf("Shm register failed\n");
+		return ret;
+	}
+
+	memset(param, 0, sizeof(param));
+	param[0].attr = TEE_PARAM_ATTR_TYPE_VALUE_INPUT;
+	param[0].u.value.a = shmCmdId;
+
+	param[1].attr = TEE_PARAM_ATTR_TYPE_MEMREF_INPUT;
+	param[1].u.memref.shm = VbufShm;
+	param[1].u.memref.size = sBufferSize;
+
+	param[2].attr = TEE_PARAM_ATTR_TYPE_VALUE_OUTPUT;
+	param[2].u.value.a = 0xdeadbeef;
+
+	ret = tee_invoke_func(tee_dev, &arg, 3, param);
+	if (ret || arg.ret) {
+		if (!ret)
+			ret = -EPROTO;
+		printf("tee_invoke_func invoke err: 0x%x 0x%x\n", ret, arg.ret);
+		return ret;
+	}
+
+	return param[2].u.value.a;
+}
+
 int VppConfig(INT handle,
 	      const INT *pvinport_cfg,
 	      const INT *pdv_cfg,
@@ -676,45 +715,6 @@ int VppPassShm(unsigned int *VirtAddr, VPP_SHM_ID AddrId, unsigned int Size)
 	param[1].attr = TEE_PARAM_ATTR_TYPE_MEMREF_INPUT;
 	param[1].u.memref.shm = VbufShm;
 	param[1].u.memref.size = Size;
-
-	param[2].attr = TEE_PARAM_ATTR_TYPE_VALUE_OUTPUT;
-	param[2].u.value.a = 0xdeadbeef;
-
-	ret = tee_invoke_func(tee_dev, &arg, 3, param);
-	if (ret || arg.ret) {
-		if (!ret)
-			ret = -EPROTO;
-		printf("tee_invoke_func invoke err: 0x%x 0x%x\n", ret, arg.ret);
-		return ret;
-	}
-
-	return param[2].u.value.a;
-}
-
-int VppInvokePassShm_Helper(void *pBuffer, VPP_SHM_ID shmCmdId, UINT32 sBufferSize)
-{
-	struct tee_invoke_arg arg;
-	struct tee_param param[4];
-	struct tee_shm *VbufShm;
-	int ret;
-
-	memset(&arg, 0, sizeof(arg));
-	arg.func = VPP_PASSSHM;
-	arg.session = session;
-
-	ret = tee_shm_register(tee_dev, (void *)pBuffer, sBufferSize, 0, &VbufShm);
-	if (ret) {
-		printf("Shm register failed\n");
-		return ret;
-	}
-
-	memset(param, 0, sizeof(param));
-	param[0].attr = TEE_PARAM_ATTR_TYPE_VALUE_INPUT;
-	param[0].u.value.a = shmCmdId;
-
-	param[1].attr = TEE_PARAM_ATTR_TYPE_MEMREF_INPUT;
-	param[1].u.memref.shm = VbufShm;
-	param[1].u.memref.size = sBufferSize;
 
 	param[2].attr = TEE_PARAM_ATTR_TYPE_VALUE_OUTPUT;
 	param[2].u.value.a = 0xdeadbeef;

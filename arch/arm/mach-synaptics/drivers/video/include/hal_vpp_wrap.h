@@ -26,7 +26,6 @@
 #define _HAL_VPP_WRAP_H
 
 #include <linux/types.h>
-#include <dm.h>
 #include "vpp_api.h"
 
 struct vpp_fops {

@@ -35,13 +35,11 @@
 #include "avio_memmap.h"
 
 #ifndef BFM_HOST_Bus_Write32
-#define BFM_HOST_Bus_Write32(offset, val) \
-	((*(volatile unsigned int *)(offset)) = val)
+#define BFM_HOST_Bus_Write32(offset, val)	((*(volatile unsigned int*)(uintptr_t)(offset))=val)
 #endif
 
 #ifndef BFM_HOST_Bus_Read32
-#define BFM_HOST_Bus_Read32(offset, holder) \
-	((*(volatile unsigned int *)(holder)) = (*(volatile unsigned int *)(offset)))
+#define BFM_HOST_Bus_Read32(offset, holder)	((*(volatile unsigned int*)(holder))=(*(volatile unsigned int*)(uintptr_t)(offset)))
 #endif
 
 #define DIAG_ASSERT(cond)							\
@@ -168,7 +166,7 @@ typedef struct {
 typedef struct {
 	unsigned int dm;
 	unsigned int dn;
-	unsigned int frac;
+	unsigned long long frac;
 	unsigned int dp;
 	unsigned int dp1;
 } APLLCFG_t;

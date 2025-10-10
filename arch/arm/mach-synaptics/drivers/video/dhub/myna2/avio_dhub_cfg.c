@@ -135,19 +135,6 @@ DHUB_channel_config  AG_config[AG_NUM_OF_CHANNELS] = {
 		dHubChannel_CFG_MTU_128byte, 0, 0, 1, 0xF, 0xF},
 };
 
-int drv_dhub_initialize_dhub(void *h_dhub_ctx)
-{
-	DhubInitialization(CPUINDEX, VPP_DHUB_BASE, VPP_HBO_SRAM_BASE,
-					&VPP_dhubHandle, LCDC_config,
-					VPP_NUM_OF_CHANNELS, DHUB_TYPE_128BIT);
-
-	DhubInitialization(CPUINDEX, AG_DHUB_BASE, AG_HBO_SRAM_BASE,
-					&AG_dhubHandle, AG_config, AG_NUM_OF_CHANNELS,
-					DHUB_TYPE_64BIT);
-
-	return 0;
-}
-
 /******************************************************************************************************************
  *    Function: DhubInitialization
  *    Description: Initialize DHUB .
@@ -214,3 +201,16 @@ void DhubInitialization(SIGN32 cpuId,
 		}
 	}
 }
+int drv_dhub_initialize_dhub(void *h_dhub_ctx)
+{
+	DhubInitialization(CPUINDEX, VPP_DHUB_BASE, VPP_HBO_SRAM_BASE,
+					&VPP_dhubHandle, LCDC_config,
+					VPP_NUM_OF_CHANNELS, DHUB_TYPE_128BIT);
+
+	DhubInitialization(CPUINDEX, AG_DHUB_BASE, AG_HBO_SRAM_BASE,
+					&AG_dhubHandle, AG_config, AG_NUM_OF_CHANNELS,
+					DHUB_TYPE_64BIT);
+
+	return 0;
+}
+

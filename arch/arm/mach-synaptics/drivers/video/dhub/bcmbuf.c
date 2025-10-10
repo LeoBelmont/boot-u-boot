@@ -25,6 +25,9 @@
 #include <linux/types.h>
 #include "bcmbuf.h"
 #include "OSAL_api.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <cpu_func.h>
 
 /***************************************************************
  * FUNCTION: allocate register programming buffer
@@ -36,8 +39,6 @@
  ****************************************************************/
 int bcmbuf_create(BCMBUF *pbcmbuf, int size, void *memlist)
 {
-	int i;
-
 	if (size <= 0)
 		return (BCMBUF_EBADPARAM);
 
@@ -181,7 +182,7 @@ int bcmbuf_to_CFGQ(HDL_dhub2d *pDhubHandle,
 	if (size <= 0)
 		return BCMBUF_EBADPARAM;
 
-	flush_cache(phy_start, size);
+	flush_cache((unsigned long)phy_start, size);
 
 	dhub_channel_generate_cmd(&pDhubHandle->dhub, dhubID,
 				  (int)(long long)phy_start,

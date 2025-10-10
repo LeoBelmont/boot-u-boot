@@ -42,12 +42,11 @@
 #define	readl	__raw_readl
 
 #ifndef BFM_HOST_Bus_Write32
-#define BFM_HOST_Bus_Write32(offset, val)	((*(volatile unsigned int *)(offset)) = val)
+#define BFM_HOST_Bus_Write32(offset, val)	((*(volatile unsigned int*)(uintptr_t)(offset))=val)
 #endif
 
 #ifndef BFM_HOST_Bus_Read32
-#define BFM_HOST_Bus_Read32(offset, holder) \
-	((*(volatile unsigned int *)(holder)) = (*(volatile unsigned int *)(offset)))
+#define BFM_HOST_Bus_Read32(offset, holder)	((*(volatile unsigned int*)(holder))=(*(volatile unsigned int*)(uintptr_t)(offset)))
 #endif
 
 #define	MV_BYTE_SWAP_16BIT(X)	((((X) & 0xff) << 8) | (((X) & 0xff00) >> 8))

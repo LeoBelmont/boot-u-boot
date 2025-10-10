@@ -28,6 +28,7 @@
 #include "syna_lcdc_dev.h"
 #include "vpp_priv.h"
 #include "dsih_displays.h"
+#include <linux/delay.h>
 
 int NTZ_MV_VPP_InitVPPS(struct berlin_fb_priv *priv)
 {

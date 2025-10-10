@@ -17,6 +17,8 @@
 #include "dsih_hal.h"
 #include "dsih_dphy.h"
 #include <linux/printk.h>
+#include <string.h>
+#include <delay.h>
 
 static struct mipi_dsi_dev *mipi_dev;
 

@@ -31,6 +31,7 @@
 #include "vpp_priv.h"
 #include "dsih_displays.h"
 #include "avpll.h"
+#include <irq_func.h>
 
 #define MP_BERLIN_INTR_ID(id)   (id + 32)
 #define PIXEL_CLOCK_RATE(FREQ)  (4 * FREQ)

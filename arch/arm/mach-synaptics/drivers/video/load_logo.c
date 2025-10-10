@@ -75,12 +75,6 @@ typedef struct {
 	fastlogo_info_t info[];
 } fastlogo_header_t;
 
-static const char *plogoname[MAX_LOGO_NAMES] = {
-	LOGO_NAME,
-	LOGO_A_NAME,
-	LOGO_B_NAME
-};
-
 static unsigned int syna_get_blksize(void)
 {
 	struct blk_desc *dev_desc;
@@ -99,34 +93,6 @@ static unsigned int syna_get_blksize(void)
 	}
 
 	return (unsigned int)dev_desc->blksz;
-}
-
-static bool syna_is_partition_exit(const char *partition_name)
-{
-	disk_partition_t info;
-	struct blk_desc *dev_desc;
-	int mmc_dev = get_mmc_boot_dev();
-	struct mmc *mmc = find_mmc_device(mmc_dev);
-
-	if (!mmc) {
-		printf("invalid mmc device\n");
-		return -1;
-	}
-
-	dev_desc = blk_get_dev("mmc", mmc_dev);
-	if (!dev_desc || dev_desc->type == DEV_TYPE_UNKNOWN) {
-		printf("invalid mmc device\n");
-		return false;
-	}
-
-	blk_dselect_hwpart(dev_desc, get_mmc_part_by_name(mmc_dev, partition_name));
-
-	if (part_get_info_by_name(dev_desc, partition_name, &info) < 0) {
-		debug("cannot find partition: '%s'\n", partition_name);
-		return false;
-	}
-
-	return true;
 }
 
 void *syna_emmc_read_from_offset(const char *partition_name, unsigned int offset,
@@ -200,10 +166,9 @@ static fastlogo_info_t *check_validate_logo(int width, int height, UINT8 *pHEADE
 	return NULL;
 }
 
-int syna_load_logo_info(int width, int height, VBUF_INFO *pVppBuf, int *partnum)
+int syna_load_logo_info (int width, int height, VBUF_INFO *pVppBuf, FASTLOGO_INFO *fl_info)
 {
 	UINT8 *pReadBuffer, *plogobuffer, *pHeader, *pLogoHeader;
-	int j;
 	bool is_partition_found = 0;
 	fastlogo_info_t *fl_header;
 	unsigned int blocksize = syna_get_blksize();
@@ -223,8 +188,8 @@ int syna_load_logo_info(int width, int height, VBUF_INFO *pVppBuf, int *partnum)
 		pLogoHeader = pHeader;
 
 		pHeader = syna_emmc_read_from_offset(pt_name,
-						     GENX_IMAGE_HEADER_FASTLOGO_SIZE,
-						     LOGO_HEADER_SIZE, pHeader, partnum);
+				GENX_IMAGE_HEADER_FASTLOGO_SIZE,
+				LOGO_HEADER_SIZE, pHeader, fl_info);
 
 		if (!pHeader) {
 			printf("fastlogo: Header read failed in partition - %s\n", pt_name);
@@ -246,10 +211,9 @@ int syna_load_logo_info(int width, int height, VBUF_INFO *pVppBuf, int *partnum)
 
 #ifdef CONFIG_MMC
 		plogobuffer = syna_emmc_read_from_offset(pt_name,
-							 fl_header->offset +
-							 GENX_IMAGE_HEADER_FASTLOGO_SIZE,
-							 (fl_header->stride * fl_header->height),
-							 pReadBuffer, partnum);
+				fl_header->offset + GENX_IMAGE_HEADER_FASTLOGO_SIZE,
+				(fl_header->stride * fl_header->height),
+				pReadBuffer, fl_info);
 #else
 		//Only support fastlogo on emmc image
 		printf("fastlogo: Not supported!!!!!!!!\n");

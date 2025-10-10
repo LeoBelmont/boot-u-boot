@@ -31,6 +31,7 @@
 #include "lcdc.h"
 #include "vpp_api.h"
 #include "drv_lcdc.h"
+#include <delay.h>
 
 struct syna_lcdc_dev *syna_lcdc[SYNA_LCDC_MAX];
 
