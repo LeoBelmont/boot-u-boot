@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <command.h>
 #include <image.h>
@@ -63,7 +63,7 @@ enum boot_type_t {
 };
 
 static int read_image(enum boot_type_t boot_type, const char *pt_name,
-	u32 offset, unsigned char *buff, unsigned int read_bytes)
+		      u32 offset, unsigned char *buff, unsigned int read_bytes)
 {
 #ifdef CONFIG_SPI_FLASH_MTD
 	struct mtd_info *mtd = NULL;
@@ -118,14 +118,14 @@ spi_out:
 		ret = 0;
 		break;
 	default:
-		;
+		break;
 	}
 
 	return ret;
 }
 
 static void *load_android_image(enum boot_type_t boot_type, const char *pt_name,
-	u32 offset, unsigned char *buff)
+				u32 offset, unsigned char *buff)
 {
 	struct img_info *img_info;
 	struct img_header *img_hdr;
@@ -157,7 +157,7 @@ static void *load_android_image(enum boot_type_t boot_type, const char *pt_name,
 
 	/* verify image */
 	ret = tee_verify_image(5, (void *)img_hdr, img_size,
-				(void *)img_hdr, img_size, IMAGE_TYPE_LINUX_KERNEL);
+			       (void *)img_hdr, img_size, IMAGE_TYPE_LINUX_KERNEL);
 	if (ret <= 0) {
 		printf("ERROR: Verify Linux Kernel image failed! ret=0x%x\n", ret);
 		return NULL;
@@ -190,7 +190,8 @@ static int boot_android_image(unsigned char *buff)
 		printf("didn't find dtb!!!\n");
 		return -1;
 	}
-	bootimg_hdr->second_addr = (u32)((uintptr_t)buff + mkbootimg_page + gih->chunk[result].offset);
+	bootimg_hdr->second_addr = (u32)((uintptr_t)buff + mkbootimg_page +
+					 gih->chunk[result].offset);
 	bootimg_hdr->second_size = gih->chunk[result].size;
 
 	sprintf(cmd, "bootm %p", buff);
@@ -282,10 +283,12 @@ retry_image_load:
 	bootimg_hdr = load_android_image(boot_type, pt_name, offset, buff);
 	if (!bootimg_hdr && try_ab) {
 		if (try_abmode(ab_mode)) {
-			printf("Invalid slot_%s boot image! reset to backup image...\n", ab_mode ? "b" : "a");
+			printf("Invalid slot_%s boot image! reset to backup image...\n",
+			       ab_mode ? "b" : "a");
 			run_command("reset", 0);
 		} else {
-			printf("Failed to load slot_%s boot image! Retry again...\n", ab_mode ? "b" : "a");
+			printf("Failed to load slot_%s boot image! Retry again...\n",
+			       ab_mode ? "b" : "a");
 			goto retry_image_load;
 		}
 	}
@@ -315,7 +318,8 @@ static int do_bootspi(struct cmd_tbl *cmdtp, int flag, int argc, char * const ar
 
 	if (argc == 2) {
 		spi_addr = simple_strtoul(argv[1], NULL, 16);
-		snprintf(cmd, sizeof(cmd), "syna_boot spi 0x%x", spi_addr ? spi_addr : DEFAULT_SPI_ADDR);
+		snprintf(cmd, sizeof(cmd), "syna_boot spi 0x%x",
+			 spi_addr ? spi_addr : DEFAULT_SPI_ADDR);
 	} else {
 		snprintf(cmd, sizeof(cmd), "syna_boot spi");
 	}
@@ -332,36 +336,33 @@ static int do_bootram(struct cmd_tbl *cmdtp, int flag, int argc, char * const ar
 	if (argc == 2)
 		ram_addr = simple_strtoul(argv[1], NULL, 16);
 
-	snprintf(cmd, sizeof(cmd), "syna_boot ram 0x%x", ram_addr ? ram_addr : CONFIG_SYS_LOAD_ADDR);
+	snprintf(cmd, sizeof(cmd), "syna_boot ram 0x%x",
+		 ram_addr ? ram_addr : CONFIG_SYS_LOAD_ADDR);
 	return run_command(cmd, 0);
 }
 
 #ifdef CONFIG_CMD_SYNA_BOOTMMC
-U_BOOT_CMD(
-	bootmmc, 1, 0, do_bootmmc,
-	"u-boot boot linux from mmc\n",
-	""
+U_BOOT_CMD(bootmmc, 1, 0, do_bootmmc,
+	   "u-boot boot linux from mmc\n",
+	   ""
 );
 #endif
 
 #ifdef CONFIG_CMD_SYNA_BOOTSPI
-U_BOOT_CMD(
-	bootspi, 1, 0, do_bootspi,
-	"u-boot boot linux from SPI\n",
-	""
+U_BOOT_CMD(bootspi, 1, 0, do_bootspi,
+	   "u-boot boot linux from SPI\n",
+	   ""
 );
 #endif
 
-U_BOOT_CMD(
-	bootram, 2, 0, do_bootram,
-	"u-boot boot linux from RAM\n",
-	""
+U_BOOT_CMD(bootram, 2, 0, do_bootram,
+	   "u-boot boot linux from RAM\n",
+	   ""
 );
 
-U_BOOT_CMD(
-	syna_boot, 3, 0, do_syna_boot,
-	"Syna u-boot boot linux\n",
-	"mmc\n"
-	"syna_boot spi/ram offset\n"
+U_BOOT_CMD(syna_boot, 3, 0, do_syna_boot,
+	   "Syna u-boot boot linux\n",
+	   "mmc\n"
+	   "syna_boot spi/ram offset\n"
 );
 

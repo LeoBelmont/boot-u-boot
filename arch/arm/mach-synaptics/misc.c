@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <asm/io.h>
 #include <mmc.h>
@@ -116,14 +116,14 @@ int get_mmc_part_by_name(int mmc_dev, const char *name)
 {
 	int ret = 0;
 
-	if (name == NULL)
+	if (!name)
 		return 0;
 
-	if(strcmp(name, "bootloader") ==0 ||
-		strcmp(name, "bootloader1") ==0)
+	if (strcmp(name, "bootloader") == 0 ||
+	    strcmp(name, "bootloader1") == 0)
 		return 1;
 
-	if(strcmp(name, "bootloader2") ==0)
+	if (strcmp(name, "bootloader2") == 0)
 		return 2;
 
 	if (get_mmc_partition_type(mmc_dev) == DEFAULT_PARTITION)

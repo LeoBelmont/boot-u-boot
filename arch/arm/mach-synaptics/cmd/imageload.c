@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <vsprintf.h>
 #include <command.h>
@@ -86,7 +86,8 @@ static int get_img_usbhost(char * const img_name, void *addr)
 			}
 			usbpath[i] = *p_img_name;
 		}
-		sprintf(cmd, "fatload usb %s 0x%x %s", usbpath, (uint32_t)(uint64_t)addr, p_img_name);
+		sprintf(cmd, "fatload usb %s 0x%x %s",
+			usbpath, (uint32_t)(uint64_t)addr, p_img_name);
 	}
 	printf("%s\n", cmd);
 
@@ -179,7 +180,8 @@ static int get_img_sd(char * const img_name, void *addr)
 			}
 			sdpath[i] = *p_img_name;
 		}
-		sprintf(cmd, "fatload mmc %s 0x%x %s", sdpath, (uint32_t)(uint64_t)addr, p_img_name);
+		sprintf(cmd, "fatload mmc %s 0x%x %s",
+			sdpath, (uint32_t)(uint64_t)addr, p_img_name);
 	}
 	printf("%s\n", cmd);
 
@@ -260,13 +262,12 @@ static int do_imgload(struct cmd_tbl *cmdtp, int flag, int argc, char * const ar
 	return ret;
 }
 
-U_BOOT_CMD(
-	imgload, 4, 0, do_imgload,
-	"load image through tftp, usb host or usb slave",
-	" [src: tftp, usbh, usbs] [image path] [load address]\n"
-	"example:\n"
-	"    imgload tftp 10.70.24.110:emmc/bootloader.subimg 0x1000000\n"
-	"    imgload usbh 0:1:emmc/bootloader.subimg 0x1000000\n"
-	"    imgload usbs emmc/bootloader.subimg 0x1000000\n"
-	"    imgload sd 1:0:emmc/bootloader.subimg 0x1000000\n"
+U_BOOT_CMD(imgload, 4, 0, do_imgload,
+	   "load image through tftp, usb host or usb slave",
+	   " [src: tftp, usbh, usbs] [image path] [load address]\n"
+	   "example:\n"
+	   "    imgload tftp 10.70.24.110:emmc/bootloader.subimg 0x1000000\n"
+	   "    imgload usbh 0:1:emmc/bootloader.subimg 0x1000000\n"
+	   "    imgload usbs emmc/bootloader.subimg 0x1000000\n"
+	   "    imgload sd 1:0:emmc/bootloader.subimg 0x1000000\n"
 );

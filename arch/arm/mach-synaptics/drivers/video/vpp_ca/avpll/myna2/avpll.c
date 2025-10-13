@@ -26,7 +26,7 @@
 #include "diag_pll.h"
 
 #define FRAC_BITS           24
-#define FRAC_MASK           ((1<<FRAC_BITS) - 1)
+#define FRAC_MASK           ((1 << FRAC_BITS) - 1)
 
 #define FREQ_FACTOR         (1000)
 
@@ -42,8 +42,8 @@
 #define MAX_DP1             7
 #define MIN_DP1             1
 
-#define MAX_DM              (1 << 6)
-#define MAX_DN              (1 << 7)
+#define MAX_DM              BIT(6)
+#define MAX_DN              BIT(7)
 #define DIVF_DEF_MULT       4
 #define PARENT_RATE_KHZ     25000
 
@@ -51,7 +51,7 @@ extern int gcd(int a, int b);
 
 #define dbg_printf      printf
 
-int AVPLL_GetClkgenparams (int freq, int *Dm, int *Dn, unsigned long long *Frac, int *Dp)
+int AVPLL_GetClkgenparams(int freq, int *Dm, int *Dn, unsigned long long *Frac, int *Dp)
 {
 	int	dp0;
 	unsigned int	dn, dm, gcdv;
@@ -67,34 +67,31 @@ int AVPLL_GetClkgenparams (int freq, int *Dm, int *Dn, unsigned long long *Frac,
 	vco = rate0 * dp0;
 	dp0 = vco / rate0;
 
-	if ((dp0 > MAX_DP0_S)) {
-		dbg_printf("dp0 invalid \n");
+	if (dp0 > MAX_DP0_S) {
+		dbg_printf("dp0 invalid\n");
 		return -1;
 	}
 
 	/* try to let vco near the high limit */
-	while ((dp0 <= (MAX_DP0_S / 2))
-		&& (vco <= VCO_HIGH_LIMIT /2)) {
+	while ((dp0 <= (MAX_DP0_S / 2)) && (vco <= VCO_HIGH_LIMIT / 2))
 		vco *= 2;
-	}
 
-	/* caculate the dn, dm */
+	/* calculate the dn, dm */
 	gcdv = gcd(vco, parent_rate);
 	dn = vco / gcdv;
 	dm = parent_rate / gcdv * DIVF_DEF_MULT;
 	frac = 0;
 
 	/* If dn and dm are valid values, we don't use frac mode. */
-	if ((dm > MAX_DM) || (dn > MAX_DN)) {
+	if (dm > MAX_DM || dn > MAX_DN) {
 		/*
-			* For frac mode, the FPFD is limited from 5M to 7.5M.
-			* For 25M input, dm is only valid for 5 or 4, here we got
-			* dm = parent / FRAC_MIN_FPFD.
-			*/
+		 * For frac mode, the FPFD is limited from 5M to 7.5M.
+		 * For 25M input, dm is only valid for 5 or 4, here we got
+		 * dm = parent / FRAC_MIN_FPFD.
+		 */
 		dm = parent_rate / FRAC_MIN_FPFD;
-		if (((parent_rate / dm) >= FRAC_MAX_FPFD)
-			|| (dm > MAX_DM)) {
-			dbg_printf("dm invalid \n");
+		if (((parent_rate / dm) >= FRAC_MAX_FPFD) || dm > MAX_DM) {
+			dbg_printf("dm invalid\n");
 			return -1;
 		}
 
@@ -103,10 +100,10 @@ int AVPLL_GetClkgenparams (int freq, int *Dm, int *Dn, unsigned long long *Frac,
 		frac = frac & FRAC_MASK;
 	}
 
-	*Dm = dm-1;
-	*Dn = dn-1;
+	*Dm = dm - 1;
+	*Dn = dn - 1;
 	*Frac = frac;
-	*Dp = dp0-1;
+	*Dp = dp0 - 1;
 
 	return 0;
 }
@@ -116,10 +113,10 @@ void AVPLL_SetClockGenericFreq(int src, unsigned int freq)
 	APLLCFG_t apll_cfg;
 
 	AVPLL_GetClkgenparams(freq,
-						&apll_cfg.dm,
-						&apll_cfg.dn,
-						&apll_cfg.frac,
-						&apll_cfg.dp);
+			      &apll_cfg.dm,
+			      &apll_cfg.dn,
+			      &apll_cfg.frac,
+			      &apll_cfg.dp);
 	apll_cfg.dp1 = 0;
 
 	diag_change_avpll(src, 0, 0, 0, 0, 0, 0, apll_cfg);

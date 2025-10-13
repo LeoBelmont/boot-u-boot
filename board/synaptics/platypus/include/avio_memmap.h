@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef avio_memmap_h
 #define avio_memmap_h () {}
@@ -29,18 +29,22 @@
 
 #pragma pack(1)
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #ifndef _DOCC_H_BITOPS_
 #define _DOCC_H_BITOPS_ () {}
 
-    #define _bSETMASK_(b)                                      ((b) < 32 ? (1 << ((b) & 31)) : 0)
-    #define _NSETMASK_(msb, lsb)                                (_bSETMASK_((msb) + 1) - _bSETMASK_(lsb))
-    #define _bCLRMASK_(b)                                      (~_bSETMASK_(b))
-    #define _NCLRMASK_(msb, lsb)                                (~_NSETMASK_(msb, lsb))
-    #define _BFGET_(r, msb, lsb)                                 (_NSETMASK_((msb) - (lsb), 0) & ((r) >> (lsb)))
-    #define _BFSET_(r, msb, lsb, v)                               do { (r) &= _NCLRMASK_(msb, lsb); (r) |= _NSETMASK_(msb, lsb) & ((v) << (lsb)); } while (0)
+    #define _bSETMASK_(b) ((b) < 32 ? (1 << ((b) & 31)) : 0)
+    #define _NSETMASK_(msb, lsb) (_bSETMASK_((msb) + 1) - _bSETMASK_(lsb))
+    #define _bCLRMASK_(b)        (~_bSETMASK_(b))
+    #define _NCLRMASK_(msb, lsb) (~_NSETMASK_(msb, lsb))
+    #define _BFGET_(r, msb, lsb) (_NSETMASK_((msb) - (lsb), 0) & ((r) >> (lsb)))
+    #define _BFSET_(r, msb, lsb, v) \
+	do { \
+		(r) &= _NCLRMASK_(msb, lsb); \
+		(r) |= _NSETMASK_(msb, lsb) & ((v) << (lsb)); \
+	} while (0)
 
 #endif
 
@@ -302,7 +306,7 @@
 ////////////////////////////////////////////////////////////
 
 #ifdef __cplusplus
-  }
+}
 #endif
 #pragma  pack()
 

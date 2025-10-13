@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef Galois_memmap_h
 #define Galois_memmap_h () {}
@@ -29,18 +29,22 @@
 
 #pragma pack(1)
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #ifndef _DOCC_H_BITOPS_
 #define _DOCC_H_BITOPS_ () {}
 
-    #define _bSETMASK_(b)                                      ((b) < 32 ? (1 << ((b) & 31)) : 0)
-    #define _NSETMASK_(msb, lsb)                                (_bSETMASK_((msb) + 1) - _bSETMASK_(lsb))
-    #define _bCLRMASK_(b)                                      (~_bSETMASK_(b))
-    #define _NCLRMASK_(msb, lsb)                                (~_NSETMASK_(msb, lsb))
-    #define _BFGET_(r, msb, lsb)                                 (_NSETMASK_((msb) - (lsb), 0) & ((r) >> (lsb)))
-    #define _BFSET_(r, msb, lsb, v)                               do { (r) &= _NCLRMASK_(msb, lsb); (r) |= _NSETMASK_(msb, lsb) & ((v) << (lsb)); } while (0)
+    #define _bSETMASK_(b) ((b) < 32 ? (1 << ((b) & 31)) : 0)
+    #define _NSETMASK_(msb, lsb) (_bSETMASK_((msb) + 1) - _bSETMASK_(lsb))
+    #define _bCLRMASK_(b)        (~_bSETMASK_(b))
+    #define _NCLRMASK_(msb, lsb) (~_NSETMASK_(msb, lsb))
+    #define _BFGET_(r, msb, lsb) (_NSETMASK_((msb) - (lsb), 0) & ((r) >> (lsb)))
+    #define _BFSET_(r, msb, lsb, v) \
+	do { \
+		(r) &= _NCLRMASK_(msb, lsb); \
+		(r) |= _NSETMASK_(msb, lsb) & ((v) << (lsb)); \
+	} while (0)
 
 #endif
 
@@ -2147,7 +2151,7 @@
     #define   MSK32MEMMAP_memmap_dummy                            0xFFFFFFFF
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_MEMMAP {
+	typedef struct SIE_MEMMAP {
     ///////////////////////////////////////////////////////////
     #define   GET32MEMMAP_memmap_dummy(r32)                    _BFGET_(r32, 31, 0)
     #define   SET32MEMMAP_memmap_dummy(r32, v)                  _BFSET_(r32, 31, 0, v)
@@ -2155,19 +2159,19 @@
     #define     w32MEMMAP_memmap                               {\
 	    UNSG32 smemmap_dummy                               : 32;\
 	}
-    union { UNSG32 u32MEMMAP_memmap;
+	union { UNSG32 u32MEMMAP_memmap;
 	    struct w32MEMMAP_memmap;
 	  };
     ///////////////////////////////////////////////////////////
-    } SIE_MEMMAP;
+	} SIE_MEMMAP;
 
-    typedef union  T32MEMMAP_memmap {
+	typedef union  T32MEMMAP_memmap {
 		UNSG32 u32;
 	    struct w32MEMMAP_memmap;
 		 } T32MEMMAP_memmap;
     ///////////////////////////////////////////////////////////
 
-    typedef union  TMEMMAP_memmap {
+	typedef union  TMEMMAP_memmap {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32MEMMAP_memmap;
@@ -2175,10 +2179,11 @@
 		 } TMEMMAP_memmap;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 MEMMAP_drvrd(SIE_MEMMAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 MEMMAP_drvwr(SIE_MEMMAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void MEMMAP_reset(SIE_MEMMAP *p);
-     SIGN32 MEMMAP_cmp(SIE_MEMMAP *p, SIE_MEMMAP *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 MEMMAP_drvrd(SIE_MEMMAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 MEMMAP_drvwr(SIE_MEMMAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
+	void MEMMAP_reset(SIE_MEMMAP *p);
+	SIGN32 MEMMAP_cmp(SIE_MEMMAP *p, SIE_MEMMAP *pie, char *pfx, void *hLOG, SIGN32 mem,
+			  SIGN32 tst);
     #define MEMMAP_check(p, pie, pfx, hLOG) MEMMAP_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define MEMMAP_print(p,    pfx, hLOG) MEMMAP_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -2188,7 +2193,7 @@
 ////////////////////////////////////////////////////////////
 
 #ifdef __cplusplus
-  }
+}
 #endif
 #pragma  pack()
 

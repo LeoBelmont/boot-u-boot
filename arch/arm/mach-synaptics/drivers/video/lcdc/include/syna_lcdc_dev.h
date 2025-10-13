@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef SYNA_LCDC_DEV_H
 #define SYNA_LCDC_DEV_H
@@ -48,12 +48,14 @@
 #define DSI_CMD_MODE_POS	14
 #define DSI_WAIT_TE_POS	15
 
-#define LCDC_DSI_CMD_MODE	(1 << DSI_CMD_MODE_POS)
-#define LCDC_WAIT_FOR_TE	(1 << DSI_WAIT_TE_POS)
+#define LCDC_DSI_CMD_MODE	BIT(DSI_CMD_MODE_POS)
+#define LCDC_WAIT_FOR_TE	BIT(DSI_WAIT_TE_POS)
 
 #define CURR_VBI_BCM_BUF	(&dev->bcmbuf[dev->bufferCurSet].vbi_bcm_buf)
-#define CURR_VBI_DMA_CFGQ	(&(dev->bcmbuf[dev->bufferCurSet].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_DMA]))
-#define CURR_VBI_BCM_CFGQ	(&(dev->bcmbuf[dev->bufferCurSet].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_BCM]))
+#define CURR_VBI_DMA_CFGQ \
+	(&dev->bcmbuf[dev->bufferCurSet].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_DMA])
+#define CURR_VBI_BCM_CFGQ \
+	(&dev->bcmbuf[dev->bufferCurSet].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_BCM])
 
 #define INTR_CLEAR_WAIT_DELAY	10000
 typedef enum SYNA_LCDC_ERROR_t {

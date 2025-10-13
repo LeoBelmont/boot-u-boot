@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <div64.h>
 #include <dm.h>
@@ -89,11 +89,11 @@ static int berlin_pwm_set_config(struct udevice *dev, uint channel,
 	u32 value, duty, period;
 	u64 cycles;
 
-#if CONFIG_IS_ENABLED(CLK)
-	cycles = clk_get_rate(&priv->clk);
-#else
-	cycles = 1000000U;
-#endif
+	if (IS_ENABLED(CONFIG_CLK))
+		cycles = clk_get_rate(&priv->clk);
+	else
+		cycles = 1000000U;
+
 	cycles *= period_ns;
 	do_div(cycles, NSEC_PER_SEC);
 	if (cycles > BERLIN_PWM_MAX_TCNT) {
@@ -154,18 +154,18 @@ static int berlin_pwm_probe(struct udevice *dev)
 	struct berlin_pwm_priv *priv = dev_get_priv(dev);
 	int ret;
 
-#if CONFIG_IS_ENABLED(CLK)
-	ret = clk_get_by_index(dev, 0, &priv->clk);
-	if (ret) {
-		printf("%s: failed to get clock\n", __func__);
-		return ret;
+	if (IS_ENABLED(CONFIG_CLK)) {
+		ret = clk_get_by_index(dev, 0, &priv->clk);
+		if (ret) {
+			printf("%s: failed to get clock\n", __func__);
+			return ret;
+		}
+		ret = clk_enable(&priv->clk);
+		if (ret && ret != -ENOSYS && ret != -ENOTSUPP) {
+			printf("%s: failed to enable clock\n", __func__);
+			return ret;
+		}
 	}
-	ret = clk_enable(&priv->clk);
-	if (ret && ret != -ENOSYS && ret != -ENOTSUPP) {
-		printf("%s: failed to enable clock\n", __func__);
-		return ret;
-	}
-#endif
 	return 0;
 }
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <asm/io.h>
 #include <dm/ofnode.h>
@@ -302,24 +302,24 @@ void ephy_poweron(void)
 #ifdef CONFIG_SYNA_RESCUE_MODE
 static void setup_rescue_mode_gpio(void)
 {
-        gpio_request(GPIO_RESCUE_SET, "SET");
-        gpio_direction_output(GPIO_RESCUE_SET, 1);
+	gpio_request(GPIO_RESCUE_SET, "SET");
+	gpio_direction_output(GPIO_RESCUE_SET, 1);
 
-        gpio_request(GPIO_RESCUE_DETECT, "DETECT");
-        gpio_direction_input(GPIO_RESCUE_DETECT);
+	gpio_request(GPIO_RESCUE_DETECT, "DETECT");
+	gpio_direction_input(GPIO_RESCUE_DETECT);
 }
 
 static void rescue_trigger_detect(void)
 {
-        // Clear detect pin to 0 briefly before reading input
-        gpio_direction_output(GPIO_RESCUE_DETECT, 0);
-        udelay(10);
-        gpio_direction_input(GPIO_RESCUE_DETECT);
+	// Clear detect pin to 0 briefly before reading input
+	gpio_direction_output(GPIO_RESCUE_DETECT, 0);
+	udelay(10);
+	gpio_direction_input(GPIO_RESCUE_DETECT);
 
-        if (gpio_get_value(GPIO_RESCUE_DETECT) == 1) {
-                // Boot Rescue Image
-                run_command("run rescue_boot", 0);
-        }
+	if (gpio_get_value(GPIO_RESCUE_DETECT) == 1) {
+		// Boot Rescue Image
+		run_command("run rescue_boot", 0);
+	}
 }
 #endif
 
@@ -348,8 +348,8 @@ int board_late_init(void)
 	unsigned int result = 0;
 
 #ifdef CONFIG_SYNA_RESCUE_MODE
-        setup_rescue_mode_gpio();
-        rescue_trigger_detect();
+	setup_rescue_mode_gpio();
+	rescue_trigger_detect();
 #endif
 
 #ifdef CONFIG_SYNA_TZ_MR
@@ -358,9 +358,8 @@ int board_late_init(void)
 
 #ifdef CONFIG_SYNA_SM
 	result = syna_init_sm();
-	if (result) {
+	if (result)
 		printf("Init SM failed, ret= 0x%08x\n", result);
-	}
 #endif
 
 #ifdef CONFIG_CMD_SYNA_MTDPARTS

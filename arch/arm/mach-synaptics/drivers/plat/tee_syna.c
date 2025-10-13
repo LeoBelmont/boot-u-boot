@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <stdarg.h>
 #include <linux/compiler.h>
@@ -98,11 +98,10 @@ TEEC_Result tee_register_ta(void *pta, size_t size)
 	tmp.allocated = true;
 	tmp.operationCount = 0;
 
-	operation.paramTypes = TEEC_PARAM_TYPES(
-			TEEC_MEMREF_PARTIAL_INPUT,
-			TEEC_VALUE_INPUT,
-			TEEC_NONE,
-			TEEC_NONE);
+	operation.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_PARTIAL_INPUT,
+						TEEC_VALUE_INPUT,
+						TEEC_NONE,
+						TEEC_NONE);
 
 	operation.params[0].memref.parent = &tmp;
 	operation.params[0].memref.size = size;

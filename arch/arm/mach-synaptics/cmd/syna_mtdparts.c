@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <command.h>
 #include <linux/mtd/mtd.h>
@@ -109,14 +109,13 @@ int parse_version_table(u8 *buff)
 		vts.dev_ids[i] = dev_id;
 		vts.num++;
 		dev_id++;
-#ifdef CONFIG_EMMC_WRITE_PROTECT
 
-#else
-		if (vt_entry->part1_start_blkind != vt_entry->part2_start_blkind) {
-			/* double copy of the partition */
-			dev_id++;
+		if (!IS_ENABLED(CONFIG_EMMC_WRITE_PROTECT)) {
+			if (vt_entry->part1_start_blkind != vt_entry->part2_start_blkind) {
+				/* double copy of the partition */
+				dev_id++;
+			}
 		}
-#endif
 	}
 	return 0;
 }
@@ -131,7 +130,8 @@ static int get_partition_info(struct mtd_info *mtd)
 		goto out;
 
 	for (i = 0; i < SPI_BOOT_PART_NUM; i++) {
-		ret = mtd_read(mtd, i * SPI_BOOT_PART_SIZE + SPI_VT_OFFSET, CLEAR_VT_SIZE, &read, buff);
+		ret = mtd_read(mtd, i * SPI_BOOT_PART_SIZE + SPI_VT_OFFSET,
+			       CLEAR_VT_SIZE, &read, buff);
 		if (ret) {
 			debug("read partition info error\n");
 			continue;
@@ -248,8 +248,7 @@ static int do_syna_mtdparts(struct cmd_tbl *cmdtp, int flag, int argc, char * co
 	return syna_init_mtdparts();
 }
 
-U_BOOT_CMD(
-		syna_mtdparts, 1, 0, do_syna_mtdparts,
-		"Load MTD partition from flash",
-		NULL
+U_BOOT_CMD(syna_mtdparts, 1, 0, do_syna_mtdparts,
+	   "Load MTD partition from flash",
+	   NULL
 );

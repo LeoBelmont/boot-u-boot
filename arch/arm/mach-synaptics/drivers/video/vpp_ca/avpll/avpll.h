@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef AVPLL_H
 #define AVPLL_H
@@ -49,8 +49,8 @@ typedef struct __VPLL_CONFIG__ {
 void AVPLL_SetClockFreqForResID(int resID);
 int AVPLL_SetClockFreq(int avpllGroupId, int vco_freq_index,
 		       unsigned int target_freq, int chId);
-void AVPLL_Load_ResConfig(VPLL_CONFIG* vpllcfg);
-int AVPLL_GetClkgenparams (int freq, int *Dm, int *Dn, unsigned long long *Frac, int *Dp);
+void AVPLL_Load_ResConfig(VPLL_CONFIG *vpllcfg);
+int AVPLL_GetClkgenparams(int freq, int *Dm, int *Dn, unsigned long long *Frac, int *Dp);
 void AVPLL_SetClockGenericFreq(int src, unsigned int freq);
 
 #endif

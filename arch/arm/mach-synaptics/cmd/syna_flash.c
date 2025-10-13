@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <command.h>
 #include <flash.h>
@@ -112,10 +112,8 @@ unsigned long flash_init(void)
 
 	struct udevice *bus, *dev;
 
-	for (uclass_first_device(UCLASS_SPI, &dev);
-	     dev;
-	     uclass_next_device(&dev))
-	     ;
+	for (uclass_first_device(UCLASS_SPI, &dev); dev; uclass_next_device(&dev))
+		;
 
 	ret = uclass_get_device_by_seq(UCLASS_SPI, CONFIG_SF_DEFAULT_BUS, &bus);
 	if (ret < 0) {
@@ -147,7 +145,8 @@ void flash_print_info(flash_info_t *info)
 {
 	int i;
 
-	// printf("%s, %d sectors, 0x%x bytes per sector.\n", mv_spi.name, mv_spi.scount, mv_spi.ssize);
+	// printf("%s, %d sectors, 0x%x bytes per sector.\n",
+	//	  mv_spi.name, mv_spi.scount, mv_spi.ssize);
 	printf("  Flash ID: 0x%08lx\n\n", info->flash_id);
 	printf("  Size: %ld MB in %d Sectors\n", info->size >> 20, info->sector_count);
 	printf("  Sector Start Addresses:");
@@ -221,10 +220,8 @@ static int do_spinit(struct cmd_tbl *cmdtp, int flag, int argc, char * const arg
 
 	struct udevice *bus, *dev;
 
-	for (uclass_first_device(UCLASS_SPI, &dev);
-	     dev;
-	     uclass_next_device(&dev))
-	     ;
+	for (uclass_first_device(UCLASS_SPI, &dev); dev; uclass_next_device(&dev))
+		;
 
 	ret = uclass_get_device_by_seq(UCLASS_SPI, CONFIG_SF_DEFAULT_BUS, &bus);
 	if (ret) {
@@ -254,8 +251,7 @@ static int do_spinit(struct cmd_tbl *cmdtp, int flag, int argc, char * const arg
 	return 0;
 }
 
-U_BOOT_CMD(
-	spinit,		2,	0,	do_spinit,
-	"init marvell spi flash",
-	"	- init marvell spi flash"
+U_BOOT_CMD(spinit,		2,	0,	do_spinit,
+	   "init marvell spi flash",
+	   "	- init marvell spi flash"
 );

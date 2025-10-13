@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 ///////////////////////////////////////////////////////////////////////////////
 //! \file errcode_vpp.h
@@ -32,8 +32,8 @@
 
 #include "ErrorCode.h"
 
-#define S_VPP( code ) ( E_SUC | E_VPP_BASE | ( (code) & 0xFFFF ) )
-#define E_VPP( code ) ( E_ERR | E_VPP_BASE | ( (code) & 0xFFFF ) )
+#define S_VPP(code) (E_SUC | E_VPP_BASE | ((code) & 0xFFFF))
+#define E_VPP(code) (E_ERR | E_VPP_BASE | ((code) & 0xFFFF))
 
 #define S_VPP_OK            (S_OK)
 

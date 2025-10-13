@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifdef CONFIG_ENV_IS_IN_SPI_FLASH
 /* Environment in SPI NOR flash */
@@ -77,6 +77,6 @@
 		     "run rescue_load; run rescue_setup; run rescue_exec\0"
 #else
 #define CFG_EXTRA_ENV_SETTINGS \
-        "upgrade_available=0\0" \
-        "altbootcmd=if test ${boot_slot} = 1; then bootslot set b; bootcount reset;bootcount reset; run bootcmd; else bootslot set a; bootcount reset; bootcount reset; run bootcmd; fi\0"
+	"upgrade_available=0\0" \
+	"altbootcmd=if test ${boot_slot} = 1; then bootslot set b; bootcount reset;bootcount reset; run bootcmd; else bootslot set a; bootcount reset; bootcount reset; run bootcmd; fi\0"
 #endif

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <command.h>
 #include <vsprintf.h>
@@ -112,7 +112,8 @@ static int do_usbload(struct cmd_tbl *cmdtp, int flag, int argc, char * const ar
 
 		retry_bm--;
 	}
-	printf("usbload done, get size %d by retry %d.\n", img_size, (BM_LOAD_RERTY_INITIAL - retry_bm));
+	printf("usbload done, get size %d by retry %d.\n",
+	       img_size, (BM_LOAD_RERTY_INITIAL - retry_bm));
 
 	/* set the parameters to env */
 	env_set_hex("fileaddr", load_addr);
@@ -131,8 +132,7 @@ static char usbload_usage[] =
 
 U_BOOT_CMD(usbload, 3, 0, do_usbload, usbload_help, usbload_usage);
 
-U_BOOT_CMD(
-	bcmusboff, 1, 0, do_bcm_disable_usb,
-	"bcm disable usb device",
-	"- bcm disable usb device"
+U_BOOT_CMD(bcmusboff, 1, 0, do_bcm_disable_usb,
+	   "bcm disable usb device",
+	   "- bcm disable usb device"
 );

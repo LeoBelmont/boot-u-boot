@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <asm/io.h>
 #include "Galois_memmap.h"
@@ -187,7 +187,7 @@ static void set_ge_pad_strength(void)
 	ds0 = 0;
 	ds1 = 1;
 	ds2 = 1;
-	
+
 	//O:RGMIIB_MDC IO:RGMIIB_MDIO is used in FPGA release, 4BIT set drive to 7;
 	regMDIO_value.u32 = readl(MEMMAP_CHIP_CTRL_REG_BASE + RA_Gbl_TW2_SCLCntl);
 	regMDIO_value.uTW2_SCLCntl_DS0 = 1;
@@ -216,7 +216,9 @@ static void set_ge_pad_strength(void)
 	writel(reg_value.u32, MEMMAP_CHIP_CTRL_REG_BASE + RA_Gbl_GPIO_A1Cntl);
 
 	reg_addr = (void *)(MEMMAP_CHIP_CTRL_REG_BASE + RA_Gbl_RGMII_CLK_OUTCntl);
-	for (i = 0; i < (RA_Gbl_RGMIIRXCTLCntl - RA_Gbl_RGMII_CLK_OUTCntl) / 4 + 1; i++, reg_addr += 4) {
+	for (i = 0;
+	     i < (RA_Gbl_RGMIIRXCTLCntl - RA_Gbl_RGMII_CLK_OUTCntl) / 4 + 1;
+	     i++, reg_addr += 4) {
 		reg_value.u32 = readl(reg_addr);
 		if (i == 0) {
 			strength0 = reg_value.uRGMIITXCCntl_DS2;
@@ -292,24 +294,24 @@ static void tw_init_mdio(void)
 #ifdef CONFIG_SYNA_RESCUE_MODE
 static void setup_rescue_mode_gpio(void)
 {
-        gpio_request(GPIO_RESCUE_SET, "SET");
-        gpio_direction_output(GPIO_RESCUE_SET, 1);
+	gpio_request(GPIO_RESCUE_SET, "SET");
+	gpio_direction_output(GPIO_RESCUE_SET, 1);
 
-        gpio_request(GPIO_RESCUE_DETECT, "DETECT");
-        gpio_direction_input(GPIO_RESCUE_DETECT);
+	gpio_request(GPIO_RESCUE_DETECT, "DETECT");
+	gpio_direction_input(GPIO_RESCUE_DETECT);
 }
 
 static void rescue_trigger_detect(void)
 {
-        // Clear detect pin to 0 briefly before reading input
-        gpio_direction_output(GPIO_RESCUE_DETECT, 0);
-        udelay(10);
-        gpio_direction_input(GPIO_RESCUE_DETECT);
+	// Clear detect pin to 0 briefly before reading input
+	gpio_direction_output(GPIO_RESCUE_DETECT, 0);
+	udelay(10);
+	gpio_direction_input(GPIO_RESCUE_DETECT);
 
-        if (gpio_get_value(GPIO_RESCUE_DETECT) == 1) {
-                // Boot Rescue Image
-                run_command("run rescue_boot", 0);
-        }
+	if (gpio_get_value(GPIO_RESCUE_DETECT) == 1) {
+		// Boot Rescue Image
+		run_command("run rescue_boot", 0);
+	}
 }
 #endif
 
@@ -334,8 +336,8 @@ int board_late_init(void)
 	unsigned int result = 0;
 
 #ifdef CONFIG_SYNA_RESCUE_MODE
-        setup_rescue_mode_gpio();
-        rescue_trigger_detect();
+	setup_rescue_mode_gpio();
+	rescue_trigger_detect();
 #endif
 
 #ifdef CONFIG_SYNA_TZ_MR

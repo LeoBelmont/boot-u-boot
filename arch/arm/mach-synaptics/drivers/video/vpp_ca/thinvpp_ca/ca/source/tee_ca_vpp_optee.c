@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifdef CONFIG_FASTLOGO
 #include <dm/device.h>
@@ -163,27 +163,26 @@ int VppReset(void)
 		return -ENODEV;
 	}
 
-
 	return param.u.value.a;
 }
 
 int VppConfig(INT handle,
-		const INT *pvinport_cfg,
-		const INT *pdv_cfg,
-		const INT *pzorder_cfg,
-		const INT *pvoutport_cfg,
-		const INT *pfeature_cfg)
+	      const INT *pvinport_cfg,
+	      const INT *pdv_cfg,
+	      const INT *pzorder_cfg,
+	      const INT *pvoutport_cfg,
+	      const INT *pfeature_cfg)
 {
 	static UINT8 cfg_mem[256];
-	int plane_size = sizeof(INT32)* (MAX_NUM_PLANES_ALL);
-	int vout_size = sizeof(INT32)* (MAX_NUM_VOUTS);
-	int feature_size = sizeof(INT32)* (MAX_NUM_FEATURE_CFG);
+	int plane_size = sizeof(INT32) * (MAX_NUM_PLANES_ALL);
+	int vout_size = sizeof(INT32) * (MAX_NUM_VOUTS);
+	int feature_size = sizeof(INT32) * (MAX_NUM_FEATURE_CFG);
 
 	memcpy(&cfg_mem[0], pvinport_cfg, plane_size);
 	memcpy(&cfg_mem[plane_size], pdv_cfg, plane_size);
-	memcpy(&cfg_mem[(plane_size*2)], pzorder_cfg, plane_size);
-	memcpy(&cfg_mem[(plane_size*3)], pvoutport_cfg, vout_size);
-	memcpy(&cfg_mem[(plane_size*3)+vout_size], pfeature_cfg, feature_size);
+	memcpy(&cfg_mem[(plane_size * 2)], pzorder_cfg, plane_size);
+	memcpy(&cfg_mem[(plane_size * 3)], pvoutport_cfg, vout_size);
+	memcpy(&cfg_mem[(plane_size * 3) + vout_size], pfeature_cfg, feature_size);
 
 	return VppInvokePassShm_Helper(&cfg_mem[0], VPP_OBJCONFIG, sizeof(cfg_mem));
 }
@@ -284,7 +283,6 @@ int VppSetHdmiTxControl(int Enable)
 		return -ENODEV;
 	}
 
-
 	return param[1].u.value.a;
 }
 
@@ -306,7 +304,7 @@ int VppOpenDispWin(int PlaneId, int WinX, int WinY, int WinW, int WinH,
 	param[2].u.value.b = BgClr;
 	param[3].attr = TEE_PARAM_ATTR_TYPE_VALUE_INOUT;
 	param[3].u.value.a = Alpha;
-	param[3].u.value.a |= (GlobalAlpha<<16);
+	param[3].u.value.a |= (GlobalAlpha << 16);
 	param[3].u.value.b = 0xdeadbeef;
 
 	ret = InvokeCommandHelper(VPP_OPENDISPWIN, param, 4);
@@ -368,7 +366,7 @@ int VppChangeDispWin(int PlaneId, int WinX, int WinY, int WinW, int WinH,
 	param[2].u.value.b = BgClr;
 	param[3].attr = TEE_PARAM_ATTR_TYPE_VALUE_INOUT;
 	param[3].u.value.a = Alpha;
-	param[3].u.value.a |= (GlobalAlpha<<16);
+	param[3].u.value.a |= (GlobalAlpha << 16);
 	param[3].u.value.b = 0xDEADBEEF;
 
 	ret = InvokeCommandHelper(VPP_CHANGEDISPWIN, param, 4);
@@ -497,8 +495,8 @@ int VppDestroy(void)
 }
 
 int VppPassVbufInfo(unsigned int *Vbuf, unsigned int VbufSize,
-		unsigned int *Clut, unsigned int ClutSize,
-		int PlaneID, int ClutValid, VPP_SHM_ID ShmID)
+		    unsigned int *Clut, unsigned int ClutSize,
+		    int PlaneID, int ClutValid, VPP_SHM_ID ShmID)
 {
 	struct tee_param param[4];
 	struct tee_shm *VbufShm;
@@ -541,7 +539,7 @@ int VppPassVbufInfoPar(unsigned int *Vbuf, unsigned int VbufSize,
 		       unsigned int *Clut, unsigned int ClutSize,
 		       int PlaneID, int ClutValid, VPP_SHM_ID ShmID)
 {
-	VBUF_INFO *pVBufInfo = (VBUF_INFO*) Vbuf;
+	VBUF_INFO *pVBufInfo = (VBUF_INFO *) Vbuf;
 	struct tee_param param[4];
 	int i, flag;
 	int ret;
@@ -554,9 +552,9 @@ int VppPassVbufInfoPar(unsigned int *Vbuf, unsigned int VbufSize,
 
 	for (i = 0; i < 5; i++) {
 		flag = 0;
-		switch(i) {
+		switch (i) {
 		case 0:
-			param[1].u.value.a = (unsigned int)((intptr_t)pVBufInfo->m_pbuf_start);;
+			param[1].u.value.a = (unsigned int)((intptr_t)pVBufInfo->m_pbuf_start);
 			param[1].u.value.b = pVBufInfo->m_bytes_per_pixel;
 			param[2].u.value.a = pVBufInfo->m_bits_per_pixel;
 			param[2].u.value.b = pVBufInfo->m_srcfmt;
@@ -597,7 +595,7 @@ int VppPassVbufInfoPar(unsigned int *Vbuf, unsigned int VbufSize,
 		}
 
 		if (flag) {
-			param[0].u.value.a = (ShmID | (PlaneID<<8));
+			param[0].u.value.a = (ShmID | (PlaneID << 8));
 			param[0].u.value.b = i;
 			param[3].u.value.b = 0xdeadbeef;
 			ret = InvokeCommandHelper(VPP_PASSPAR, param, 4);
@@ -624,7 +622,7 @@ INT VppSetFormat(INT handle, INT cpcbID, VPP_DISP_OUT_PARAMS *pDispParams)
 	memcpy(&aDispParamsData[0], &cpcbID, sizeof(INT));
 	memcpy(&aDispParamsData[1], pDispParams, sizeof(VPP_DISP_OUT_PARAMS));
 
-	ret = tee_shm_register(tee_dev, (void*)&aDispParamsData,
+	ret = tee_shm_register(tee_dev, (void *)&aDispParamsData,
 			       VPP_SETFORMAT_SIZE, 0, &VbufShm);
 	if (ret) {
 		debug("Shm register failed\n");
@@ -665,7 +663,7 @@ int VppPassShm(unsigned int *VirtAddr, VPP_SHM_ID AddrId, unsigned int Size)
 	arg.func = VPP_PASSSHM;
 	arg.session = session;
 
-	ret = tee_shm_register(tee_dev, (void*)VirtAddr, Size, 0, &VbufShm);
+	ret = tee_shm_register(tee_dev, (void *)VirtAddr, Size, 0, &VbufShm);
 	if (ret) {
 		printf("Shm register failed\n");
 		return ret;
@@ -704,7 +702,7 @@ int VppInvokePassShm_Helper(void *pBuffer, VPP_SHM_ID shmCmdId, UINT32 sBufferSi
 	arg.func = VPP_PASSSHM;
 	arg.session = session;
 
-	ret = tee_shm_register(tee_dev, (void*)pBuffer, sBufferSize, 0, &VbufShm);
+	ret = tee_shm_register(tee_dev, (void *)pBuffer, sBufferSize, 0, &VbufShm);
 	if (ret) {
 		printf("Shm register failed\n");
 		return ret;

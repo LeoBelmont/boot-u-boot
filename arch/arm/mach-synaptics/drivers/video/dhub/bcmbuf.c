@@ -1,6 +1,6 @@
-/// SPDX-License-Identifier: GPL-2.0+
+// SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <linux/types.h>
 #include "bcmbuf.h"
@@ -73,7 +73,6 @@ int bcmbuf_destroy(BCMBUF *pbcmbuf)
  ****************************************************************/
 int bcmbuf_reset(BCMBUF *pbcmbuf)
 {
-
 	pbcmbuf->tail = pbcmbuf->head + pbcmbuf->size;
 
 	/*set pointers to the head*/
@@ -93,8 +92,6 @@ void bcmbuf_select(BCMBUF *pbcmbuf, int subID)
 	/* reset read/write pointer of the buffer */
 	pbcmbuf->writer = pbcmbuf->head;
 	pbcmbuf->subID = subID;
-
-	return;
 }
 
 /*********************************************************
@@ -112,7 +109,7 @@ int bcmbuf_write(BCMBUF *pbcmbuf, unsigned int address, unsigned int value)
 	/*if not enough space for storing another 8 bytes, wrap around happens*/
 	end = pbcmbuf->tail;
 
-	if (pbcmbuf->writer == end){
+	if (pbcmbuf->writer == end) {
 		/*the buffer is full, no space for wrap around*/
 		printf("LCDC_BCMBUF_Write failed (0x%x 0x%x)\r\n", address, value);
 		return BCMBUF_EBCMBUFFULL;
@@ -120,9 +117,9 @@ int bcmbuf_write(BCMBUF *pbcmbuf, unsigned int address, unsigned int value)
 
 	/*save the data to the buffer*/
 	*pbcmbuf->writer = value;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	*pbcmbuf->writer = address;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	return BCMBUF_OK;
 }
 
@@ -131,10 +128,10 @@ int bcmbuf_write(BCMBUF *pbcmbuf, unsigned int address, unsigned int value)
  * PARAMS: *buf - pointer to the buffer descriptor
  ********************************************************************/
 void bcmbuf_hardwaretrans(HDL_dhub2d *pDhubHandle,
-						  int dhubID,
-						  unsigned int QID,
-						  BCMBUF *pbcmbuf,
-						  int block)
+			  int dhubID,
+			  unsigned int QID,
+			  BCMBUF *pbcmbuf,
+			  int block)
 {
 	unsigned int *start;
 	int size;
@@ -154,13 +151,11 @@ void bcmbuf_hardwaretrans(HDL_dhub2d *pDhubHandle,
 	start = (pbcmbuf->phy_addr + shm_offset);
 
 	bcmbuf_raw_hardwaretrans(pDhubHandle,
-							dhubID,
-							QID,
-							start,
-							size,
-							block);
-
-	return;
+				 dhubID,
+				 QID,
+				 start,
+				 size,
+				 block);
 }
 
 /*********************************************************************
@@ -170,10 +165,10 @@ void bcmbuf_hardwaretrans(HDL_dhub2d *pDhubHandle,
  * NOTE: this API is only called from VBI/VDE ISR.
  ********************************************************************/
 int bcmbuf_to_CFGQ(HDL_dhub2d *pDhubHandle,
-				   int dhubID,
-				   unsigned int QID,
-				   BCMBUF *pbcmbuf,
-				   DHUB_CFGQ *cfgQ)
+		   int dhubID,
+		   unsigned int QID,
+		   BCMBUF *pbcmbuf,
+		   DHUB_CFGQ *cfgQ)
 {
 	unsigned int *start, *phy_start;
 	int size;
@@ -188,12 +183,13 @@ int bcmbuf_to_CFGQ(HDL_dhub2d *pDhubHandle,
 
 	flush_cache(phy_start, size);
 
-	dhub_channel_generate_cmd(&(pDhubHandle->dhub), dhubID,
-							(int)(long long)phy_start,
-							(int)size, 0, 0, 0, 1,
-							bcm_sched_cmd);
+	dhub_channel_generate_cmd(&pDhubHandle->dhub, dhubID,
+				  (int)(long long)phy_start,
+				  (int)size, 0, 0, 0, 1,
+				  bcm_sched_cmd);
 
-	while (!BCM_SCHED_PushCmd(QID, bcm_sched_cmd, cfgQ->addr + cfgQ->len*2));
+	while (!BCM_SCHED_PushCmd(QID, bcm_sched_cmd, cfgQ->addr + cfgQ->len * 2))
+		;
 	cfgQ->len += 2;
 
 	return BCMBUF_OK;
@@ -206,22 +202,23 @@ int bcmbuf_to_CFGQ(HDL_dhub2d *pDhubHandle,
  * NOTE: this API is only called from VBI/VDE ISR.
  ********************************************************************/
 void bcmbuf_CFGQ_To_CFGQ(HDL_dhub2d *pDhubHandle,
-					   int dhubID,
-					   unsigned int QID,
-					   DHUB_CFGQ *src_cfgQ,
-					   DHUB_CFGQ *cfgQ)
+			 int dhubID,
+			 unsigned int QID,
+			 DHUB_CFGQ *src_cfgQ,
+			 DHUB_CFGQ *cfgQ)
 {
 	unsigned int bcm_sched_cmd[2];
 
 	if (src_cfgQ->len <= 0)
-		return ;
+		return;
 
-	dhub_channel_generate_cmd(&(pDhubHandle->dhub), dhubID,
-							(int)(long long)src_cfgQ->phy_addr,
-							(int)src_cfgQ->len*8, 0, 0, 0, 1,
-							bcm_sched_cmd);
+	dhub_channel_generate_cmd(&pDhubHandle->dhub, dhubID,
+				  (int)(long long)src_cfgQ->phy_addr,
+				  (int)src_cfgQ->len * 8, 0, 0, 0, 1,
+				  bcm_sched_cmd);
 
-	while (!BCM_SCHED_PushCmd(QID, bcm_sched_cmd, cfgQ->addr + cfgQ->len*2));
+	while (!BCM_SCHED_PushCmd(QID, bcm_sched_cmd, cfgQ->addr + cfgQ->len * 2))
+		;
 	cfgQ->len += 2;
 }
 
@@ -233,42 +230,43 @@ void bcmbuf_CFGQ_To_CFGQ(HDL_dhub2d *pDhubHandle,
  * NOTE: this API is only called from VBI/VDE ISR.
  *******************************************************************************/
 int bcmbuf_DHUB_CFGQ_Commit(HDL_dhub2d *pDhubHandle,
-							int dhubID,
-							unsigned int sched_qid,
-							DHUB_CFGQ *cfgQ,
-							int cpcbID,
-							int intrType)
+			    int dhubID,
+			    unsigned int sched_qid,
+			    DHUB_CFGQ *cfgQ,
+			    int cpcbID,
+			    int intrType)
 {
 	unsigned int bcm_sched_cmd[2];
 
 	if (cfgQ->len <= 0)
 		return BCMBUF_EBADPARAM;
 
-	dhub_channel_generate_cmd(&(pDhubHandle->dhub), dhubID,
-							(int)(long long)cfgQ->phy_addr,
-							(int)cfgQ->len*8, 0, 0, 0, 1,
-							bcm_sched_cmd);
+	dhub_channel_generate_cmd(&pDhubHandle->dhub, dhubID,
+				  (int)(long long)cfgQ->phy_addr,
+				  (int)cfgQ->len * 8, 0, 0, 0, 1,
+				  bcm_sched_cmd);
 
-	while (!BCM_SCHED_PushCmd(sched_qid, bcm_sched_cmd, NULL));
+	while (!BCM_SCHED_PushCmd(sched_qid, bcm_sched_cmd, NULL))
+		;
 
 	return BCMBUF_OK;
 }
 
 void bcmbuf_cfgq_hardwaretrans(HDL_dhub2d *pDhubHandle,
-								int dhubID,
-								unsigned int QID,
-								DHUB_CFGQ *cfgQ,
-								int block)
+			       int dhubID,
+			       unsigned int QID,
+			       DHUB_CFGQ *cfgQ,
+			       int block)
 {
 	if (cfgQ->len <= 0)
 		return;
 
 	bcmbuf_raw_hardwaretrans(pDhubHandle,
-							dhubID,
-							QID,
-							cfgQ->phy_addr,
-							(cfgQ->len * 8),
-							block);
+				 dhubID,
+				 QID,
+				 cfgQ->phy_addr,
+				 (cfgQ->len * 8),
+				 block);
 }
 
 int bcmbuf_DHUB_AutoPush(unsigned int sched_qid, int intrType, int enable)
@@ -277,11 +275,11 @@ int bcmbuf_DHUB_AutoPush(unsigned int sched_qid, int intrType, int enable)
 }
 
 void bcmbuf_raw_hardwaretrans(HDL_dhub2d *pDhubHandle,
-							int dhubID,
-							unsigned int QID,
-							void *start,
-							size_t size,
-							int block)
+			      int dhubID,
+			      unsigned int QID,
+			      void *start,
+			      size_t size,
+			      int block)
 {
 	HDL_semaphore *pSemHandle;
 	int status;
@@ -291,7 +289,7 @@ void bcmbuf_raw_hardwaretrans(HDL_dhub2d *pDhubHandle,
 		return;
 
 	/* start BCM engine */
-	pSemHandle = dhub_semaphore(&(pDhubHandle->dhub));
+	pSemHandle = dhub_semaphore(&pDhubHandle->dhub);
 	if (block) {
 		/* clear possible BCM previous interrupt */
 		status = semaphore_chk_full(pSemHandle, dhubID);
@@ -309,19 +307,19 @@ void bcmbuf_raw_hardwaretrans(HDL_dhub2d *pDhubHandle,
 		status = semaphore_chk_full(pSemHandle, dhubID);
 	}
 
-	dhub_channel_generate_cmd(&(pDhubHandle->dhub), dhubID,
-							(int)(long long)start,
-							(int)size, 0, 0, 0, 1,
-							bcm_sched_cmd);
-	while( !BCM_SCHED_PushCmd(QID, bcm_sched_cmd, NULL));
+	dhub_channel_generate_cmd(&pDhubHandle->dhub, dhubID,
+				  (int)(long long)start,
+				  (int)size, 0, 0, 0, 1,
+				  bcm_sched_cmd);
+	while (!BCM_SCHED_PushCmd(QID, bcm_sched_cmd, NULL))
+		;
 
 	if (block) {
 		/* check BCM interrupt */
-		pSemHandle = dhub_semaphore(&(pDhubHandle->dhub));
+		pSemHandle = dhub_semaphore(&pDhubHandle->dhub);
 		status = semaphore_chk_full(pSemHandle, dhubID);
-		while (!status) {
+		while (!status)
 			status = semaphore_chk_full(pSemHandle, dhubID);
-		}
 
 		/* clear BCM interrupt */
 		semaphore_pop(pSemHandle, dhubID, 1);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 /*
  * (C) Copyright 2016
@@ -226,11 +226,10 @@ int get_mem_from_fdt(void)
 
 int dram_init(void)
 {
-#if defined(CONFIG_SYNA_FASTBOOT) || defined(CONFIG_SYNA_SUBOOT)
-	get_mem_from_tzk();
-#else
-	get_mem_from_fdt();
-#endif
+	if (IS_ENABLED(CONFIG_SYNA_FASTBOOT) || IS_ENABLED(CONFIG_SYNA_SUBOOT))
+		get_mem_from_tzk();
+	else
+		get_mem_from_fdt();
 
 	debug("%s: Initial DRAM size %llx\n", __func__, (u64)gd->ram_size);
 

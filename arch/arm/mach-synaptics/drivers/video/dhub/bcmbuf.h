@@ -1,6 +1,6 @@
-/// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef __BCMBUF__
 #define __BCMBUF__
@@ -35,7 +35,7 @@ typedef enum {
 	BCMBUF_ENOMEM       = 0x0002,
 	BCMBUF_EBADCALL     = 0x0003,
 	BCMBUF_EBCMBUFFULL  = 0x0004,
-}BCMBUF_ERROR;
+} BCMBUF_ERROR;
 
 typedef struct DHUB_CFGQ_T {
 	void *handle;
@@ -50,8 +50,9 @@ typedef struct DHUB_CFGQ_T {
  * - Sub-buffers
  */
 typedef struct BCMBUF_T {
-	/*Note: Ensure the following order matches the order of hal_dhub.c:VIP_BCMBUF
-	 * 'writer' is updated inside hal_dhub.c:clear functions */
+	/* Note: Ensure the following order matches the order of hal_dhub.c:VIP_BCMBUF
+	 * 'writer' is updated inside hal_dhub.c:clear functions
+	 */
 	unsigned int *head;       // head of total BCM buffer
 	unsigned int *tail;       // tail of the buffer, used for checking wrap around
 	unsigned int *writer;     // write pointer of queue, update with shadow_tail with commit
@@ -112,23 +113,23 @@ int bcmbuf_write(BCMBUF *pbcmbuf, unsigned int address, unsigned int value);
  * NOTE: this API is only called from VBI/VDE ISR.
  *******************************************************************************/
 int bcmbuf_DHUB_CFGQ_Commit(HDL_dhub2d *pDhubHandle,
-							int dhubID,
-							unsigned int sched_qid,
-							DHUB_CFGQ *cfgQ,
-							int cpcbID,
-							int intrType);
+			    int dhubID,
+			    unsigned int sched_qid,
+			    DHUB_CFGQ *cfgQ,
+			    int cpcbID,
+			    int intrType);
 
 /*********************************************************************
- * FUNCTION: send a BCM BUF info info to a BCM cfgQ
+ * FUNCTION: send a BCM BUF info to a BCM cfgQ
  * PARAMS: *pbcmbuf - pointer to the BCMBUF
  *		 *cfgQ - target BCM cfgQ
  * NOTE: this API is only called from VBI/VDE ISR.
  ********************************************************************/
 int bcmbuf_to_CFGQ(HDL_dhub2d *pDhubHandle,
-				   int dhubID,
-				   unsigned int QID,
-				   BCMBUF *pbcmbuf,
-				   DHUB_CFGQ *cfgQ);
+		   int dhubID,
+		   unsigned int QID,
+		   BCMBUF *pbcmbuf,
+		   DHUB_CFGQ *cfgQ);
 
 /*********************************************************************
  * FUNCTION: send a BCM cfgQ info to a BCM cfgQ
@@ -137,10 +138,10 @@ int bcmbuf_to_CFGQ(HDL_dhub2d *pDhubHandle,
  * NOTE: this API is only called from VBI/VDE ISR.
  ********************************************************************/
 void bcmbuf_CFGQ_To_CFGQ(HDL_dhub2d *pDhubHandle,
-					   int dhubID,
-					   unsigned int QID,
-					   DHUB_CFGQ *src_cfgQ,
-					   DHUB_CFGQ *cfgQ);
+			 int dhubID,
+			 unsigned int QID,
+			 DHUB_CFGQ *src_cfgQ,
+			 DHUB_CFGQ *cfgQ);
 
 /*********************************************************************
  * FUNCTION: do the hardware transmission
@@ -148,17 +149,17 @@ void bcmbuf_CFGQ_To_CFGQ(HDL_dhub2d *pDhubHandle,
  *				 1: return after waiting for transaction finishing
  ********************************************************************/
 void bcmbuf_cfgq_hardwaretrans(HDL_dhub2d *pDhubHandle,
-						  int dhubID,
-						  unsigned int QID,
-						  DHUB_CFGQ *cfgQ,
-						  int block);
+			       int dhubID,
+			       unsigned int QID,
+			       DHUB_CFGQ *cfgQ,
+			       int block);
 
 int bcmbuf_DHUB_AutoPush(unsigned int sched_qid, int intrType, int enable);
 
 void bcmbuf_raw_hardwaretrans(HDL_dhub2d *pDhubHandle,
-							int dhubID,
-							unsigned int QID,
-							void *start,
-							size_t size,
-							int block);
+			      int dhubID,
+			      unsigned int QID,
+			      void *start,
+			      size_t size,
+			      int block);
 #endif
