@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <linux/types.h>
 #include <malloc.h>
@@ -55,14 +55,14 @@ static void syna_lcdc_hw_param_update(struct syna_lcdc_dev *dev)
 {
 	syna_lcdc_writel(dev, LCDC_REG_PARUP, 1);
 
+	/*start sending display command & data*/
 	if (dev->panel->intf_type & SYNA_LCDC_TYPE_DPI_MCU)
-		syna_lcdc_writel(dev, LCDC_REG_CDISPUPR, 1); /*start sending display command & data*/
+		syna_lcdc_writel(dev, LCDC_REG_CDISPUPR, 1);
 
+	/* send single new frame */
 	if (dev->panel->intf_type & SYNA_LCDC_INTF_TYPE_DSI)
-		/* send single new frame */
 		syna_lcdc_writel(dev, LCDC_REG_LCDCCR, 1);
 }
-
 
 static void syna_lcdc_wrap_interrupt_enable(void)
 {
@@ -139,114 +139,107 @@ static void syna_lcdc_set_hw_init(struct syna_lcdc_dev *dev)
 		syna_lcdc_writel(dev, LCDC_REG_LCDCCR, 2); /* FIF0 Reset */
 
 	/* clear all pending interrupts (may exist from u-boot) */
-	syna_lcdc_writel(dev, LCDC_REG_INTSR,syna_lcdc_readl(dev, LCDC_REG_INTSR)); //clear all interrupts
+	syna_lcdc_writel(dev, LCDC_REG_INTSR, syna_lcdc_readl(dev, LCDC_REG_INTSR));
 
 	syna_lcdc_writel(dev, LCDC_REG_INTER, INT_FRAME_DONE);
 
 	if (panel->intf_type & SYNA_LCDC_TYPE_DPI_MCU) {
 		dispir = 4; //CPU type LCD
 		gpsel = 0;
-		if ((panel->bits_per_pixel != 8) && (panel->bits_per_pixel != 9)) {
+		if (panel->bits_per_pixel != 8 && panel->bits_per_pixel != 9)
 			dispir |= 0x20; //CPU type MODE16
-		}
 
 		lcdc_ctrl.uCTRL5_full_level_14_en = 0;
 		if (panel->bits_per_pixel == 9) {
 			lcdc_ctrl.uCTRL5_cpu_mode18 = 1; //cpu_mode18
-		}
-		else if (panel->bits_per_pixel == 16) {
+		} else if (panel->bits_per_pixel == 16) {
 			switch (panel->mode) {
-				case SYNA_LCDC_MODE_3:
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					lcdc_ctrl.uCTRL5_cpu_mode16as24 = 1;
-					break;
-				case SYNA_LCDC_MODE_2:
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					lcdc_ctrl.uCTRL5_cpu_mode16as18 = 1;//cpu_mux_exp_en | cpu_mode16as18
-					break;
-				case SYNA_LCDC_MODE_1:
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					lcdc_ctrl.uCTRL5_cpu_cmd_shift1 = 1;//cpu_mux_exp_en | cpu_cmd_shift1
-					break;
-				case SYNA_LCDC_MODE_0:
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1; //cpu_mux_exp_en
-				default:
-					break;
+			case SYNA_LCDC_MODE_3:
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
+				lcdc_ctrl.uCTRL5_cpu_mode16as24 = 1;
+				break;
+			case SYNA_LCDC_MODE_2:
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1; //cpu_mux_exp_en
+				lcdc_ctrl.uCTRL5_cpu_mode16as18 = 1; //cpu_mode16as18
+				break;
+			case SYNA_LCDC_MODE_1:
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1; //cpu_mux_exp_en
+				lcdc_ctrl.uCTRL5_cpu_cmd_shift1 = 1; //cpu_cmd_shift1
+				break;
+			case SYNA_LCDC_MODE_0:
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1; //cpu_mux_exp_en
+			default:
+				break;
+			}
+		} else if (panel->bits_per_pixel == 18) {
+			switch (panel->mode) {
+			case SYNA_LCDC_MODE_1:
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
+				lcdc_ctrl.uCTRL5_cpu_cmd_shift1 = 1;
+				lcdc_ctrl.uCTRL5_cpu_mode18 = 1;
+				break;
+			case SYNA_LCDC_MODE_0:
+			default:
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
+				lcdc_ctrl.uCTRL5_cpu_mode18 = 1;
+				break;
+			}
+		} else if (panel->bits_per_pixel == 24) {
+			switch (panel->mode) {
+			case SYNA_LCDC_MODE_1:
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
+				lcdc_ctrl.uCTRL5_cpu_cmd_shift1 = 1;
+				break;
+			case SYNA_LCDC_MODE_0:
+			default:
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
+				lcdc_ctrl.uCTRL5_cpu_mode18 = 1;
+				break;
 			}
 		}
-		else if (panel->bits_per_pixel == 18) {
-			switch (panel->mode) {
-				case SYNA_LCDC_MODE_1:
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					lcdc_ctrl.uCTRL5_cpu_cmd_shift1 = 1;
-					lcdc_ctrl.uCTRL5_cpu_mode18 = 1;
-					break;
-				case SYNA_LCDC_MODE_0:
-				default:
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					lcdc_ctrl.uCTRL5_cpu_mode18 = 1;
-					break;
-			}
-		}
-		else if (panel->bits_per_pixel == 24) {
-			switch (panel->mode) {
-				case SYNA_LCDC_MODE_1:
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					lcdc_ctrl.uCTRL5_cpu_cmd_shift1 = 1;
-					break;
-				case SYNA_LCDC_MODE_0:
-				default:
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					lcdc_ctrl.uCTRL5_cpu_mode18 = 1;
-					break;
-			}
-		}
-	}
-	else if (panel->intf_type & SYNA_LCDC_TYPE_DSI_CMD)
+	} else if (panel->intf_type & SYNA_LCDC_TYPE_DSI_CMD) {
 		dispir = LCDC_DSI_CMD_MODE;
-	else {
+	} else {
 		if (panel->bits_per_pixel == 24) {
 			dispir = 1;
 			gpsel = 0;
-		}
-		else if (panel->bits_per_pixel == 18) {
+		} else if (panel->bits_per_pixel == 18) {
 			switch (panel->mode) {
-				case SYNA_LCDC_MODE_3:
-					gpsel = (1 << 1); //GPMUX18B
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					break;
-				case SYNA_LCDC_MODE_2:
-					gpsel = (1 << 4); //LBPPM
-					break;
-				case SYNA_LCDC_MODE_1:
-					gpsel = (1 << 6)| (1 << 4); //ROUND666 | LBPPM
-					break;
-				 case SYNA_LCDC_MODE_0:
-				default:
-					gpsel = 0;
-					break;
+			case SYNA_LCDC_MODE_3:
+				gpsel = (1 << 1); //GPMUX18B
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
+				break;
+			case SYNA_LCDC_MODE_2:
+				gpsel = (1 << 4); //LBPPM
+				break;
+			case SYNA_LCDC_MODE_1:
+				gpsel = (1 << 6) | (1 << 4); //ROUND666 | LBPPM
+				break;
+			case SYNA_LCDC_MODE_0:
+			default:
+				gpsel = 0;
+				break;
 			}
-		}
-		else if (panel->bits_per_pixel == 16) {
+		} else if (panel->bits_per_pixel == 16) {
 			switch (panel->mode) {
-				case SYNA_LCDC_MODE_3:
-					gpsel = (1 << 2); //GPMUX16B
-					lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
-					break;
-				case SYNA_LCDC_MODE_2:
-					//LBPPM | ROUND565
-					gpsel = (1 << 4) | (1 << 5);
-					break;
-				case SYNA_LCDC_MODE_1:
-					gpsel = 0;
-					lcdc_ctrl.uCTRL5_b16as18 = 1; //b16as18
-					break;
-				case SYNA_LCDC_MODE_0:
-				default:
-					gpsel = 0;
-					//contiguous16
-					lcdc_ctrl.uCTRL5_contiguous16 = 1;
-					break;
+			case SYNA_LCDC_MODE_3:
+				gpsel = (1 << 2); //GPMUX16B
+				lcdc_ctrl.uCTRL5_cpu_mux_exp_en = 1;
+				break;
+			case SYNA_LCDC_MODE_2:
+				//LBPPM | ROUND565
+				gpsel = (1 << 4) | (1 << 5);
+				break;
+			case SYNA_LCDC_MODE_1:
+				gpsel = 0;
+				lcdc_ctrl.uCTRL5_b16as18 = 1; //b16as18
+				break;
+			case SYNA_LCDC_MODE_0:
+			default:
+				gpsel = 0;
+				//contiguous16
+				lcdc_ctrl.uCTRL5_contiguous16 = 1;
+				break;
 			}
 		}
 	}
@@ -264,7 +257,6 @@ static void syna_lcdc_set_hw_init(struct syna_lcdc_dev *dev)
 static void syna_lcdc_config_tg(struct syna_lcdc_dev *dev)
 {
 	SYNA_LCDC_PANEL *panel = dev->panel;
-
 
 	syna_lcdc_writel(dev, LCDC_REG_LCDCCR, 0);
 	syna_lcdc_writel(dev, LCDC_REG_DISPCR, 0);
@@ -328,14 +320,14 @@ static void syna_lcdc_config_tg(struct syna_lcdc_dev *dev)
 	syna_lcdc_writel(dev, LCDC_REG_LCDCCR, 1);
 }
 
-static struct syna_lcdc_dev *syna_lcdc_create(int num, SYNA_LCDC_PANEL *panel) {
-
+static struct syna_lcdc_dev *syna_lcdc_create(int num, SYNA_LCDC_PANEL *panel)
+{
 	struct syna_lcdc_dev *dev;
 
 	if (!panel)
 		return NULL;
 
-	dev = (struct syna_lcdc_dev *) malloc(sizeof(struct syna_lcdc_dev));
+	dev = (struct syna_lcdc_dev *)malloc(sizeof(struct syna_lcdc_dev));
 	if (!dev)
 		return NULL;
 
@@ -348,7 +340,7 @@ static struct syna_lcdc_dev *syna_lcdc_create(int num, SYNA_LCDC_PANEL *panel) {
 	//Save panel device pointer
 	dev->panel = panel;
 
-	if (SYNA_LCDC_OK != syna_lcdc_dlr_create(dev, num))
+	if (syna_lcdc_dlr_create(dev, num) != SYNA_LCDC_OK)
 		return NULL;
 
 	return dev;
@@ -420,9 +412,8 @@ void syna_lcdc_dev_deinit(void)
 {
 	int i;
 
-	for (i = 0; i < SYNA_LCDC_MAX; i++) {
+	for (i = 0; i < SYNA_LCDC_MAX; i++)
 		syna_lcdc_destroy(i);
-	}
 }
 
 static int syna_lcdc_dev_init(void)
@@ -431,24 +422,28 @@ static int syna_lcdc_dev_init(void)
 	SYNA_LCDC_PANEL *syna_panel_config;
 
 	/*FIXME: configure based on resolution configuration*/
-	GA_REG_WORD32_WRITE(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_VPLL0_WRAP+RA_VPLL_WRAP_VPLL_CTRL, 0x820);
-	GA_REG_WORD32_WRITE(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_VPLL1_WRAP + RA_VPLL_WRAP_VPLL_CTRL, 0x820);
-	GA_REG_WORD32_WRITE(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_AVPLLA_CLK_EN, 0x4F);
-	GA_REG_WORD32_WRITE(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_LCDC2_CTRL, 0x39);
+	GA_REG_WORD32_WRITE(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE +
+		RA_avioGbl_VPLL0_WRAP + RA_VPLL_WRAP_VPLL_CTRL, 0x820);
+	GA_REG_WORD32_WRITE(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE +
+		RA_avioGbl_VPLL1_WRAP + RA_VPLL_WRAP_VPLL_CTRL,	0x820);
+	GA_REG_WORD32_WRITE(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE +
+		RA_avioGbl_AVPLLA_CLK_EN, 0x4F);
+	GA_REG_WORD32_WRITE(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE +
+		RA_avioGbl_LCDC2_CTRL, 0x39);
 
 	syna_lcdc_wrap_lcdcclk_enable();
 	syna_lcdc_wrap_clkgating_disable();
 	syna_lcdc_wrap_interrupt_enable();
 
 	for (i = 0; i < SYNA_LCDC_MAX; i++) {
-		syna_panel_config = (SYNA_LCDC_PANEL *) malloc(sizeof(struct syna_lcdc_dev));
-		if (syna_panel_config == NULL) {
+		syna_panel_config = (SYNA_LCDC_PANEL *)malloc(sizeof(struct syna_lcdc_dev));
+		if (!syna_panel_config) {
 			printf("failed to alloc panel mem lcdc\n");
 			return SYNA_LCDC_EBADPARAM;
 		}
 
 		syna_lcdc[i] = syna_lcdc_create(i, syna_panel_config);
-		if (syna_lcdc[i] == NULL) {
+		if (!syna_lcdc[i]) {
 			printf("failed to create lcdc\n");
 			if (i == 1)
 				syna_lcdc_destroy(0);
@@ -482,10 +477,9 @@ void syna_lcdc_clear_disable_interrupts(void)
 			};
 
 			GA_REG_WORD32_WRITE(syna_lcdc[i]->core_addr + LCDC_REG_INTSR,
-							syna_lcdc_readl(syna_lcdc[i], LCDC_REG_INTSR));
+					    syna_lcdc_readl(syna_lcdc[i], LCDC_REG_INTSR));
 
 			GA_REG_WORD32_WRITE(syna_lcdc[i]->core_addr + LCDC_REG_INTER, 0);
 		}
 	}
-	return;
 }

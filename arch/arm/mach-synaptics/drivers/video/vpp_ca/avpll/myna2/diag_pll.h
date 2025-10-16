@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,10 +20,10 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
-#ifndef  __DIAG_PLL_H__
-#define  __DIAG_PLL_H__
+#ifndef __DIAG_PLL_H__
+#define __DIAG_PLL_H__
 
 #include <linux/types.h>
 #include <asm/io.h>
@@ -35,18 +35,24 @@
 #include "avio_memmap.h"
 
 #ifndef BFM_HOST_Bus_Write32
-#define BFM_HOST_Bus_Write32(offset, val)	((*(volatile unsigned int*)(offset))=val)
+#define BFM_HOST_Bus_Write32(offset, val) \
+	((*(volatile unsigned int *)(offset)) = val)
 #endif
 
 #ifndef BFM_HOST_Bus_Read32
-#define BFM_HOST_Bus_Read32(offset, holder)	((*(volatile unsigned int*)(holder))=(*(volatile unsigned int*)(offset)))
+#define BFM_HOST_Bus_Read32(offset, holder) \
+	((*(volatile unsigned int *)(holder)) = (*(volatile unsigned int *)(offset)))
 #endif
 
-#define DIAG_ASSERT(cond)       {if (!(cond)) {     \
-                                    printf("Assert fail, condition:%s, file:%s, line:%d\n", #cond, __FILE__, __LINE__); \
-                                    while(1); \
-                                 }}
-
+#define DIAG_ASSERT(cond)							\
+	do {									\
+		if (!(cond)) {                                                  \
+			printf("Assert fail, condition:%s, file:%s, line:%d\n", \
+			       #cond, __FILE__, __LINE__);                      \
+			while (1)						\
+				;                                               \
+		}								\
+	} while (0)
 
 #define DOWN            1
 #define UP              0
@@ -79,80 +85,74 @@
 #define M6		6
 #define FREF            25
 
-#define VPLLWRAP0BASE_ADDR    	(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_VPLL0_WRAP)
-#define VPLLWRAP1BASE_ADDR    	(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_VPLL1_WRAP)
-#define APLLWRAP0BASE_ADDR    	(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_APLL0_WRAP)
-#define APLLWRAP1BASE_ADDR    	(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_APLL1_WRAP)
+#define VPLLWRAP0BASE_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_VPLL0_WRAP)
+#define VPLLWRAP1BASE_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_VPLL1_WRAP)
+#define APLLWRAP0BASE_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_APLL0_WRAP)
+#define APLLWRAP1BASE_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_APLL1_WRAP)
 
-#define APLLWRAP0APLLCTRL     	APLLWRAP0BASE_ADDR + RA_APLL_WRAP_APLL_CLK1_CTRL
-#define APLLWRAP1APLLCTRL     	APLLWRAP1BASE_ADDR + RA_APLL_WRAP_APLL_CLK1_CTRL
-#define APLLWRAP0APLL     	APLLWRAP0BASE_ADDR + RA_APLL_WRAP_APLL
-#define APLLWRAP1APLL     	    APLLWRAP1BASE_ADDR + RA_APLL_WRAP_APLL
+#define APLLWRAP0APLLCTRL	APLLWRAP0BASE_ADDR + RA_APLL_WRAP_APLL_CLK1_CTRL
+#define APLLWRAP1APLLCTRL	APLLWRAP1BASE_ADDR + RA_APLL_WRAP_APLL_CLK1_CTRL
+#define APLLWRAP0APLL	APLLWRAP0BASE_ADDR + RA_APLL_WRAP_APLL
+#define APLLWRAP1APLL	APLLWRAP1BASE_ADDR + RA_APLL_WRAP_APLL
 
-#define VPLLWRAP0VPLLCTRL     	VPLLWRAP0BASE_ADDR + RA_VPLL_WRAP_VPLL_CTRL
-#define VPLLWRAP1VPLLCTRL     	VPLLWRAP1BASE_ADDR + RA_VPLL_WRAP_VPLL_CTRL
-#define VPLLWRAP0VPLL     	    VPLLWRAP0BASE_ADDR + RA_VPLL_WRAP_VPLL
-#define VPLLWRAP1VPLL     	    VPLLWRAP1BASE_ADDR + RA_VPLL_WRAP_VPLL
+#define VPLLWRAP0VPLLCTRL	VPLLWRAP0BASE_ADDR + RA_VPLL_WRAP_VPLL_CTRL
+#define VPLLWRAP1VPLLCTRL	VPLLWRAP1BASE_ADDR + RA_VPLL_WRAP_VPLL_CTRL
+#define VPLLWRAP0VPLL	VPLLWRAP0BASE_ADDR + RA_VPLL_WRAP_VPLL
+#define VPLLWRAP1VPLL	VPLLWRAP1BASE_ADDR + RA_VPLL_WRAP_VPLL
 
-
-#define AVPLL_SWPD_ADDR    (MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_SWPDWN_CTRL)
+#define AVPLL_SWPD_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_SWPDWN_CTRL)
 
 enum PLLMODE {
-    INT_MODE=0,
-    FRAC_MODE,
-    SSC_MODE,
-    RSVD
+	INT_MODE = 0,
+	FRAC_MODE,
+	SSC_MODE,
+	RSVD
 };
 
 #define PLL_REG_SET(tmpstr, field123, val123)     tmpstr.uctrl##field123 = val123
 #define PLL_REG_GET(tmpstr, field123, val123)     val123 = tmpstr.uctrl##field123
 
-#define PLL_REG_READ(baseaddr, offset, val123)                                          \
-                        do{                                                             \
-                            BFM_HOST_Bus_Read32((baseaddr+offset*4), &val123);          \
-                        }while(0)
+#define PLL_REG_READ(baseaddr, offset, val123) \
+	BFM_HOST_Bus_Read32(((baseaddr) + (offset) * 4), &(val123))
 
-#define PLL_REG_WRITE(baseaddr, offset, val123)                                         \
-                        do{                                                             \
-                            BFM_HOST_Bus_Write32((baseaddr+offset*4), val123);          \
-                        }while(0)
+#define PLL_REG_WRITE(baseaddr, offset, val123) \
+	BFM_HOST_Bus_Write32(((baseaddr) + (offset) * 4), val123)
 
 #if TARGET != BOOT
-#define PLL_REG_PRINT(baseaddr, offset)                                                 \
-                        do{                                                             \
-                            volatile unsigned int val123;                               \
-                            BFM_HOST_Bus_Read32((baseaddr+offset*4), &val123);          \
-                            debug("0x%08x: 0x%08x\n",                    \
-                                    (baseaddr+offset*4),                                \
-                                    val123);                                            \
-                        }while(0)
+#define PLL_REG_PRINT(baseaddr, offset)								\
+			do {									\
+				volatile unsigned int val123;					\
+				BFM_HOST_Bus_Read32(((baseaddr) + (offset) * 4), &val123);	\
+				debug("0x%08x: 0x%08x\n", ((baseaddr) + (offset) * 4), val123); \
+			} while (0)
 #else
-#define PLL_REG_PRINT(baseaddr, offset)                                                 \
-                        do{                                                             \
-                            volatile unsigned int val123;                               \
-                            BFM_HOST_Bus_Read32((baseaddr+offset*4), &val123);          \
-                            debug("0x%08x: 0x%08x\n",                              \
-                                    (baseaddr+offset*4),                                \
-                                    val123);                                            \
-                        }while(0)
+#define PLL_REG_PRINT(baseaddr, offset)								\
+			do {									\
+				volatile unsigned int val123;					\
+				BFM_HOST_Bus_Read32(((baseaddr) + (offset) * 4), &val123);	\
+				debug("0x%08x: 0x%08x\n", ((baseaddr) + (offset) * 4), val123); \
+			} while (0)
 #endif
 #define SSC_DIV_MAX		15
 
-
 typedef enum {
-    SYSPLL0=0,
-    SYSPLL1,
-    MEMPLL,
-    CPUPLL,
-    VPLL0,
-    VPLL1,
-    APLL0,
-    APLL1,
-    SYSPLL
+	SYSPLL0 = 0,
+	SYSPLL1,
+	MEMPLL,
+	CPUPLL,
+	VPLL0,
+	VPLL1,
+	APLL0,
+	APLL1,
+	SYSPLL
 } E_PLL_SRC;
 
-enum divider_index
-{
+enum divider_index {
 	DIVIDED_BY_2 = 1,
 	DIVIDED_BY_4,
 	DIVIDED_BY_6,
@@ -161,31 +161,31 @@ enum divider_index
 };
 
 typedef struct {
-    int clocko;
-    int clocko1;
+	int clocko;
+	int clocko1;
 } CLOCKO_t;
 
 typedef struct {
-    unsigned int dm;
-    unsigned int dn;
-    unsigned int frac;
-    unsigned int dp;
-    unsigned int dp1;
+	unsigned int dm;
+	unsigned int dn;
+	unsigned int frac;
+	unsigned int dp;
+	unsigned int dp1;
 } APLLCFG_t;
 
 typedef struct {
-    unsigned int ssc;
-    unsigned int freq;
-    unsigned int amp;
+	unsigned int ssc;
+	unsigned int freq;
+	unsigned int amp;
 } SSC_t;
 
 typedef struct {
-    int div;
-    int val;
+	int div;
+	int val;
 } ssc_div_t;
 
 int diag_change_avpll(unsigned int apll_index, unsigned int freq,
-        unsigned int ssc, unsigned int ssc_freq, unsigned int ssc_amp, unsigned
-	int ssc_mode, unsigned int calc, APLLCFG_t pll_cfg);
+		      unsigned int ssc, unsigned int ssc_freq, unsigned int ssc_amp,
+		      unsigned int ssc_mode, unsigned int calc, APLLCFG_t pll_cfg);
 
 #endif /* __DIAG_PLL_H__ */

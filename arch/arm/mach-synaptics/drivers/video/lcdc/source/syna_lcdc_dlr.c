@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <linux/types.h>
 #include <malloc.h>
@@ -44,36 +44,36 @@ static unsigned char syna_lcdc_bitmap_table[SYNA_LCDC_PIXFMT_MAX][SYNA_LCDC_PIXO
 	{//ARGB32 input
 		{ //ARGB
 			24, 25, 26, 27, 28, 29, 30, 31, 16, 17, 18, 19, 20, 21, 22, 23,
-			8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4 ,5, 6, 7,
+			8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7,
 		},
 		{ //ABGR
 			8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-			24, 25, 26, 27, 28, 29, 30, 31, 0, 1, 2, 3, 4 ,5, 6, 7,
+			24, 25, 26, 27, 28, 29, 30, 31, 0, 1, 2, 3, 4, 5, 6, 7,
 		},
 		{ //RGBA
 			16, 17, 18, 19, 20, 21, 22, 23, 8, 9, 10, 11, 12, 13, 14, 15,
-			0, 1, 2, 3, 4 ,5, 6, 7, 24, 25, 26, 27, 28, 29, 30, 31,
+			0, 1, 2, 3, 4, 5, 6, 7, 24, 25, 26, 27, 28, 29, 30, 31,
 		},
 		{ //BGRA
-			0, 1, 2, 3, 4 ,5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 			16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
 		}
 	},
 	{ //ARGB32_PM
 		{ //ARGB
 			24, 25, 26, 27, 28, 29, 30, 31, 16, 17, 18, 19, 20, 21, 22, 23,
-			8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4 ,5, 6, 7,
+			8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7,
 		},
 		{ //ABGR
 			8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-			25, 26, 27, 28, 29, 30, 31, 0, 1, 2, 3, 4 ,5, 6, 7,
+			25, 26, 27, 28, 29, 30, 31, 0, 1, 2, 3, 4, 5, 6, 7,
 		},
 		{ //RGBA
 			16, 17, 18, 19, 20, 21, 22, 23, 8, 9, 10, 11, 12, 13, 14, 15,
-			0, 1, 2, 3, 4 ,5, 6, 7, 24, 25, 26, 27, 28, 29, 30, 31,
+			0, 1, 2, 3, 4, 5, 6, 7, 24, 25, 26, 27, 28, 29, 30, 31,
 		},
 		{ //BGRA
-			0, 1, 2, 3, 4 ,5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 			16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
 		}
 	},
@@ -83,7 +83,7 @@ static unsigned char syna_lcdc_bitmap_table[SYNA_LCDC_PIXFMT_MAX][SYNA_LCDC_PIXO
 			27, 28, 29, 30, 31, 21, 22, 23, 24, 25, 26, 16, 17, 18, 19, 20,
 		},
 		{ //BGR
-			0, 1, 2, 3, 4 ,5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 			17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
 		},
 		{//RGB
@@ -91,14 +91,14 @@ static unsigned char syna_lcdc_bitmap_table[SYNA_LCDC_PIXFMT_MAX][SYNA_LCDC_PIXO
 			27, 28, 29, 30, 31, 21, 22, 23, 24, 25, 26, 16, 17, 18, 19, 20,
 		},
 		{ //BGR
-			0, 1, 2, 3, 4 ,5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 			16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
 		}
 	},
 	{ //RGB888
 		{ //RGB
 			24, 25, 26, 27, 28, 29, 30, 31, 16, 17, 18, 19, 20, 21, 22, 23,
-			8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4 ,5, 6, 7,
+			8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7,
 		},
 		{ //BGR
 			24, 25, 26, 27, 28, 29, 30, 31, 0, 1, 2, 3, 4, 5, 6, 7,
@@ -106,7 +106,7 @@ static unsigned char syna_lcdc_bitmap_table[SYNA_LCDC_PIXFMT_MAX][SYNA_LCDC_PIXO
 		},
 		{ //RGB
 			24, 25, 26, 27, 28, 29, 30, 31, 16, 17, 18, 19, 20, 21, 22, 23,
-			8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4 ,5, 6, 7,
+			8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7,
 		},
 		{ //BGR
 			24, 25, 26, 27, 28, 29, 30, 31, 0, 1, 2, 3, 4, 5, 6, 7,
@@ -140,8 +140,8 @@ static void syna_lcdc_dlr_clearClient(struct syna_lcdc_dev *dev)
 }
 
 static void syna_lcdc_dlr_setbitmap(struct syna_lcdc_dev *dev,
-									int src_fmt,
-									int order)
+				    int src_fmt,
+				    int order)
 {
 	unsigned char *bitmap_table = NULL;
 	T32LCDC_CTRL4 ctrl4;
@@ -164,7 +164,7 @@ static void syna_lcdc_dlr_setbitmap(struct syna_lcdc_dev *dev,
 		sel.uSEL_BIT_POS5 = bitmap_table[index + 5];
 		syna_lcdc_writel(dev, RA_LCDC_bitmap32_ctrl + 4 * (index / 6), sel.u32);
 		index += 6;
-	} while(index < 30);
+	} while (index < 30);
 
 	sel5.uSEL_BIT_POS30 = bitmap_table[index + 0];
 	sel5.uSEL_BIT_POS31 = bitmap_table[index + 1];
@@ -181,28 +181,27 @@ static void syna_lcdc_dlr_start2DDMA(struct syna_lcdc_dev *dev, VBUF_INFO *pinfo
 	unsigned int width_byte;
 
 	start_addr = pinfo->m_pbuf_start;
-	width_byte = (pinfo->m_content_width * pinfo->m_bits_per_pixel)/8;
-	stride = (width_byte * 16 + 15)/16; /*16-byte alignment*/
+	width_byte = (pinfo->m_content_width * pinfo->m_bits_per_pixel) / 8;
+	stride = (width_byte * 16 + 15) / 16; /*16-byte alignment*/
 
 	if (dev->bcm_enable) {
-		cfgQ_shadow = (void *) CURR_VBI_DMA_CFGQ->addr;
+		cfgQ_shadow = (void *)CURR_VBI_DMA_CFGQ->addr;
 		cfgQ_len = &CURR_VBI_DMA_CFGQ->len;
 		cfgQ = cfgQ_shadow + *cfgQ_len * 2;//cfgQ_shadow + *cfgQ_len;
 		*cfgQ_len += START_2NDDMA(dev->dhubID, dev->dmaRID,
-								start_addr, width_byte, width_byte,
-								1, stride, pinfo->m_content_height,
-								(T64b*) cfgQ);
-	}
-	else {
+					  start_addr, width_byte, width_byte,
+					  1, stride, pinfo->m_content_height,
+					  (T64b *)cfgQ);
+	} else {
 		START_2NDDMA(dev->dhubID, dev->dmaRID, start_addr,
-					width_byte,	width_byte, 1, stride,
-					pinfo->m_content_height, NULL);
+			     width_byte,	width_byte, 1, stride,
+			     pinfo->m_content_height, NULL);
 	}
 }
 
 static void syna_lcdc_dlr_setdisplay_bpp(struct syna_lcdc_dev *dev,
-										int m_bits_per_pixel,
-										int move_alpha)
+					 int m_bits_per_pixel,
+					 int move_alpha)
 {
 	unsigned int bpp = 0;
 
@@ -211,8 +210,7 @@ static void syna_lcdc_dlr_setdisplay_bpp(struct syna_lcdc_dev *dev,
 		if (m_bits_per_pixel == 24) {
 			//Bit map setting for RGB888
 			bpp |= 1 << 4;
-		}
-		else if (m_bits_per_pixel == 32){
+		} else if (m_bits_per_pixel == 32) {
 			//Bit map setting = A[31:24] B[23:16] G[15:8] R[7:0]
 			bpp |= 1 << 4;
 
@@ -223,13 +221,11 @@ static void syna_lcdc_dlr_setdisplay_bpp(struct syna_lcdc_dev *dev,
 	}
 	//Input type mode register (IBCR)
 	syna_lcdc_writel(dev, LCDC_REG_INTMR, bpp);
-
-	return;
 }
 
 static void syna_lcdc_dlr_setplane_position(struct syna_lcdc_dev *dev,
-											int x, int y,
-											int width, int height)
+					    int x, int y,
+					    int width, int height)
 {
 	syna_lcdc_writel(dev, LCDC_REG_INDXSR, width - 1);
 	syna_lcdc_writel(dev, LCDC_REG_INDYSR, height - 1);
@@ -247,43 +243,39 @@ static void syna_lcdc_dlr_start(struct syna_lcdc_dev *dev)
 	T32LCDC_CTRL2 ctrl2;
 
 	pinfo = dev->curr_frame;
-	if (!pinfo) {
+	if (!pinfo)
 		return;
-	}
 
-	if ((pinfo->m_srcfmt != dev->m_srcfmt) ||
-		(pinfo->m_order != dev->m_order) ||
-		(pinfo->m_content_width != dev->m_content_width) ||
-		(pinfo->m_content_height != dev->m_content_height) ||
-		(pinfo->m_bits_per_pixel != dev->m_bits_per_pixel)) {
-
+	if (pinfo->m_srcfmt != dev->m_srcfmt ||
+	    pinfo->m_order != dev->m_order ||
+	    pinfo->m_content_width != dev->m_content_width ||
+	    pinfo->m_content_height != dev->m_content_height ||
+	    pinfo->m_bits_per_pixel != dev->m_bits_per_pixel) {
 		ctrl2.u32 = 0;
 		ctrl2.uCTRL2_flushCnt_R0 = 0x5;
-		if ((pinfo->m_bits_per_pixel == 32) ||
-			(pinfo->m_bits_per_pixel == 16)) {
+		if (pinfo->m_bits_per_pixel == 32 ||
+		    pinfo->m_bits_per_pixel == 16) {
 			ctrl2.uCTRL2_packSel_R0 = 0; //32-bit packing
-		}
-		else if (pinfo->m_bits_per_pixel == 24) {
+		} else if (pinfo->m_bits_per_pixel == 24) {
 			ctrl2.uCTRL2_packSel_R0 = 1; //24-bit packing
 		}
 
 		//ceil( ohres*ovres*bpp/128 )
-		ctrl1.uCTRL1_wordTot_R0 = \
-					(pinfo->m_content_width * pinfo->m_bits_per_pixel)/8;
+		ctrl1.uCTRL1_wordTot_R0 =
+			(pinfo->m_content_width * pinfo->m_bits_per_pixel) / 8;
 
 		if (ctrl1.uCTRL1_wordTot_R0 % 16) {
 			ctrl2.uCTRL2_nonStdResEn_R0 = 1;
-			ctrl1.uCTRL1_wordTot_R0 = ctrl1.uCTRL1_wordTot_R0/16 + 1;
-		}
-		else {
+			ctrl1.uCTRL1_wordTot_R0 = ctrl1.uCTRL1_wordTot_R0 / 16 + 1;
+		} else {
 			ctrl2.uCTRL2_nonStdResEn_R0 = 0;
-			ctrl1.uCTRL1_wordTot_R0 = ctrl1.uCTRL1_wordTot_R0/16;
+			ctrl1.uCTRL1_wordTot_R0 = ctrl1.uCTRL1_wordTot_R0 / 16;
 		}
 		ctrl1.uCTRL1_wordTot_R0 *= pinfo->m_content_height;
 
 		//width * bpp/32
-		ctrl2.uCTRL2_pixlineTot_R0 = \
-					(pinfo->m_content_width * pinfo->m_bits_per_pixel)/32;
+		ctrl2.uCTRL2_pixlineTot_R0 =
+			(pinfo->m_content_width * pinfo->m_bits_per_pixel) / 32;
 
 		syna_lcdc_writel(dev, RA_LCDC_CTRL1, ctrl1.u32);
 		syna_lcdc_writel(dev, RA_LCDC_CTRL2, ctrl2.u32);
@@ -291,8 +283,8 @@ static void syna_lcdc_dlr_start(struct syna_lcdc_dev *dev)
 		syna_lcdc_dlr_setdisplay_bpp(dev, pinfo->m_bits_per_pixel, 1);
 
 		syna_lcdc_dlr_setplane_position(dev, 0, 0,
-					pinfo->m_content_width,
-					pinfo->m_content_height);
+						pinfo->m_content_width,
+						pinfo->m_content_height);
 
 		syna_lcdc_dlr_setbitmap(dev, pinfo->m_srcfmt, pinfo->m_order);
 		dev->m_srcfmt = pinfo->m_srcfmt;
@@ -327,15 +319,15 @@ static void syna_lcdc_dlr_mergebuf(struct syna_lcdc_dev *dev)
 {
 	if (dev->bcm_enable) {
 		bcmbuf_to_CFGQ(&AG_dhubHandle, avioDhubChMap_aio64b_BCM_R,
-						BCM_SCHED_Q13, CURR_VBI_BCM_BUF,
-						CURR_VBI_BCM_CFGQ);
+			       BCM_SCHED_Q13, CURR_VBI_BCM_BUF,
+			       CURR_VBI_BCM_CFGQ);
 
-		flush_dcache_range((long unsigned int)CURR_VBI_DMA_CFGQ->addr,
-			((int)(long long)CURR_VBI_DMA_CFGQ->addr) + DMA_CMD_BUFFER_SIZE);
+		flush_dcache_range((unsigned long)CURR_VBI_DMA_CFGQ->addr,
+				   ((int)(long long)CURR_VBI_DMA_CFGQ->addr) + DMA_CMD_BUFFER_SIZE);
 
 		bcmbuf_CFGQ_To_CFGQ(&AG_dhubHandle, avioDhubChMap_aio64b_BCM_R,
-							BCM_SCHED_Q13, CURR_VBI_DMA_CFGQ,
-							CURR_VBI_BCM_CFGQ);
+				    BCM_SCHED_Q13, CURR_VBI_DMA_CFGQ,
+				    CURR_VBI_BCM_CFGQ);
 	}
 }
 
@@ -343,44 +335,38 @@ static void syna_lcdc_dlr_commitbuf(struct syna_lcdc_dev *dev, int use_vbi)
 {
 	int schedQ;
 
-	if (!dev->bcm_enable) {
+	if (!dev->bcm_enable)
 		return;
-	}
 
-	flush_dcache_range((long unsigned int)CURR_VBI_BCM_CFGQ->addr,
-		((int)(long long) CURR_VBI_BCM_CFGQ->addr) + DMA_CMD_BUFFER_SIZE);
+	flush_dcache_range((unsigned long)CURR_VBI_BCM_CFGQ->addr,
+			   ((int)(long long)CURR_VBI_BCM_CFGQ->addr) + DMA_CMD_BUFFER_SIZE);
 
 	schedQ = (dev->lcdcID == 0) ? BCM_SCHED_Q0 : BCM_SCHED_Q1;
 	if (use_vbi) {
 		bcmbuf_DHUB_CFGQ_Commit(&AG_dhubHandle,
-							avioDhubChMap_aio64b_BCM_R,
-							schedQ,
-							CURR_VBI_BCM_CFGQ, dev->lcdcID, 0);
-
-		if (dev->bcm_autopush_en) {
-			if (CURR_VBI_BCM_CFGQ->len != 0 && CURR_VBI_DMA_CFGQ->len != 0) {
-				bcmbuf_DHUB_AutoPush(
-							schedQ,
-							dev->dmaRID, dev->bcm_autopush_en);
-			}
-		}
-		else {
-			bcmbuf_DHUB_AutoPush(
-					schedQ,
-					dev->dmaRID, 0);
-		}
-	}
-	else {
-		bcmbuf_cfgq_hardwaretrans(&AG_dhubHandle,
-								avioDhubChMap_aio64b_BCM_R,
-								BCM_SCHED_Q12,
-								CURR_VBI_BCM_CFGQ, 1);
-		if (dev->bcm_enable) {
-			//To avoid issue for 2nd Frame
-			bcmbuf_DHUB_CFGQ_Commit(&AG_dhubHandle,
 					avioDhubChMap_aio64b_BCM_R,
 					schedQ,
 					CURR_VBI_BCM_CFGQ, dev->lcdcID, 0);
+
+		if (dev->bcm_autopush_en) {
+			if (CURR_VBI_BCM_CFGQ->len != 0 && CURR_VBI_DMA_CFGQ->len != 0) {
+				bcmbuf_DHUB_AutoPush(schedQ,
+						     dev->dmaRID, dev->bcm_autopush_en);
+			}
+		} else {
+			bcmbuf_DHUB_AutoPush(schedQ, dev->dmaRID, 0);
+		}
+	} else {
+		bcmbuf_cfgq_hardwaretrans(&AG_dhubHandle,
+					  avioDhubChMap_aio64b_BCM_R,
+					  BCM_SCHED_Q12,
+					  CURR_VBI_BCM_CFGQ, 1);
+		if (dev->bcm_enable) {
+			//To avoid issue for 2nd Frame
+			bcmbuf_DHUB_CFGQ_Commit(&AG_dhubHandle,
+						avioDhubChMap_aio64b_BCM_R,
+						schedQ,
+						CURR_VBI_BCM_CFGQ, dev->lcdcID, 0);
 		}
 	}
 }
@@ -404,7 +390,6 @@ void syna_lcdc_dlr_handler(struct syna_lcdc_dev *dev)
 	syna_lcdc_dlr_frameupdate(dev);
 
 	if (dev->curr_frame) {
-
 		//client clear
 		syna_lcdc_dlr_clearClient(dev);
 
@@ -422,9 +407,9 @@ void syna_lcdc_dlr_init(struct syna_lcdc_dev *dev, int num)
 	dev->curr_frame = NULL;
 	dev->dhubID = (int)(long long)&VPP_dhubHandle;
 
-	/**
-	  * Refer AVIO_BCM.pdf intrNo details
-	  */
+	/*
+	 * Refer AVIO_BCM.pdf intrNo details
+	 */
 	dev->lcdcID = num;
 	if (num == SYNA_LCDC_1) {
 		dev->dmaRID = avioDhubChMap_vpp128b_LCDC1_R;
@@ -438,8 +423,8 @@ void syna_lcdc_dlr_init(struct syna_lcdc_dev *dev, int num)
 }
 
 static void syna_lcdc_create_BcmCfgQ(struct syna_lcdc_dev *dev,
-								DHUB_CFGQ *cfgQ,
-								void *pvpp_mem)
+				     DHUB_CFGQ *cfgQ,
+				     void *pvpp_mem)
 {
 	cfgQ->handle = malloc(DMA_CMD_BUFFER_SIZE);
 	cfgQ->addr = cfgQ->handle;
@@ -452,20 +437,20 @@ int syna_lcdc_dlr_create(struct syna_lcdc_dev *dev, int num)
 
 	for (i = 0; i < BCM_BUF_COUNT; i++) {
 		/* create VBI BCM buffer */
-		if (bcmbuf_create(&(dev->bcmbuf[i].vbi_bcm_buf),
-			BCM_BUFFER_SIZE,
-			dev->vpp_mem_list) != SYNA_LCDC_OK) {
+		if (bcmbuf_create(&dev->bcmbuf[i].vbi_bcm_buf,
+				  BCM_BUFFER_SIZE,
+				  dev->vpp_mem_list) != SYNA_LCDC_OK) {
 			printf("failed to create bcmbuf\n");
 			return SYNA_LCDC_ENOMEM;
 		}
 
 		syna_lcdc_create_BcmCfgQ(dev,
-			&dev->bcmbuf[i].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_DMA],
-			&dev->bcmbuf[i].vpp_mem_handle[SYNA_DHUB_CFGQ_TYPE_DMA]);
+					 &dev->bcmbuf[i].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_DMA],
+					 &dev->bcmbuf[i].vpp_mem_handle[SYNA_DHUB_CFGQ_TYPE_DMA]);
 
 		syna_lcdc_create_BcmCfgQ(dev,
-			&dev->bcmbuf[i].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_BCM],
-			&dev->bcmbuf[i].vpp_mem_handle[SYNA_DHUB_CFGQ_TYPE_BCM]);
+					 &dev->bcmbuf[i].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_BCM],
+					 &dev->bcmbuf[i].vpp_mem_handle[SYNA_DHUB_CFGQ_TYPE_BCM]);
 
 		dev->bufferCurSet = 0;
 	}
@@ -486,10 +471,10 @@ void syna_lcdc_dlr_intr_enable(int intr, int enable)
 	semaphore_cfg(pSemHandle, intr, 1, 0);
 	semaphore_clr_full(pSemHandle, intr);
 	semaphore_intr_enable(pSemHandle, intr,
-						0/*empty*/, enable/*full*/,
-						0/*almost empty*/,
-						0/*almost full*/,
-						0/*cpu id*/);
+			      0/*empty*/, enable/*full*/,
+			      0/*almost empty*/,
+			      0/*almost full*/,
+			      0/*cpu id*/);
 }
 
 void syna_lcdc_dlr_destroy(struct syna_lcdc_dev *dev)
@@ -500,6 +485,6 @@ void syna_lcdc_dlr_destroy(struct syna_lcdc_dev *dev)
 		free(dev->bcmbuf[i].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_DMA].addr);
 		free(dev->bcmbuf[i].vbi_cfgQ[SYNA_DHUB_CFGQ_TYPE_BCM].addr);
 
-		bcmbuf_destroy(&(dev->bcmbuf[i].vbi_bcm_buf));
+		bcmbuf_destroy(&dev->bcmbuf[i].vbi_bcm_buf);
 	}
 }

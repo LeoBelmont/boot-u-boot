@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include "OSAL_api.h"
 #include "compat.h"
@@ -33,8 +33,8 @@
 // External function declaration
 extern int get_mem_region_by_name(u64 *start, u64 *size, char *zone_name);
 
-extern void * malloc_ion_noncacheable(int size);
-extern void * malloc_ion_cacheable(int size);
+extern void *malloc_ion_noncacheable(int size);
+extern void *malloc_ion_cacheable(int size);
 
 //malloc- allocate memory from NonSecure,Cache
 void GaloisInit(void)
@@ -42,31 +42,32 @@ void GaloisInit(void)
     // do nothing
 }
 
-void * GaloisMalloc(unsigned int size)
+void *GaloisMalloc(unsigned int size)
 {
-    if (size > 0)
-    {
-        void *ptr = NULL;
-        ptr = (void *)((((unsigned long)malloc_ion_noncacheable(size + 32) + 31) >> 5) << 5);
-        return(ptr);
-    }
-    return(0);
+	if (size > 0) {
+		void *ptr = NULL;
+
+		ptr = (void *)((((unsigned long)
+			       malloc_ion_noncacheable(size + 32) + 31) >> 5) << 5);
+		return ptr;
+	}
+	return(0);
 }
 
-void * GMalloc(unsigned int size)
+void *GMalloc(unsigned int size)
 {
-    if (size > 0)
-    {
-        void *ptr = NULL;
-        ptr = (void *)((((unsigned long)malloc_ion_noncacheable(size) + 32) >> 5) << 5);
-        return(ptr);
-    }
-    return(0);
+	if (size > 0) {
+		void *ptr = NULL;
+
+		ptr = (void *)((((unsigned long)malloc_ion_noncacheable(size) + 32) >> 5) << 5);
+		return ptr;
+	}
+	return(0);
 }
 
-void* VPP_ALLOC(unsigned int uiSize)
+void *VPP_ALLOC(unsigned int uiSize)
 {
-    return malloc_ion_cacheable(uiSize);
+	return malloc_ion_cacheable(uiSize);
 }
 
 void *VPP_ALLOC_ALLIGNED(unsigned int size, unsigned int alignment)
@@ -77,22 +78,22 @@ void *VPP_ALLOC_ALLIGNED(unsigned int size, unsigned int alignment)
 	if (!buffer)
 		return NULL;
 
-	buffer = (void*)(((uintptr_t)buffer + (PAGE_SIZE - 1)) & ~(PAGE_SIZE - 1));
+	buffer = (void *)(((uintptr_t)buffer + (PAGE_SIZE - 1)) & ~(PAGE_SIZE - 1));
 
 	return buffer;
 }
 
 //#define VPP_ENABLE_USE_NonCache_For_Cached_Memory
-void * VPP_TZ_ALLOC(unsigned int  uiSize)
+void *VPP_TZ_ALLOC(unsigned int  uiSize)
 {
-    void *pPtr = NULL;
+	void *pPtr = NULL;
 
 #ifdef VPP_ENABLE_TZ_MALLOC_MEM_ALLOCATION
-    pPtr = malloc_ion_cacheable(uiSize);
+	pPtr = malloc_ion_cacheable(uiSize);
 #else
-    pPtr = GMalloc(uiSize);
+	pPtr = GMalloc(uiSize);
 #endif
-    return pPtr;
+	return pPtr;
 }
 
 /**

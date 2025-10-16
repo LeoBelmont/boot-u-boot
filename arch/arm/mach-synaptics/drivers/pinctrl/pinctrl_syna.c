@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <dm.h>
 #include <asm/io.h>
@@ -256,24 +256,51 @@ static int syna_pinctrl_probe(struct udevice *dev)
 
 static const struct udevice_id syna_pinctrl_match[] = {
 #ifdef CONFIG_TARGET_PLATYPUS
-	{	.compatible = "syna,platypus-soc-pinctrl",	.data = (ulong)&platypus_soc_pinctrl_data,},
-	{	.compatible = "syna,platypus-avio-pinctrl", .data = (ulong)&platypus_avio_pinctrl_data,},
-	{	.compatible = "syna,platypus-sysmgr-pinctrl", .data = (ulong)&platypus_sysmgr_pinctrl_data,},
+	{
+		.compatible = "syna,platypus-soc-pinctrl",
+		.data = (ulong)&platypus_soc_pinctrl_data,
+	},
+	{
+		.compatible = "syna,platypus-avio-pinctrl",
+		.data = (ulong)&platypus_avio_pinctrl_data,
+	},
+	{
+		.compatible = "syna,platypus-sysmgr-pinctrl",
+		.data = (ulong)&platypus_sysmgr_pinctrl_data,
+	},
 #endif
 
 #ifdef CONFIG_TARGET_DOLPHIN
-	{	.compatible = "syna,dolphin-soc-pinctrl",	.data = (ulong)&dolphin_soc_pinctrl_data,},
-	{	.compatible = "syna,dolphin-avio-pinctrl", .data = (ulong)&dolphin_avio_pinctrl_data,},
-	{	.compatible = "syna,dolphin-sysmgr-pinctrl", .data = (ulong)&dolphin_sysmgr_pinctrl_data,},
+	{
+		.compatible = "syna,dolphin-soc-pinctrl",
+		.data = (ulong)&dolphin_soc_pinctrl_data,
+	},
+	{
+		.compatible = "syna,dolphin-avio-pinctrl",
+		.data = (ulong)&dolphin_avio_pinctrl_data,
+	},
+	{
+		.compatible = "syna,dolphin-sysmgr-pinctrl",
+		.data = (ulong)&dolphin_sysmgr_pinctrl_data,
+	},
 #endif
 
 #ifdef CONFIG_TARGET_MYNA2
-	{	.compatible = "syna,myna2-soc-pinctrl", .data = (ulong)&myna2_soc_pinctrl_data,},
+	{
+		.compatible = "syna,myna2-soc-pinctrl",
+		.data = (ulong)&myna2_soc_pinctrl_data,
+	},
 #endif
 
 #ifdef CONFIG_TARGET_KLAMATH
-	{	.compatible = "syna,klamath-soc-pinctrl",	.data = (ulong)&klamath_soc_pinctrl_data,},
-	{	.compatible = "syna,klamath-sysmgr-pinctrl", .data = (ulong)&klamath_sysmgr_pinctrl_data,},
+	{
+		.compatible = "syna,klamath-soc-pinctrl",
+		.data = (ulong)&klamath_soc_pinctrl_data,
+	},
+	{
+		.compatible = "syna,klamath-sysmgr-pinctrl",
+		.data = (ulong)&klamath_sysmgr_pinctrl_data,
+	},
 #endif
 	{}
 };

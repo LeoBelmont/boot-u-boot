@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _OSAL_API_H_
 #define _OSAL_API_H_
@@ -48,10 +48,10 @@ typedef UINT32                  AMP_SHM_HANDLE;
 typedef char    CHAR;
 
 void GaloisInit(void);
-void * GaloisMalloc(unsigned int size);
-void * VPP_ALLOC(unsigned int  uiSize);
+void *GaloisMalloc(unsigned int size);
+void *VPP_ALLOC(unsigned int  uiSize);
 void *VPP_ALLOC_ALLIGNED(unsigned int size, unsigned int alignment);
-void * VPP_TZ_ALLOC(unsigned int  uiSize);
+void *VPP_TZ_ALLOC(unsigned int  uiSize);
 
 int VPP_GET_RSV_MEM_REGION(u64 *start, u64 *size);
 

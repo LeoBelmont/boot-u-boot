@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _VPP_CFG_H_
 #define _VPP_CFG_H_
@@ -31,34 +31,34 @@ extern "C" {
 
 /* definition of video resolution type */
 enum {
-    TYPE_SD = 0,
-    TYPE_HD = 1,
-    TYPE_UHD = 2,
+	TYPE_SD = 0,
+	TYPE_HD = 1,
+	TYPE_UHD = 2,
 };
 
 /* definition of video scan mode */
 enum {
-    SCAN_PROGRESSIVE = 0,
-    SCAN_INTERLACED  = 1,
+	SCAN_PROGRESSIVE = 0,
+	SCAN_INTERLACED  = 1,
 };
 
 /* definition of video frame-rate */
 enum {
-        FRAME_RATE_23P98 = 0,
-        FRAME_RATE_24    = 1,
-        FRAME_RATE_25    = 2,
-        FRAME_RATE_29P97 = 3,
-        FRAME_RATE_30    = 4,
-        FRAME_RATE_47P96 = 5,
-        FRAME_RATE_48    = 6,
-        FRAME_RATE_50    = 7,
-        FRAME_RATE_59P94 = 8,
-        FRAME_RATE_60    = 9,
-        FRAME_RATE_100   = 10,
-        FRAME_RATE_119P88 = 11,
-        FRAME_RATE_120   = 12,
-        FRAME_RATE_89P91 = 13,
-        FRAME_RATE_90    = 14
+	FRAME_RATE_23P98 = 0,
+	FRAME_RATE_24    = 1,
+	FRAME_RATE_25    = 2,
+	FRAME_RATE_29P97 = 3,
+	FRAME_RATE_30    = 4,
+	FRAME_RATE_47P96 = 5,
+	FRAME_RATE_48    = 6,
+	FRAME_RATE_50    = 7,
+	FRAME_RATE_59P94 = 8,
+	FRAME_RATE_60    = 9,
+	FRAME_RATE_100   = 10,
+	FRAME_RATE_119P88 = 11,
+	FRAME_RATE_120   = 12,
+	FRAME_RATE_89P91 = 13,
+	FRAME_RATE_90    = 14
 };
 
 #ifdef __cplusplus
@@ -66,5 +66,3 @@ enum {
 #endif
 
 #endif
-
-

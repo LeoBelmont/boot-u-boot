@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <linux/delay.h>
 #include "OSAL_api.h"
@@ -38,7 +38,7 @@
 
 #define WAIT_LOOP_COUNT 50
 
-#define MP_BERLIN_INTR_ID(id)   (id + 32)
+#define MP_BERLIN_INTR_ID(id)   ((id) + 32)
 
 #if defined IRQ_dHubIntrAvio0
 #define IRQ_DHUB_INTR_AVIO_0 IRQ_dHubIntrAvio0
@@ -59,8 +59,8 @@ typedef struct __SetClockFreq_Data_ {
 	int v_total;
 } SetClockFreq_Data;
 
-static int g_pushframe_done = 0;
-static int frm_count = 0;
+static int g_pushframe_done;
+static int frm_count;
 static VPP_WIN_ATTR showlogo_attr = {0x00801080, 0xFFF, 1};
 static int loop_isr_count;
 static int isr_enabled;
@@ -71,11 +71,10 @@ VOID VPP_ISR_Handler_irq(VOID *param)
 
 	loop_isr_count++;
 	ret = VppIsrHandler(VPP_CC_MSG_TYPE_VPP, 0);
-	if (ret) {
+	if (ret)
 		printf("vpp isr handler failed\n");
-	}
 
-	if(g_pushframe_done) {
+	if (g_pushframe_done) {
 		frm_count++;
 		g_pushframe_done = 0;
 	}
@@ -95,11 +94,11 @@ void MV_VPP_Disable_IRQ(void)
 
 int MV_VPPOBJ_Mipi_LoadInfoTable(struct vpp_config_params *vpp_config_param)
 {
-	VPP_MIPI_CONFIG_PARAMS* pMipiConfigParams;
-	RESOLUTION_INFO*  rescfg;
+	VPP_MIPI_CONFIG_PARAMS *pMipiConfigParams;
+	RESOLUTION_INFO *rescfg;
 	VPLL_CONFIG pllcfg;
 
-	pMipiConfigParams =  (((VPP_MIPI_CONFIG_PARAMS*)vpp_config_param->mipi_resinfo_params));
+	pMipiConfigParams =  (((VPP_MIPI_CONFIG_PARAMS *)vpp_config_param->mipi_resinfo_params));
 	if (!pMipiConfigParams) {
 		printf("Invalid MIPI Config Params\n");
 		return -EINVAL;
@@ -121,14 +120,14 @@ int MV_VPPOBJ_Mipi_LoadInfoTable(struct vpp_config_params *vpp_config_param)
 	RESINFO_PARAM_UPDATE(flag_3d);
 	RESINFO_PARAM_UPDATE(pts_per_cnt_4);
 
-	m_resinfo_table[RES_DSI_CUSTOM].width = rescfg->active_width+\
-						rescfg->hfrontporch+\
-						rescfg->hsyncwidth+\
+	m_resinfo_table[RES_DSI_CUSTOM].width = rescfg->active_width +
+						rescfg->hfrontporch +
+						rescfg->hsyncwidth +
 						rescfg->hbackporch;
 
-	m_resinfo_table[RES_DSI_CUSTOM].height = rescfg->active_height+\
-						 rescfg->vfrontporch+\
-						 rescfg->vsyncwidth+\
+	m_resinfo_table[RES_DSI_CUSTOM].height = rescfg->active_height +
+						 rescfg->vfrontporch +
+						 rescfg->vsyncwidth +
 						 rescfg->vbackporch;
 
 	memset(&pllcfg, 0, sizeof(VPLL_CONFIG));
@@ -140,9 +139,9 @@ int MV_VPPOBJ_Mipi_LoadInfoTable(struct vpp_config_params *vpp_config_param)
 	pllcfg.h_total = m_resinfo_table[RES_DSI_CUSTOM].width;
 	pllcfg.v_total = m_resinfo_table[RES_DSI_CUSTOM].height;
 
-	if (MV_VPP_OK != AVPLL_GetClkgenparams(pMipiConfigParams->infoparams.resInfo.freq,
-						&pllcfg.Dm, &pllcfg.Dn,
-						&pllcfg.frac, &pllcfg.Dp)) {
+	if (AVPLL_GetClkgenparams(pMipiConfigParams->infoparams.resInfo.freq,
+				  &pllcfg.Dm, &pllcfg.Dn,
+				  &pllcfg.frac, &pllcfg.Dp) != MV_VPP_OK) {
 		return MV_VPP_EUNSUPPORT;
 	}
 
@@ -151,7 +150,8 @@ int MV_VPPOBJ_Mipi_LoadInfoTable(struct vpp_config_params *vpp_config_param)
 	return 0;
 }
 
-static void AVPLL_SetClockFreq_Pack(int *p_packed_data, SetClockFreq_Data *p_data) {
+static void AVPLL_SetClockFreq_Pack(int *p_packed_data, SetClockFreq_Data *p_data)
+{
 	p_packed_data[0] = p_data->pllsrc;
 	p_packed_data[1] = p_data->isInterlaced << 8 | p_data->refresh_rate;
 	p_packed_data[2] = p_data->h_active << 16 | p_data->v_active;
@@ -161,7 +161,7 @@ static void AVPLL_SetClockFreq_Pack(int *p_packed_data, SetClockFreq_Data *p_dat
 int MV_VPP_SetFormat(INT handle, INT cpcbID, VPP_DISP_OUT_PARAMS *pDispParams)
 {
 	SetClockFreq_Data clock_data;
-	RESOLUTION_INFO* resinfo;
+	RESOLUTION_INFO *resinfo;
 	int packed_data[4];
 	UINT32  resID;
 
@@ -267,9 +267,8 @@ int MV_VPP_pushframe(VBUF_INFO *p_vpp_buf, INT plane_id, int width, int height)
 		     1, 0, 0);
 
 	ret = MV_VPPOBJ_DisplayFrame(0, plane_id, p_vpp_buf);
-	if (ret != 0) {
+	if (ret != 0)
 		printf("Diaplay frame failed\n");
-	}
 
 	if (isr_enabled)
 		MV_VPP_Enable_IRQ();
@@ -327,7 +326,7 @@ int MV_VPPOBJ_Config_Display(struct vpp_config_params *vpp_config_param)
 
 	ret = MV_VPPOBJ_OpenDispWindow(0, PLANE_GFX1, &showlogo_win,
 				       &showlogo_attr);
-	if(ret != MV_VPP_OK)
+	if (ret != MV_VPP_OK)
 		return ret;
 
 	MV_VPPOBJ_SetRefWindow(0, PLANE_GFX1, &showlogo_win);
@@ -375,7 +374,7 @@ void MV_VPPOBJ_StopDisplay(void)
 {
 	loop_isr_count = 0;
 
-	while(loop_isr_count < WAIT_LOOP_COUNT)
+	while (loop_isr_count < WAIT_LOOP_COUNT)
 		mdelay(2);
 }
 

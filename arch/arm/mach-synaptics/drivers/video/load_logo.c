@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <linux/types.h>
 #include <stdlib.h>
@@ -130,7 +130,8 @@ static bool syna_is_partition_exit(const char *partition_name)
 }
 
 void *syna_emmc_read_from_offset(const char *partition_name, unsigned int offset,
-				unsigned int size, void *buff, FASTLOGO_INFO *fastlogo_display_info)
+				 unsigned int size, void *buff,
+				 FASTLOGO_INFO *fastlogo_display_info)
 {
 	struct blk_desc *dev_desc;
 	disk_partition_t info;
@@ -168,9 +169,9 @@ void *syna_emmc_read_from_offset(const char *partition_name, unsigned int offset
 	return (buff + (offset % dev_desc->blksz));
 }
 
-static fastlogo_info_t* check_validate_logo(int width, int height, UINT8* pHEADER)
+static fastlogo_info_t *check_validate_logo(int width, int height, UINT8 *pHEADER)
 {
-	fastlogo_header_t *fl_header_info = (fastlogo_header_t*)pHEADER;
+	fastlogo_header_t *fl_header_info = (fastlogo_header_t *)pHEADER;
 	int i;
 
 	for (i = 0; i < fl_header_info->logo_num; i++) {
@@ -222,8 +223,8 @@ int syna_load_logo_info(int width, int height, VBUF_INFO *pVppBuf, int *partnum)
 		pLogoHeader = pHeader;
 
 		pHeader = syna_emmc_read_from_offset(pt_name,
-				GENX_IMAGE_HEADER_FASTLOGO_SIZE,
-				LOGO_HEADER_SIZE, pHeader, partnum);
+						     GENX_IMAGE_HEADER_FASTLOGO_SIZE,
+						     LOGO_HEADER_SIZE, pHeader, partnum);
 
 		if (!pHeader) {
 			printf("fastlogo: Header read failed in partition - %s\n", pt_name);
@@ -236,7 +237,7 @@ int syna_load_logo_info(int width, int height, VBUF_INFO *pVppBuf, int *partnum)
 	}
 
 	if (is_partition_found) {
-		pReadBuffer = (UINT8*)malloc((fl_header->stride *
+		pReadBuffer = (UINT8 *)malloc((fl_header->stride *
 					fl_header->height) + (blocksize * 2));
 		if (!pReadBuffer) {
 			printf("fastlogo: Mem Allocation for FB fail\n");
@@ -245,9 +246,10 @@ int syna_load_logo_info(int width, int height, VBUF_INFO *pVppBuf, int *partnum)
 
 #ifdef CONFIG_MMC
 		plogobuffer = syna_emmc_read_from_offset(pt_name,
-				fl_header->offset + GENX_IMAGE_HEADER_FASTLOGO_SIZE,
-				(fl_header->stride * fl_header->height),
-				pReadBuffer, partnum);
+							 fl_header->offset +
+							 GENX_IMAGE_HEADER_FASTLOGO_SIZE,
+							 (fl_header->stride * fl_header->height),
+							 pReadBuffer, partnum);
 #else
 		//Only support fastlogo on emmc image
 		printf("fastlogo: Not supported!!!!!!!!\n");

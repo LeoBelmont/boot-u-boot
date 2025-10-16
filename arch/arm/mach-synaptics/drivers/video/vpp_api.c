@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,14 +20,14 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include "hal_vpp_wrap.h"
 #include "vpp_api.h"
 #include "vpp.h"
 
 #define MAX_NUM_FEATURE_CFG 1
-#define VPP_FEATURE_HDMITX	(1<<0)
+#define VPP_FEATURE_HDMITX (1 << 0)
 
 const INT32 gVinPortConfig[] = {
     /* PLANE_MAIN   */ CHAN_MAIN,
@@ -91,11 +91,12 @@ int MV_VPP_Init(struct berlin_fb_priv *priv)
 		return ret;
 	}
 
-	if(priv->vpp_config_param.hdmitx_enable)
+	if (priv->vpp_config_param.hdmitx_enable)
 		feature_cfg |= (VPP_FEATURE_HDMITX);
 	gFeatureConfig[0] = feature_cfg;
 
-	ret = wrap_MV_VPP_Config(gVinPortConfig, gDVConfig, gZorderConfig, gVoutPortConfig, gFeatureConfig);
+	ret = wrap_MV_VPP_Config(gVinPortConfig, gDVConfig, gZorderConfig,
+				 gVoutPortConfig, gFeatureConfig);
 	if (ret) {
 		printf("VPP Config failed = %d\n", ret);
 		return ret;
@@ -135,9 +136,8 @@ int MV_VPP_Config_Display(struct berlin_fb_priv *priv)
 	int ret;
 
 	ret = wrap_MV_VPP_Config_Display(priv);
-	if (ret) {
+	if (ret)
 		printf("VPP Display config failed = %d\n", ret);
-	}
 
 	return ret;
 }
@@ -153,9 +153,8 @@ int MV_VPP_Display_Frame(struct berlin_fb_priv *priv, VBUF_INFO *p_vpp_buf,
 	int ret;
 
 	ret = wrap_MV_VPP_Display_Frame(priv, p_vpp_buf, display, width, height);
-	if (ret) {
-		printf("VPP Display %d Frame failed = %d - \n", display, ret);
-	}
+	if (ret)
+		printf("VPP Display %d Frame failed = %d -\n", display, ret);
 
 	return ret;
 }

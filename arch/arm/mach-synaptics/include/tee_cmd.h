@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _TEE_CMD_H_
 #define _TEE_CMD_H_
@@ -46,13 +46,16 @@ enum TAMgrCmd {
 
 enum tz_boot_func_id {
 	/* param: {stage, mode};
-	 * return: error code */
+	 * return: error code
+	 */
 	SMC_FUNC_TOS_BOOT_STAGE			= TOS_BOOT(0x10),
 	/* param: {attr_mask, attr_val, region, max_num};
-	 * return: count */
+	 * return: count
+	 */
 	SMC_FUNC_TOS_MEM_REGION_LIST		= TOS_BOOT(0x21),
 	/* param: {src, src_len, dst, dst_len};
-	 * return: {errcode,dec_len} */
+	 * return: {errcode,dec_len}
+	 */
 	SMC_FUNC_TOS_CRYPTO_VERIFY_IMAGE	= TOS_BOOT(0x40),
 };
 

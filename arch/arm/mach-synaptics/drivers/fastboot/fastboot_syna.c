@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <config.h>
 #include <div64.h>
@@ -96,7 +96,8 @@ static bool is_valid_bootctrl(void *p_bootctrl)
 {
 	misc_boot_ctrl_t *pbctrl = (misc_boot_ctrl_t *)p_bootctrl;
 
-	return ((pbctrl->magic == BOOTCTRL_MAGIC) && (pbctrl->version == MISC_BOOT_CONTROL_VERSION));
+	return ((pbctrl->magic == BOOTCTRL_MAGIC) &&
+		(pbctrl->version == MISC_BOOT_CONTROL_VERSION));
 }
 
 static bool slot_is_bootable(misc_slot_metadata_t *p_slot)
@@ -313,12 +314,23 @@ int get_current_slot(void)
 	if (is_valid_bootctrl((void *)&bctrl)) {
 		if (slot_is_bootable((void *)&bctrl.slot_info[0]) &&
 		    slot_is_bootable((void *)&bctrl.slot_info[1])) {
-		    if (bctrl.slot_info[0].priority != bctrl.slot_info[1].priority)
-				bootab_sel = (bctrl.slot_info[0].priority - bctrl.slot_info[1].priority) > 0 ? BOOTSEL_A : BOOTSEL_B;
-			else if(bctrl.slot_info[0].successful_boot != bctrl.slot_info[1].successful_boot)
-				bootab_sel = (bctrl.slot_info[0].successful_boot - bctrl.slot_info[1].successful_boot) > 0 ? BOOTSEL_A : BOOTSEL_B;
-			else if(bctrl.slot_info[0].tries_remaining != bctrl.slot_info[1].tries_remaining)
-				bootab_sel = (bctrl.slot_info[0].tries_remaining - bctrl.slot_info[1].tries_remaining) > 0 ? BOOTSEL_A : BOOTSEL_B;
+			if (bctrl.slot_info[0].priority != bctrl.slot_info[1].priority)
+				bootab_sel =
+					(bctrl.slot_info[0].priority -
+					 bctrl.slot_info[1].priority) > 0 ?
+					BOOTSEL_A : BOOTSEL_B;
+			else if (bctrl.slot_info[0].successful_boot !=
+				 bctrl.slot_info[1].successful_boot)
+				bootab_sel =
+					(bctrl.slot_info[0].successful_boot -
+					 bctrl.slot_info[1].successful_boot) > 0 ?
+					BOOTSEL_A : BOOTSEL_B;
+			else if (bctrl.slot_info[0].tries_remaining !=
+				 bctrl.slot_info[1].tries_remaining)
+				bootab_sel =
+					(bctrl.slot_info[0].tries_remaining -
+					 bctrl.slot_info[1].tries_remaining) > 0 ?
+					BOOTSEL_A : BOOTSEL_B;
 			else
 				bootab_sel = BOOTSEL_DEFAULT;
 		} else if (slot_is_bootable((void *)&bctrl.slot_info[0])) {
@@ -334,7 +346,8 @@ int get_current_slot(void)
 	} else {
 		printf("invalid bootctrl, Magic:0x%x,Ver:0x%x.\n", bctrl.magic, bctrl.version);
 		if (!init_bootctrl((void *)&bctrl, BOOTSEL_DEFAULT)) {
-			printf("No valid metadata for bootctrl, initialize to default slot %d !\n", BOOTSEL_DEFAULT);
+			printf("No valid metadata for bootctrl,initialize to default slot %d !\n",
+			       BOOTSEL_DEFAULT);
 			bootab_sel = BOOTSEL_DEFAULT;
 		}
 	}
@@ -350,33 +363,34 @@ bool set_active_slot(int slot_index)
 	misc_boot_ctrl_t bctrl;
 	misc_slot_metadata_t *slotp = NULL;
 
-	if((unsigned int)slot_index > 0x1) {
+	if ((unsigned int)slot_index > 0x1) {
 		printf("invalid slot number for bootctrl !\n");
 		goto error;
 	}
 
-	if(get_bootctrl_metadata((void *)&bctrl)) {
+	if (get_bootctrl_metadata((void *)&bctrl)) {
 		printf("Error: fail to get bootctrl.metadata !\n");
 		goto error;
 	}
 
-	if(is_valid_bootctrl((void *)&bctrl)) {
+	if (is_valid_bootctrl((void *)&bctrl)) {
 		slotp = &bctrl.slot_info[slot_index];
 		slotp->successful_boot = 0;
 		slotp->priority = 15;
 		slotp->tries_remaining = 2;
 
-		slotp = &bctrl.slot_info[1-slot_index];
-		if(slotp->priority >= 15)
+		slotp = &bctrl.slot_info[1 - slot_index];
+		if (slotp->priority >= 15)
 			slotp->priority = 14;
-		if(write_bootctrl_metadata((void *)&bctrl)) {
+		if (write_bootctrl_metadata((void *)&bctrl)) {
 			printf("Fail to write bootctrl metadata !\n");
 			goto error;
 		}
 	} else {
 		printf("invalid bootctrl, Magic:0x%x,Ver:0x%x.\n", bctrl.magic, bctrl.version);
-		printf("No valid metadata for bootctrl, initialize to default slot %d !\n", slot_index);
-		if(init_bootctrl((void *)&bctrl, slot_index))
+		printf("No valid metadata for bootctrl, initialize to default slot %d !\n",
+		       slot_index);
+		if (init_bootctrl((void *)&bctrl, slot_index))
 			goto error;
 	}
 
@@ -709,7 +723,7 @@ static int do_bootslot(struct cmd_tbl *cmdtp, int flag, int argc, char * const a
 	if (argc == 1)
 		return -1;
 
-	if(strcmp(argv[1], "get") == 0) {
+	if (strcmp(argv[1], "get") == 0) {
 		ab_mode = get_current_slot();
 		if (ab_mode != BOOTSEL_A && ab_mode != BOOTSEL_B)
 			printf("No bootable slots found\n");
@@ -719,7 +733,7 @@ static int do_bootslot(struct cmd_tbl *cmdtp, int flag, int argc, char * const a
 		return 0;
 	}
 
-	if(strcmp(argv[1], "set") == 0) {
+	if (strcmp(argv[1], "set") == 0) {
 		if (argv[2][0] == 'a')
 			ab_mode = BOOTSEL_A;
 		else if (argv[2][0] == 'b')
@@ -734,11 +748,10 @@ static int do_bootslot(struct cmd_tbl *cmdtp, int flag, int argc, char * const a
 	return -1;
 }
 
-U_BOOT_CMD(
-	bootslot, 3, 0, do_bootslot,
-	"get/set active Linux boot slot(a/b) in emmc\n",
-	"Examples:\n"
-	"\tbootslot get\n"
-	"\tbootslot set a\n"
+U_BOOT_CMD(bootslot, 3, 0, do_bootslot,
+	   "get/set active Linux boot slot(a/b) in emmc\n",
+	   "Examples:\n"
+	   "\tbootslot get\n"
+	   "\tbootslot set a\n"
 );
 

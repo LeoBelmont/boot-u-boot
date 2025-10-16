@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _TEE_CLIENT_TYPE_H_
 #define _TEE_CLIENT_TYPE_H_
@@ -40,11 +40,10 @@ typedef TEE_UUID TEEC_UUID;
 typedef struct TEEC_Session	TEEC_Session;
 typedef struct TEEC_Operation	TEEC_Operation;
 
-typedef TEEC_Result (*TEEC_Callback)(
-	TEEC_Session * session,
-	u32		commandID,
-	TEEC_Operation *operation,
-	void *userdata);
+typedef TEEC_Result (*TEEC_Callback)(TEEC_Session * session,
+				    u32		commandID,
+				    TEEC_Operation *operation,
+				    void *userdata);
 
 /** TEEC_Context is the main logical container linking a Client Application
  * (Service) with a particular TEE.
@@ -179,7 +178,8 @@ typedef struct TEEC_RegisteredMemoryReference {
  * must be consistent with the flags defined in the parent Shared Memory Block.
  * Note that the parent field MUST NOT be NULL. To encode a null
  * Memory Reference, the Client Application must use a Temporary Memory
- * Reference with the buffer field set to NULL. */
+ * Reference with the buffer field set to NULL.
+ */
 	TEEC_SharedMemory *parent;
 
 /*! Size of the referenced memory region, in bytes.
