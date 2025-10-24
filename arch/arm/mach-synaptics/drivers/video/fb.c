@@ -104,6 +104,14 @@ u32 get_fastlogo_status(void)
 
 typedef struct cmd_tbl_s	cmd_tbl_t;
 struct gpio_desc enable_gpio;
+/* Functional hook provided to set status manually
+ * Usage: when dtbo env variable set, status can be set to 0
+ * So that linux can bootup independent of u-boot
+ */
+void set_fastlogo_status(bool status)
+{
+	fastlogo_display_info.u.status =  status;
+}
 
 int syna_parse_lcdc_dt(struct udevice *dev)
 {
