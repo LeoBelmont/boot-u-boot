@@ -61,6 +61,8 @@
 #define GICD_BASE				0xf7901000
 #define GICC_BASE				0xf7902000
 
+#define CFG_ENV_CALLBACK_LIST_STATIC		"dtbo:dtbo"
+
 #ifdef CONFIG_SYNA_RESCUE_MODE
 #define CFG_EXTRA_ENV_SETTINGS \
 	"upgrade_available=0\0" \
