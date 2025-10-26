@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -30,7 +30,7 @@
 
 static void __iomem *gicd_base;
 static void __iomem *gicc_base;
-static int gic_v2_irq_num = 0;
+static int gic_v2_irq_num;
 
 static inline u32 gicd_readl(u32 offset)
 {
@@ -58,6 +58,7 @@ void gic_v2_init(void __iomem *gicd, void __iomem *gicc, int *irq_num)
 	gicc_base = gicc;
 
 	u32 val;
+
 	val = gicd_readl(GICD_TYPER);
 	val &= 0x1F;
 	gic_v2_irq_num = 32 * (val + 1);
@@ -68,6 +69,7 @@ void gic_v2_init(void __iomem *gicd, void __iomem *gicc, int *irq_num)
 	gicc_writel(GICC_CTLR, 0);
 
 	int i;
+
 	for (i = 0; i < *irq_num; i += 32) {
 		/* Disable all interrupt source */
 		gicd_writel(GICD_ICENABLERn + (i / 32) * 4, 0xFFFFFFFF);
@@ -113,6 +115,7 @@ void gic_v2_enable_irq(int irq)
 {
 	gicd_writel(GICD_ISENABLERn + (irq / 32) * 4, BIT(irq % 32));
 	u32 val = gicd_readl(GICD_ITARGETSRn + (irq / 4) * 4);
+
 	gicd_writel(GICD_ITARGETSRn + (irq / 4) * 4, bitfield_replace(val, 8 * (irq % 4), 8, 0x01));
 }
 
@@ -120,12 +123,14 @@ void gic_v2_disable_irq(int irq)
 {
 	gicd_writel(GICD_ICENABLERn + (irq / 32) * 4, BIT(irq % 32));
 	u32 val = gicd_readl(GICD_ITARGETSRn + (irq / 4) * 4);
+
 	gicd_writel(GICD_ITARGETSRn + (irq / 4) * 4, bitfield_replace(val, 8 * (irq % 4), 8, 0x00));
 }
 
 int gic_v2_get_irq_id(void)
 {
 	int irq = gicc_readl(GICC_IAR) & 0x3ff;
+
 	if (irq >= 1020 && irq <= 1021) {		/*  Reserved */
 		printf("Receive illegal interrupt %d.\n", irq);
 		return -ENOSYS;
@@ -133,7 +138,8 @@ int gic_v2_get_irq_id(void)
 		debug("Receive spurious interrupt.\n");
 		return -EINVAL;
 	} else if (irq >= gic_v2_irq_num || irq < 0) {
-		printf("Receive illegal interrupt %d, mustn't larger than %d.\n", irq, gic_v2_irq_num);
+		printf("Receive illegal interrupt %d, mustn't larger than %d.\n",
+		       irq, gic_v2_irq_num);
 		return -EPERM;
 	}
 	return irq;

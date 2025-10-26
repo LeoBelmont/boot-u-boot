@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include "hal_vpp_wrap.h"
 #include "includes.h"
@@ -28,7 +28,6 @@
 #include "syna_lcdc_dev.h"
 #include "vpp_priv.h"
 #include "dsih_displays.h"
-#include <linux/delay.h>
 
 int NTZ_MV_VPP_InitVPPS(struct berlin_fb_priv *priv)
 {
@@ -51,7 +50,7 @@ int NTZ_MV_VPP_Mipi_LoadConfig(struct berlin_fb_priv *priv)
 	struct lcdc_config *lcdc_config_data = priv->lcdc_config_data;
 
 	if (!lcdc_config_data->is_dev_avail[DISPLAY_TYPE_DSI] &&
-		!lcdc_config_data->is_dev_avail[DISPLAY_TYPE_TFT]) {
+	    !lcdc_config_data->is_dev_avail[DISPLAY_TYPE_TFT]) {
 		printf("Error: DSI or RGB panel not available\n");
 		return -ENODEV;
 	}

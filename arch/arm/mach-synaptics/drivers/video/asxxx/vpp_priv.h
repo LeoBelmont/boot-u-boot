@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _VPP_PRIV_H
 #define _VPP_PRIV_H
@@ -34,7 +34,7 @@ typedef enum {
 } ENUM_DISPLAY_ID;
 
 int syna_get_display_modeinfo(struct berlin_fb_priv *priv, int *width,
-		int *heigth, int display, avio_fastlogo_info *dispinfo);
+			      int *heigth, int display, avio_fastlogo_info *dispinfo);
 void syna_lcdc_Enable_IRQ(int intrno);
 void syna_lcdc_Disable_IRQ(int intrno);
 int lcdc_push_frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,

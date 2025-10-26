@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <asm/io.h>
 #include <asm/utils.h>
@@ -184,6 +184,7 @@ static void designware_wdt_enable(void)
 static unsigned int designware_wdt_is_enabled(void)
 {
 	unsigned long val;
+
 	val = readl((CONFIG_DW_WDT_BASE + DW_WDT_CR));
 	return val & 0x1;
 }
@@ -211,6 +212,7 @@ void hw_watchdog_init(void)
 void syna_dw_wdt_init(void)
 {
 	unsigned int wdt_mask;
+
 	wdt_mask = readl(SOC_SM_SYS_CTRL_REG_BASE + RA_smSysCtl_SM_WDT_MASK);
 	//clear bit2 for wdt2 sm reset and bit 5 for wdt2 soc reset
 	wdt_mask &= ~(1 << 2);

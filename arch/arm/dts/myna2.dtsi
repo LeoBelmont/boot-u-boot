@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <dt-bindings/clock/myna2.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -158,7 +158,7 @@
 			compatible = "synaptics,chipctrl-reset";
 			reg = <0xea0000 0x10000>;
 			#reset-cells = <4>;
-                };
+		};
 
 		gic: interrupt-controller@901000 {
 			compatible = "arm,gic-400";
@@ -329,8 +329,8 @@
 		};
 
 		pinctrl: pinctrl@ea8000 {
-                        compatible = "syna,myna2-soc-pinctrl";
-                        reg = <0xea8000 0x28>;
+			compatible = "syna,myna2-soc-pinctrl";
+			reg = <0xea8000 0x28>;
 		};
 
 		keypad: keypad@ea0a44 {
@@ -440,8 +440,9 @@
 				status = "disabled";
 			};
 /**************************************************************************************
-    Put all new nodes before this line - DTBO overlay feature updates below entries
-***************************************************************************************/
+ * Put all new nodes before this line - DTBO overlay feature updates below entries
+ **************************************************************************************
+ */
 			i2c0: i2c@1c00 {
 				compatible = "snps,designware-i2c";
 				reg = <0x1c00 0x100>;

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _VDEC_COM_H_
 #define _VDEC_COM_H_
@@ -602,13 +602,11 @@ typedef struct vbuf_info_t
 #define VDEC_HAL_CONFIG     vdec_config_t
 #define VDEC_HAL_INFO       vdec_const_t
 
-typedef INT32 (* VDEC_EVENT_CALLBACK) (VOID *pStrmCtx, VDEC_EVENT_DESC *pEventDesc);
+typedef INT32 (*VDEC_EVENT_CALLBACK) (VOID *pStrmCtx, VDEC_EVENT_DESC *pEventDesc);
 
-
-typedef struct vdec_buf_req_t
-{
-    UINT32 m_buf_size;                  // buffer size requested
-    UINT32 m_num_frames;                // number of frames need
+typedef struct vdec_buf_req_t {
+	UINT32 m_buf_size;                  // buffer size requested
+	UINT32 m_num_frames;                // number of frames need
 } VDEC_BUF_REQ;
 
 // StreamCtx structure

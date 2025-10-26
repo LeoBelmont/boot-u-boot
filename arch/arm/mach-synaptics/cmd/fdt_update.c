@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <command.h>
 #include <stdlib.h>
@@ -70,7 +70,8 @@ static void setup_cma_param(char *bootargs)
 	/* Notice: strict check for the cma_pool_addr should be non-zero */
 	if (get_cma_size() && get_cma_addr()) {
 		memset(tmp_buf, 0x0, sizeof(tmp_buf));
-		snprintf(tmp_buf, (sizeof(tmp_buf) - 1), "cma=%d@%d", get_cma_size(), get_cma_addr());
+		snprintf(tmp_buf, (sizeof(tmp_buf) - 1), "cma=%d@%d",
+			 get_cma_size(), get_cma_addr());
 		strcat(bootargs, tmp_buf);
 	}
 }
@@ -421,7 +422,8 @@ error:
 	return 0;
 }
 
-static void update_opp_node(void *buf, int offset, unsigned int vh, unsigned int vl, unsigned int vh_freq)
+static void update_opp_node(void *buf, int offset, unsigned int vh, unsigned int vl,
+			    unsigned int vh_freq)
 {
 	int node;
 	const unsigned int *p;
@@ -450,7 +452,8 @@ static void update_opp_node(void *buf, int offset, unsigned int vh, unsigned int
 			fdt_setprop(buf, node, "opp-microvolt", vol_l, sizeof(vol_l));
 		} else {
 			if (vh_freq > 0 && vh_freq < 2500) {
-				snprintf(vh_freq_name, 20, "opp@%lu", (long unsigned int)vh_freq * 1000000);
+				snprintf(vh_freq_name, 20, "opp@%lu",
+					 (long unsigned int)vh_freq * 1000000);
 				fdt_set_name(buf, node, vh_freq_name);
 			}
 			fdt_setprop(buf, node, "opp-microvolt", vol_h, sizeof(vol_h));
@@ -458,7 +461,8 @@ static void update_opp_node(void *buf, int offset, unsigned int vh, unsigned int
 	}
 }
 
-static void update_opp_vcpu(void *fdt, unsigned int vcpuh, unsigned int vcpul, unsigned int vcpuh_freq)
+static void update_opp_vcpu(void *fdt, unsigned int vcpuh, unsigned int vcpul,
+			    unsigned int vcpuh_freq)
 {
 	int offset;
 
@@ -471,7 +475,8 @@ static void update_opp_vcpu(void *fdt, unsigned int vcpuh, unsigned int vcpul, u
 	update_opp_node(fdt, offset, vcpuh, vcpul, vcpuh_freq);
 }
 
-static void update_opp_vcore(void *fdt, unsigned int vcoreh, unsigned int vcorel, unsigned int vcoreh_freq)
+static void update_opp_vcore(void *fdt, unsigned int vcoreh, unsigned int vcorel,
+			     unsigned int vcoreh_freq)
 {
 	int offset;
 
@@ -574,7 +579,7 @@ static int setup_fdt_overlay(void *fdt)
 		goto err;
 	}
 
-	if (0 == get_current_slot())
+	if (get_current_slot() == 0)
 		part_index = f_mmc_get_part_index(get_mmc_active_dev(), "rootfs_a");
 	else
 		part_index = f_mmc_get_part_index(get_mmc_active_dev(), "rootfs_b");
@@ -587,7 +592,8 @@ static int setup_fdt_overlay(void *fdt)
 	}
 
 	while (tok) {
-		sprintf(cmd, "ext4load mmc %x:%x %p /boot/%s", get_mmc_active_dev(), part_index, fdto_addr, tok);
+		sprintf(cmd, "ext4load mmc %x:%x %p /boot/%s", get_mmc_active_dev(), part_index,
+			fdto_addr, tok);
 		if (run_command(cmd, 0)) {
 			printf("failed to load '%s'\n", tok);
 			break;

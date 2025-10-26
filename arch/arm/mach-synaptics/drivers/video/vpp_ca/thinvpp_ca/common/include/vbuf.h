@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _VBUF_H_
 #define _VBUF_H_
@@ -38,25 +38,23 @@
 //!
 //! This enum should be used in VDEC_VID_BUF_DESC.user_data.m_buf_use_state.
 //! [QUESTION: Is it OK to drop this type?]
-typedef enum
-{
-    VM_BUF_UNALLOCATE = 0x0,
-    VM_BUF_IN_DECODING,
-    VM_BUF_READY_DISP,
-    VM_BUF_IN_DISP,
-    VM_BUF_RETIRE,
+typedef enum {
+	VM_BUF_UNALLOCATE = 0x0,
+	VM_BUF_IN_DECODING,
+	VM_BUF_READY_DISP,
+	VM_BUF_IN_DISP,
+	VM_BUF_RETIRE,
 } VM_BUFFER_STATE;
 
 //! \brief
 //! This enum indicates the video buffer pool state.
-typedef enum
-{
-    VBUF_POOL_STATE_EMPTY      = 0x0,  //! No water - no vbuf was allocated in the pool.
-    VBUF_POOL_STATE_EXHAUSTED  = 0x1,  //! Sold out - no vbuf is  available in the pool.
-    VBUF_POOL_STATE_NORMAL     = 0x2,  //! Have water and space, - vbuf is avaliable .
+typedef enum {
+	VBUF_POOL_STATE_EMPTY      = 0x0,  //! No water - no vbuf was allocated in the pool.
+	VBUF_POOL_STATE_EXHAUSTED  = 0x1,  //! Sold out - no vbuf is  available in the pool.
+	VBUF_POOL_STATE_NORMAL     = 0x2,  //! Have water and space, - vbuf is available .
 
-    VBUF_POOL_STATE_INVALID    = 0xFFFFFFFF, //! Unused state, just make 32-bit alignment.
-}VBUF_POOL_STATE;
+	VBUF_POOL_STATE_INVALID    = 0xFFFFFFFF, //! Unused state, just make 32-bit alignment.
+} VBUF_POOL_STATE;
 
 //! \brief
 //! This enum indicates how the video frame buffer is allocated.
@@ -65,62 +63,60 @@ typedef enum
 //! [QUESTION:
 //! What's GRP_ALLOC and SELF_ALLOC? Who shall set this field and when
 //! shall I set this field?]
-typedef enum
-{
-    VM_MEM_UNALLOCATE = 0x0,
-    VM_MEM_GRP_ALLOC,
-    VM_MEM_SELF_ALLOC,
+typedef enum {
+	VM_MEM_UNALLOCATE = 0x0,
+	VM_MEM_GRP_ALLOC,
+	VM_MEM_SELF_ALLOC,
 } VM_ALLOCATE_TYPE;
 
-typedef enum
-{
-    VBUF_CTRL_TYPE_INVALID = 0,
-    VBUF_CTRL_TYPE_START_PTS,
-    VBUF_CTRL_TYPE_STOP_PTS,
-    VBUF_CTRL_TYPE_PAUSE_PTS,
-    VBUF_CTRL_TYPE_PTS_DISCON
+typedef enum {
+	VBUF_CTRL_TYPE_INVALID = 0,
+	VBUF_CTRL_TYPE_START_PTS,
+	VBUF_CTRL_TYPE_STOP_PTS,
+	VBUF_CTRL_TYPE_PAUSE_PTS,
+	VBUF_CTRL_TYPE_PTS_DISCON
 
-}VBUF_CTRL_TYPE;
+} VBUF_CTRL_TYPE;
 
-typedef struct _vbuf_ctrl_pts_info_
-{
-    UINT32  m_pts_hi;
-    UINT32  m_pts_lo;
-}VBUF_CTRL_PTS_INFO;
+typedef struct _vbuf_ctrl_pts_info_ {
+	UINT32  m_pts_hi;
+	UINT32  m_pts_lo;
+} VBUF_CTRL_PTS_INFO;
 
-typedef union _vbuf_ctrl_info_union_
-{
-    VBUF_CTRL_PTS_INFO m_pts;
+typedef union _vbuf_ctrl_info_union_ {
+	VBUF_CTRL_PTS_INFO m_pts;
 
-}VBUF_CTRL_INFO_UNION;
+} VBUF_CTRL_INFO_UNION;
 
-typedef struct _vbuf_control_info_
-{
-    VBUF_CTRL_TYPE 	m_CmdType;
-    VOID*			m_CmdContext;
-    UINT32          m_UserData;
-    VBUF_CTRL_INFO_UNION m_Union;
+typedef struct _vbuf_control_info_ {
+	VBUF_CTRL_TYPE	m_CmdType;
+	VOID		*m_CmdContext;
+	UINT32		m_UserData;
+	VBUF_CTRL_INFO_UNION m_Union;
 #ifdef PTS_PLAYITEM_EXT
-    MV_PlayItem_ID_t m_PID;
+	MV_PlayItem_ID_t m_PID;
 #endif
-}VBUF_CONTROL_INFO;
+} VBUF_CONTROL_INFO;
 
 /* user data block header */
-typedef struct _user_data_block_header_
-{
-    UINT8   m_level  ;                              ///<: Reserved for VDM internal use.
-    UINT8   m_sub_type;                             ///<: Reserved for PE internal use. Sub type of user data. so far only use for CC, 1-dvd cc 0-atsc/dvb/bd cc.
-    UINT8   m_type;                                 ///<: type of user data, defined below. i.e., VIDEO_USER_DATA_TYPE_CC.
-    UINT8   m_valid;                                ///<: TRUE: the user data is valid.
-    UINT8   m_matched;                              ///<: Reserved for VDM internal user.
-    UINT8   m_body_offset;                          ///<: The byte offset of user data body from the m_pStart.
-    UINT16  m_length;                               ///<: The number of bytes of user data payload, starting from m_pStrat;
-    UINT32  m_pos;                                  ///<: Reserved for VDM internal use.
-    UINT8*  m_pStart;                               ///<: The user data start address, (including the header and body).
-    UINT8   m_is_top_field_first;                   /// only apply to interlaced frame, 1: top field first out
-    UINT8   m_is_repeat_first_field;                /// only apply to interlaced frame, 1: repeat first field.
+typedef struct _user_data_block_header_ {
+	UINT8   m_level; ///<: Reserved for VDM internal use.
+	UINT8   m_sub_type; /* Reserved for PE internal use. Sub type of user data.
+			     * so far only use for CC, 1-dvd cc 0-atsc/dvb/bd cc.
+			     */
+	UINT8   m_type;/* type of user data, defined below.
+			* i.e., VIDEO_USER_DATA_TYPE_CC.
+			*/
+	UINT8   m_valid;  //<: TRUE: the user data is valid.
+	UINT8   m_matched;//<: Reserved for VDM internal user.
+	UINT8   m_body_offset;//<: The byte offset of user data body from the m_pStart.
+	UINT16  m_length;//<: The number of bytes of user data payload, starting from m_pStrat;
+	UINT32  m_pos;   //<: Reserved for VDM internal use.
+	UINT8  *m_pStart;//<: The user data start address, (including the header and body).
+	UINT8   m_is_top_field_first;// only apply to interlaced frame, 1: top field first out
+	UINT8   m_is_repeat_first_field;// only apply to interlaced frame, 1: repeat first field.
 
-}USER_DATA_BLOCK_HEADER;
+} USER_DATA_BLOCK_HEADER;
 
 /* official user data type */
 #define VIDEO_USER_DATA_TYPE_CC         0x0         ///<: Closed Caption
@@ -142,10 +138,10 @@ typedef struct _user_data_block_header_
 #define VIDEO_USER_DATA_TYPE_FP         0x9
 #endif
 
-HRESULT create_global_desc_array(int src_fmt, int bitdepth,int width, int height);
+HRESULT create_global_desc_array(int src_fmt, int bitdepth, int width, int height);
 HRESULT get_vbuf_info(VBUF_INFO **pVBInfo);
-void build_frames( VBUF_INFO *vbufinfo, INT32 srcfmt,
-        INT32 bit_depth, INT32 x, INT32 y, INT32 width, INT32 height, INT32 progressive, INT32 pattern_type,bool IsPatt);
+void build_frames(VBUF_INFO *vbufinfo, INT32 srcfmt, INT32 bit_depth, INT32 x, INT32 y,
+		  INT32 width, INT32 height, INT32 progressive, INT32 pattern_type, bool IsPatt);
 
 #if !defined(VPP_IN_TRUST_ZONE)
 //! \brief
@@ -153,7 +149,8 @@ void build_frames( VBUF_INFO *vbufinfo, INT32 srcfmt,
 #define VBUF_HANDLE HANDLE
 
 ////////////////////////////////////////////////////////////////////////////////
-//! \fn VBUF_HANDLE VBuf_PoolCreate(UINT32 uiMaxPoolSize, UINT32 uiMinPoolSize, UINT32 uiMaxBufNum, UINT32 uiMinBufNum);
+//! \fn VBUF_HANDLE VBuf_PoolCreate(UINT32 uiMaxPoolSize, UINT32 uiMinPoolSize,
+//				    UINT32 uiMaxBufNum, UINT32 uiMinBufNum);
 //!	This function create a video buffer pool object. It also define how many buffer
 //! number and how large the buffer size will be created initially, but it doesn't
 //! allocate any video buffer for the pool yet.
@@ -175,7 +172,7 @@ void build_frames( VBUF_INFO *vbufinfo, INT32 srcfmt,
 //! the depth of buffer queue, So it is invalid to set this value to 0.\n
 //!
 //! \param [IN]	UINT32 uiMinBufNum:\n
-//! The minumum buffer number in the pool that will be created initially.\n
+//! The minimum buffer number in the pool that will be created initially.\n
 //!
 //! \return
 //!	return a pointer as the handle of the buffer
@@ -186,7 +183,8 @@ void build_frames( VBUF_INFO *vbufinfo, INT32 srcfmt,
 //! \see
 //!	VBuf_PoolRemove
 ////////////////////////////////////////////////////////////////////////////////
-VBUF_HANDLE VBuf_PoolCreate(UINT32 uiMaxPoolSize, UINT32 uiMinPoolSize, UINT32 uiMinBufNum, UINT32 uiMaxBufNum);
+VBUF_HANDLE VBuf_PoolCreate(UINT32 uiMaxPoolSize, UINT32 uiMinPoolSize, UINT32 uiMinBufNum,
+			    UINT32 uiMaxBufNum);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn HRESULT VBuf_PoolRemove(VBUF_HANDLE hVBufPool);
@@ -221,7 +219,7 @@ HRESULT VBuf_PoolRemove(VBUF_HANDLE hVBufPool);
 //! \param [OUT] UINT32 *pMaxSize.
 //!	the pointer of address that store the value of Maxinum memory size of Pool.\n
 //! \param [OUT] UINT32 *pMinSize
-//!	the pointer of address that store the value of Minumum memory size of Pool.\n
+//!	the pointer of address that store the value of Minimum memory size of Pool.\n
 //! \param [OUT] UINT32 *pUsedSize
 //!	the pointer of address that store the value of How many memory size has been used.\n
 //! \param [OUT] UINT32 *pAllocedSize
@@ -232,7 +230,8 @@ HRESULT VBuf_PoolRemove(VBUF_HANDLE hVBufPool);
 //! \see
 //!	VBuf_PoolCreate, VBuf_ItemFree
 ////////////////////////////////////////////////////////////////////////////////
-HRESULT VBuf_PoolGetMemSize(VBUF_HANDLE hVBufPool, UINT32 *pMaxSize, UINT32 *pMinSize, UINT32* pUsedSize, UINT32* pAllocedSize);
+HRESULT VBuf_PoolGetMemSize(VBUF_HANDLE hVBufPool, UINT32 *pMaxSize, UINT32 *pMinSize,
+			    UINT32 *pUsedSize, UINT32 *pAllocedSize);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn HRESULT VBUF_PoolGetBufNumbers(VBUF_HANDLE hVBufPool,
@@ -248,7 +247,7 @@ HRESULT VBuf_PoolGetMemSize(VBUF_HANDLE hVBufPool, UINT32 *pMaxSize, UINT32 *pMi
 //! \param [OUT] UINT32 *pMaxBufNum.
 //!	the pointer of address that store the value of Maxinum buffer number of Pool.\n
 //! \param [OUT] UINT32 *pMinSize
-//!	the pointer of address that store the value of Minumum buffer number of Pool.\n
+//!	the pointer of address that store the value of Minimum buffer number of Pool.\n
 //! \param [OUT] UINT32 *pUsedSize
 //!	the pointer of address that store the value of How many buffer has been used.
 //! including the buffer in using and buffer in retire but not be freed yet\n
@@ -258,7 +257,8 @@ HRESULT VBuf_PoolGetMemSize(VBUF_HANDLE hVBufPool, UINT32 *pMaxSize, UINT32 *pMi
 //! \see
 //!	VBuf_PoolCreate, VBuf_ItemFree
 ////////////////////////////////////////////////////////////////////////////////
-HRESULT VBuf_PoolGetBufNumbers(VBUF_HANDLE hVBufPool, UINT32 *pMaxBufNum, UINT32 *pMinBufNum, UINT32 *pAllocedNum);
+HRESULT VBuf_PoolGetBufNumbers(VBUF_HANDLE hVBufPool, UINT32 *pMaxBufNum, UINT32 *pMinBufNum,
+			       UINT32 *pAllocedNum);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn HRESULT VBuf_PoolReset(VBUF_HANDLE hVBufPool, INT32 mode);
@@ -298,9 +298,9 @@ HRESULT VBuf_PoolReset(VBUF_HANDLE hVBufPool, INT32 mode);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT VBuf_PoolPreAllocMem(VBUF_HANDLE hVBufPool, UINT32 uiNum, UINT32 uiPerFrameSize);
 
-
 ////////////////////////////////////////////////////////////////////////////////
-//! \fn HRESULT VBuf_ItemReq(VBUF_HANDLE hVBufPool, UINT32 uiReqType, UINT32 uiSize, VDEC_VID_BUF_DESC **pReqVidDesc);
+//! \fn HRESULT VBuf_ItemReq(VBUF_HANDLE hVBufPool, UINT32 uiReqType, UINT32 uiSize,
+//			     VDEC_VID_BUF_DESC **pReqVidDesc);
 //!	Request a buffer with the size requirement.
 //!
 //!	It may give a previously used buffer from the pool, or allocate
@@ -336,8 +336,7 @@ HRESULT VBuf_PoolPreAllocMem(VBUF_HANDLE hVBufPool, UINT32 uiNum, UINT32 uiPerFr
 //!	VBuf_DesCreate
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT VBuf_ItemReq(VBUF_HANDLE hVBufPool, UINT32 uiReqType,
-                     UINT32 uiSize, VDEC_VID_BUF_DESC **pReqVidDesc);
-
+		     UINT32 uiSize, VDEC_VID_BUF_DESC **pReqVidDesc);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn HRESULT VBuf_ItemFree(VBUF_HANDLE hVBufPool, VDEC_VID_BUF_DESC *pVidBufDesc);
@@ -379,7 +378,7 @@ HRESULT VBuf_ItemFree(VBUF_HANDLE hVBufPool, VDEC_VID_BUF_DESC *pVidBufDesc);
 //! \see
 //!	VBuf_DesRemove
 ////////////////////////////////////////////////////////////////////////////////
-HRESULT VBuf_DesCreate(VDEC_VID_BUF_DESC **pDesc, UINT32 BufID );
+HRESULT VBuf_DesCreate(VDEC_VID_BUF_DESC **pDesc, UINT32 BufID);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn HRESULT VBuf_DesRemove(VDEC_VID_BUF_DESC *pVidBufDesc);
@@ -423,21 +422,25 @@ HRESULT VBuf_DesSelfMemAlloc(VDEC_VID_BUF_DESC *pVidBufDesc, UINT32 uiSize);
 HRESULT VBuf_DesSelfMemFree(VDEC_VID_BUF_DESC *pVidBufDesc);
 
 ////////////////////////////////////////////////////////////////////////////////
-//! \fn HRESULT VBuf_PoolGetFullness(VBUF_HANDLE hVBufPool, UINT32*pReadyToDecode, UINT32 *pReadyToDisplay)
+//! \fn HRESULT VBuf_PoolGetFullness(VBUF_HANDLE hVBufPool,UINT32*pReadyToDecode,
+//				     UINT32 *pReadyToDisplay)
 //!	Get fullness info for video buffer pool, both ReadyToDisp queue and ReadyToDecode queue
 //!
 //! \param [IN] VBUF_HANDLE hVBufPool
 //!	it is the handle of buffer pool.
 //! \param [OUT] UINT32* pReadyForDecode
-//!	it is the fullness of queue, which indicte the number of  frames that are ready for decoding.
+//!	it is the fullness of queue, which indicte the number of  frames
+//	that are ready for decoding.
 //! \param [OUT] UINT32* free_queue_fullness
-//!	it is the fullness of queue, which indicte the number of  frames that are ready for display.
+//!	it is the fullness of queue, which indicte the number of  frames
+//	that are ready for display.
 //!
 //! \return
 //!	S_OK success; !=0, error with error code.
 //!	Error code TBD.
 ////////////////////////////////////////////////////////////////////////////////
-HRESULT VBuf_PoolGetFullness(VBUF_HANDLE hVBufPool, UINT32 *pReadyToDecode, UINT32 *pReadyToDisplay);
+HRESULT VBuf_PoolGetFullness(VBUF_HANDLE hVBufPool, UINT32 *pReadyToDecode,
+			     UINT32 *pReadyToDisplay);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn HRESULT VBuf_PushFrameReadyToDecode(VBUF_HANDLE hVBufPool, VDEC_VID_BUF_DESC *pVidBufDesc);
@@ -504,7 +507,7 @@ HRESULT VBuf_PushFrameReadyToDisp(VBUF_HANDLE hVBufPool, VDEC_VID_BUF_DESC *pVid
 //!	VDEC_VID_BUF_DESC *pVidBufDesc; Video buffer descriptor poped.
 //!	NULL if no frame is available in queue.
 ////////////////////////////////////////////////////////////////////////////////
-VDEC_VID_BUF_DESC* VBuf_PopFrameReadyToDisp(VBUF_HANDLE hVBufPool, BOOL bAdvance);
+VDEC_VID_BUF_DESC *VBuf_PopFrameReadyToDisp(VBUF_HANDLE hVBufPool, BOOL bAdvance);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn VDEC_VID_BUF_DESC* VBuf_PopFrameReadyToDecode(VBUF_HANDLE hVBufPool, BOOL bAdvance);
@@ -521,7 +524,7 @@ VDEC_VID_BUF_DESC* VBuf_PopFrameReadyToDisp(VBUF_HANDLE hVBufPool, BOOL bAdvance
 //!	NULL if no frame is available in queue.
 //!
 ////////////////////////////////////////////////////////////////////////////////
-VDEC_VID_BUF_DESC* VBuf_PopFrameReadyToDecode(VBUF_HANDLE hVBufPool, BOOL bAdvance);
+VDEC_VID_BUF_DESC *VBuf_PopFrameReadyToDecode(VBUF_HANDLE hVBufPool, BOOL bAdvance);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn VBUF_INFO* VBuf_GetVBufInfo(VDEC_VID_BUF_DESC *pVidBufDesc);
@@ -534,7 +537,7 @@ VDEC_VID_BUF_DESC* VBuf_PopFrameReadyToDecode(VBUF_HANDLE hVBufPool, BOOL bAdvan
 //!	VBUF_INFO *: VBuf Info structure pointer.
 //!
 ////////////////////////////////////////////////////////////////////////////////
-VBUF_INFO* VBuf_GetVBufInfo(VDEC_VID_BUF_DESC *pVidBufDesc);
+VBUF_INFO *VBuf_GetVBufInfo(VDEC_VID_BUF_DESC *pVidBufDesc);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn VDEC_VID_BUF_DESC* VBuf_PushControlInfo(VBUF_HANDLE hVBufPool,VBUF_CONTROL_INFO* pInfo);
@@ -544,15 +547,14 @@ VBUF_INFO* VBuf_GetVBufInfo(VDEC_VID_BUF_DESC *pVidBufDesc);
 //! \param [IN] VBUF_CONTROL_INFO*    The pointer of control tag.
 //!
 //! \return
-//! 	S_OK success; !=0, error with error code.
+//!	S_OK success; !=0, error with error code.
 //!	    Error code TBD.
 //!
 ////////////////////////////////////////////////////////////////////////////////
-HRESULT VBuf_PushControlInfo(VBUF_HANDLE hVBufPool, VBUF_CONTROL_INFO* pInfo);
+HRESULT VBuf_PushControlInfo(VBUF_HANDLE hVBufPool, VBUF_CONTROL_INFO *pInfo);
 
-
-HRESULT VBuf_PopControlInfo(VBUF_HANDLE hVBufPool, VDEC_VID_BUF_DESC *pVidBufDesc, VBUF_CONTROL_INFO* pInfo);
-
+HRESULT VBuf_PopControlInfo(VBUF_HANDLE hVBufPool, VDEC_VID_BUF_DESC *pVidBufDesc,
+			    VBUF_CONTROL_INFO *pInfo);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \fn VBUF_POOL_STATE VBuf_PoolGetState(VBUF_HANDLE hVBufPool);

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef __COMMON_TYPE_H__
 #define __COMMON_TYPE_H__
@@ -47,7 +47,7 @@ typedef  signed long long    SIGN64;
 typedef  float               REAL32;
 typedef  double              REAL64;
 #ifndef INLINE
-    #define INLINE          inline
+	#define INLINE          inline
 #endif
 typedef unsigned char          UCHAR;
 typedef char                   CHAR;
@@ -68,9 +68,10 @@ typedef signed int             HRESULT;
 typedef long            LONG;
 typedef unsigned long   ULONG;
 
-/*---------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  *    Multiple-word types
- *--------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------
+ */
 #ifndef Txxb
 #define Txxb
 typedef UINT8 T8b;
@@ -97,9 +98,9 @@ typedef void *SHM_HANDLE;
 typedef INT32   ENUM_TYPE;
 
 #ifdef CPU_BIG_ENDIAN
-#define FCC_GEN(a, b, c, d)		(((a)<<24) |((b)<<16) | ((c)<<8) | (d))
+#define FCC_GEN(a, b, c, d)		(((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
 #else
-#define FCC_GEN(a, b, c, d)		(((d)<<24) |((c)<<16) | ((b)<<8) | (a))
+#define FCC_GEN(a, b, c, d)		(((d) << 24) | ((c) << 16) | ((b) << 8) | (a))
 #endif
 
 #define GaloisMemSet memset
@@ -127,8 +128,8 @@ typedef INT32   ENUM_TYPE;
 
 #define E_GENERIC_BASE  (0x0000 << 16)
 
-#define E_GEN_SUC(code) (E_SUC | E_GENERIC_BASE | (code&0x0000FFFF))
-#define E_GEN_ERR(code) (E_ERR | E_GENERIC_BASE | (code&0x0000FFFF))
+#define E_GEN_SUC(code) (E_SUC | E_GENERIC_BASE | ((code) & 0x0000FFFF))
+#define E_GEN_ERR(code) (E_ERR | E_GENERIC_BASE | ((code) & 0x0000FFFF))
 
 #define S_OK  E_GEN_SUC(0x0000)
 #define S_FALSE  E_GEN_SUC(0x0001)

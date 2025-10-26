@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <linux/types.h>
 #include <dm.h>
@@ -28,12 +28,12 @@
 #include "hal_vpp_wrap.h"
 
 #define wrap_MV_VPP_CallFunc(func_ptr, args...) {	\
-	if(func_ptr)					\
+	if (func_ptr)					\
 		func_ptr(args);				\
 }
 
 #define wrap_MV_VPP_CallFuncAndReturn(func_ptr, args...) {	\
-	if(func_ptr)						\
+	if (func_ptr)						\
 		return func_ptr(args);				\
 								\
 	return 0;						\
@@ -58,10 +58,11 @@ int wrap_MV_VPP_Reset(void)
 	wrap_MV_VPP_CallFuncAndReturn(vpp_fops.MV_VPP_Reset);
 }
 
-int wrap_MV_VPP_Config(const int *pvinport_cfg, const int *pdv_cfg,
-			const int *pzorder_cfg, const int *pvoutport_cfg, const int *pfeature_cfg)
+int wrap_MV_VPP_Config(const int *pvinport_cfg, const int *pdv_cfg, const int *pzorder_cfg,
+		       const int *pvoutport_cfg, const int *pfeature_cfg)
 {
-	wrap_MV_VPP_CallFuncAndReturn(vpp_fops.MV_VPP_Config, pvinport_cfg, pdv_cfg, pzorder_cfg, pvoutport_cfg, pfeature_cfg);
+	wrap_MV_VPP_CallFuncAndReturn(vpp_fops.MV_VPP_Config, pvinport_cfg, pdv_cfg, pzorder_cfg,
+				      pvoutport_cfg, pfeature_cfg);
 }
 
 int wrap_MV_VPP_Set_Format(struct berlin_fb_priv *priv)

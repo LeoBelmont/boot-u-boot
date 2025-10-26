@@ -9,7 +9,26 @@
  * @author Luis Oliveira <luis.oliveira@synopsys.com>
  */
 /*
- * Copyright (C) 2024 Synaptics Incorporated
+ * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 or
+ * later as published by the Free Software Foundation.
+ *
+ * INFORMATION CONTAINED IN THIS DOCUMENT IS PROVIDED "AS-IS," AND
+ * SYNAPTICS EXPRESSLY DISCLAIMS ALL EXPRESS AND IMPLIED WARRANTIES,
+ * INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE, AND ANY WARRANTIES OF NON-INFRINGEMENT OF ANY
+ * INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL SYNAPTICS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR
+ * CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN CONNECTION WITH THE USE
+ * OF THE INFORMATION CONTAINED IN THIS DOCUMENT, HOWEVER CAUSED AND
+ * BASED ON ANY THEORY OF LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, AND EVEN IF SYNAPTICS WAS
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. IF A TRIBUNAL OF
+ * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
+ * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
+ * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
  */
 
 #include "dsih_dphy.h"
@@ -65,7 +84,7 @@ int mipi_dsih_dphy_open(struct mipi_dsi_dev *dev)
  */
 #ifdef GEN_2
 int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
-							 uint32_t output_freq)
+			     uint32_t output_freq)
 {
 	uint32_t loop_divider = 0;  /* (M) */
 	uint32_t input_divider = 1; /* (N) */
@@ -83,13 +102,13 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 		uint8_t lpf_resistor; /* lpfctrl */
 	}
 
-	loop_bandwidth[] =
-		{/*
-		 * Gen 2 associates the charge pump current and LPF
-		 * resistor with the output frequency ranges
-		 * (and thus we simplify here to use the counter/pointer
-		 * of the following structure)
-		 */
+	loop_bandwidth[] = {
+		 /*
+		  * Gen 2 associates the charge pump current and LPF
+		  * resistor with the output frequency ranges
+		  * (and thus we simplify here to use the counter/pointer
+		  * of the following structure)
+		  */
 		 {80, 0x00, 0x01, 0x02},
 		 {90, 0x00, 0x01, 0x02},
 		 {100, 0x00, 0x01, 0x02},
@@ -135,14 +154,13 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 		 {1500, 0x07, 0x0B, 0x08}};
 	uint32_t delta = 0;
 	uint32_t tmp_loop_divider = 0;
-	unsigned step = 0;
+	unsigned int step = 0;
 
 	struct {
 		uint32_t freq;   /* upper margin of frequency range */
 		uint8_t hs_freq;   /* hsfreqrange */
 		uint8_t vco_range; /* vcorange */
-	} ranges[] =
-		{
+	} ranges[] = {
 			{90, 0x00, 0x00},
 			{100, 0x10, 0x00},
 			{110, 0x20, 0x00},
@@ -182,7 +200,7 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 			{1400, 0x1C, 0x07},
 			{1450, 0x2C, 0x07},
 			{1500, 0x3C, 0x07}};
-	if (phy == NULL)
+	if (!phy)
 		return MIPI_RET(ENODEV);
 
 	if (output_freq < MIN_OUTPUT_FREQ)
@@ -196,14 +214,15 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 		((loop_divider * phy->reference_freq) / (phy->reference_freq / DPHY_DIV_LOWER_LIMIT)) - output_freq;
 
 	for (input_divider = 1 + (phy->reference_freq / DPHY_DIV_UPPER_LIMIT);
-		 ((phy->reference_freq / input_divider) >= DPHY_DIV_LOWER_LIMIT) && (!flag);
-		 input_divider++) {
+	     ((phy->reference_freq / input_divider) >= DPHY_DIV_LOWER_LIMIT) && (!flag);
+	     input_divider++) {
 		tmp_loop_divider =
 			((output_freq * input_divider) / (phy->reference_freq));
 
 		if ((tmp_loop_divider % 2) == 0) {
 			/* if even */
-			if (output_freq == (tmp_loop_divider * (phy->reference_freq / input_divider))) {
+			if (output_freq ==
+			    (tmp_loop_divider * (phy->reference_freq / input_divider))) {
 				/* exact values found */
 				flag = 1;
 				loop_divider = tmp_loop_divider;
@@ -212,10 +231,12 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 					output_freq - (tmp_loop_divider * (phy->reference_freq / input_divider));
 
 				/* variable was incremented
-				 * before exiting the loop */
+				 * before exiting the loop
+				 */
 				input_divider--;
 			}
-			if ((output_freq - (tmp_loop_divider * (phy->reference_freq / input_divider))) < delta) {
+			if ((output_freq -
+			    (tmp_loop_divider * (phy->reference_freq / input_divider))) < delta) {
 				/* values found with smaller delta */
 				loop_divider = tmp_loop_divider;
 
@@ -225,7 +246,8 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 			}
 		} else {
 			tmp_loop_divider += 1;
-			if (output_freq == (tmp_loop_divider * (phy->reference_freq / input_divider))) {
+			if (output_freq ==
+			    (tmp_loop_divider * (phy->reference_freq / input_divider))) {
 				/* exact values found */
 				flag = 1;
 				loop_divider = tmp_loop_divider;
@@ -234,10 +256,12 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 					(tmp_loop_divider * (phy->reference_freq / input_divider)) - output_freq;
 
 				/* variable was incremented
-				 * before exiting the loop */
+				 * before exiting the loop
+				 */
 				input_divider--;
 			}
-			if (((tmp_loop_divider * (phy->reference_freq / input_divider)) - output_freq) < delta) {
+			if (((tmp_loop_divider * (phy->reference_freq / input_divider)) -
+			    output_freq) < delta) {
 				/* values found with smaller delta */
 				loop_divider = tmp_loop_divider;
 
@@ -251,8 +275,8 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 		input_divider =
 			step + (loop_divider * phy->reference_freq) / output_freq;
 
-		mipi_dbg_print(MIPI_DEBUG,"D-PHY: Approximated Frequency: %d KHz\n",
-				 (loop_divider * (phy->reference_freq / input_divider)) / 8);
+		mipi_dbg_print(MIPI_DEBUG, "D-PHY: Approximated Frequency: %d KHz\n",
+			       (loop_divider * (phy->reference_freq / input_divider)) / 8);
 	}
 	/*
 	 * get the PHY in power down mode (shutdownz = 0)
@@ -269,14 +293,14 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 
 	/* find ranges */
 	for (range = 0;
-		 (range < (sizeof(ranges) / sizeof(ranges[0]))) && ((output_freq / 1000) > ranges[range].freq);
-		 range++) {
+	     (range < (sizeof(ranges) / sizeof(ranges[0]))) &&
+	     ((output_freq / 1000) > ranges[range].freq);
+	     range++) {
 		;
 	}
 
-	if (range >= (sizeof(ranges) / sizeof(ranges[0]))) {
+	if (range >= (sizeof(ranges) / sizeof(ranges[0])))
 		return FALSE;
-	}
 
 	/* set up board depending on environment if any */
 	mipi_dsih_dphy_set_base_dir_tx(dev);
@@ -293,7 +317,8 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 	mipi_dsih_dphy_write(dev, 0x10, data, 1);
 
 	/* for all Gen2 testchips,
-	 * bypass LP TX enable idle low power */
+	 * bypass LP TX enable idle low power
+	 */
 	data[0] = 0x80;
 	mipi_dsih_dphy_write(dev, 0x32, data, 1);
 	mipi_dsih_dphy_write(dev, 0x42, data, 1);
@@ -323,7 +348,8 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 
 	/* bypass CP default|
 	 * bypass LPF default|
-	 * LPF resistor [7]|[6]|[5:0] */
+	 * LPF resistor [7]|[6]|[5:0]
+	 */
 	data[0] =
 		(0x01 << 7) | (0x01 << 6) | (loop_bandwidth[i].lpf_resistor << 0);
 	mipi_dsih_dphy_write(dev, 0x12, data, 1);
@@ -333,16 +359,18 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 	mipi_dsih_dphy_write(dev, 0x17, data, 1);
 
 	/* pll loop divider (code 0x18) takes only 2 bytes
-	 * (10 bits in data) */
+	 * (10 bits in data)
+	 */
 	no_of_bytes = 2;
 	for (i = 0; i < no_of_bytes; i++) {
 		/* 7 is dependent on no_of_bytes make sure 5 bits only
-		 * of value are written at a time */
-		data[i] =
-			((uint8_t)((((loop_divider - 2) >> (5 * i)) & 0x1F) | (i << 7)));
+		 * of value are written at a time
+		 */
+		data[i] = ((uint8_t)((((loop_divider - 2) >> (5 * i)) & 0x1F) | (i << 7)));
 	}
 	/* PLL loop divider ratio -
-	 * SET no|reserved|feedback divider [7]|[6:5]|[4:0] */
+	 * SET no|reserved|feedback divider [7]|[6:5]|[4:0]
+	 */
 	mipi_dsih_dphy_write(dev, 0x18, data, no_of_bytes);
 	mipi_dsih_dphy_no_of_lanes(dev, no_of_lanes);
 	mipi_dsih_dphy_stop_wait_time(dev, 0x1C);
@@ -355,7 +383,7 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 #endif
 #ifdef GEN_3
 int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
-							 uint32_t output_data_rate)
+			     uint32_t output_data_rate)
 {
 	unsigned long loop_divider = 0;  /* (M) */
 	unsigned long input_divider = 1; /* (N) */
@@ -375,8 +403,7 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 		uint32_t data_rate; /* upper margin of frequency range */
 		uint8_t hs_freq;	/* hsfreqrange */
 		uint8_t vco_range;  /* vcorange */
-	} ranges[] =
-	{
+	} ranges[] = {
 		{  80, 0x00, 0x3F},
 		{  90, 0x10, 0x3F},
 		{ 100, 0x20, 0x3F},
@@ -442,7 +469,7 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 		{2500, 0x49, 0x01}
 	};
 
-	if (phy == NULL)
+	if (!phy)
 		return MIPI_RET(ENODEV);
 
 	if (output_freq < MIN_OUTPUT_FREQ)
@@ -450,14 +477,14 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 
 	/* find ranges */
 	for (range = 0;
-		 (range < (sizeof(ranges) / sizeof(ranges[0]))) && ((output_data_rate / 1000) > ranges[range].data_rate);
-		 range++) {
+	     (range < (sizeof(ranges) / sizeof(ranges[0]))) &&
+	     ((output_data_rate / 1000) > ranges[range].data_rate);
+	     range++) {
 		;
 	}
 
-	if (range >= (sizeof(ranges) / sizeof(ranges[0]))) {
+	if (range >= (sizeof(ranges) / sizeof(ranges[0])))
 		return FALSE;
-	}
 
 	if ((ranges[range].vco_range >> 4) == 3)
 		vco_divider = 8;
@@ -475,57 +502,56 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 		((output_freq * (phy->reference_freq / DPHY_DIV_LOWER_LIMIT)) / phy->reference_freq);
 
 	/* here delta will account for the rounding */
-	delta =
-		((loop_divider * phy->reference_freq) / (phy->reference_freq / DPHY_DIV_LOWER_LIMIT)) - output_freq;
+	delta = ((loop_divider * phy->reference_freq) / (phy->reference_freq / DPHY_DIV_LOWER_LIMIT)) - output_freq;
 
 	for (input_divider = 1 + (phy->reference_freq / DPHY_DIV_UPPER_LIMIT);
-		 ((phy->reference_freq / input_divider) >= DPHY_DIV_LOWER_LIMIT) && (!flag);
-		 input_divider++) {
+	     ((phy->reference_freq / input_divider) >= DPHY_DIV_LOWER_LIMIT) && (!flag);
+	     input_divider++) {
 		tmp_loop_divider = ((output_freq * input_divider) / (phy->reference_freq));
 		if ((tmp_loop_divider % 2) == 0) {
-
 			/* if even */
-			if (output_freq == (tmp_loop_divider * (phy->reference_freq / input_divider))) {
-
+			if (output_freq ==
+			    (tmp_loop_divider * (phy->reference_freq / input_divider))) {
 				/* exact values found */
 				flag = 1;
 				loop_divider = tmp_loop_divider;
 
-				delta =
-					output_freq - (tmp_loop_divider * (phy->reference_freq / input_divider));
+				delta = output_freq -
+					(tmp_loop_divider * (phy->reference_freq / input_divider));
 
 				/* variable was incremented
-				 * before exiting the loop */
+				 * before exiting the loop
+				 */
 				input_divider--;
 			}
-			if ((output_freq - (tmp_loop_divider * (phy->reference_freq / input_divider))) < delta) {
-
+			if ((output_freq -
+			    (tmp_loop_divider * (phy->reference_freq / input_divider))) < delta) {
 				/* values found with smaller delta */
 				loop_divider = tmp_loop_divider;
 
-				delta =
-					output_freq - (tmp_loop_divider * (phy->reference_freq / input_divider));
+				delta = output_freq -
+					(tmp_loop_divider * (phy->reference_freq / input_divider));
 				step = 1;
 			}
 		} else {
 			tmp_loop_divider += 1;
-			if (output_freq == (tmp_loop_divider * (phy->reference_freq / input_divider))) {
-
+			if (output_freq ==
+			    (tmp_loop_divider * (phy->reference_freq / input_divider))) {
 				/* exact values found */
 				flag = 1;
 				loop_divider = tmp_loop_divider;
-				delta =
-					(tmp_loop_divider * (phy->reference_freq / input_divider)) - output_freq;
+				delta = (tmp_loop_divider * (phy->reference_freq / input_divider)) -
+					output_freq;
 
 				/* variable was incremented before exiting the loop */
 				input_divider--;
 			}
-			if (((tmp_loop_divider * (phy->reference_freq / input_divider)) - output_freq) < delta) {
-
+			if (((tmp_loop_divider * (phy->reference_freq / input_divider)) -
+			    output_freq) < delta) {
 				/* values found with smaller delta */
 				loop_divider = tmp_loop_divider;
-				delta =
-					(tmp_loop_divider * (phy->reference_freq / input_divider)) - output_freq;
+				delta = (tmp_loop_divider * (phy->reference_freq / input_divider)) -
+					output_freq;
 				step = 0;
 			}
 		}
@@ -548,7 +574,7 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 	mipi_dphy_pll_clksel(phy, PLL_OUTPUT_CLOCK_GENERATE);
 
 	/* hs frequency range [7]|[6:0]*/
-	data[0] = (1 << 7) | (ranges[range].hs_freq ) ;
+	data[0] = (1 << 7) | (ranges[range].hs_freq);
 	mipi_dsih_dphy_write(dev, 0x44, data, 1);
 
 	/*PLL lock configurations*/
@@ -600,7 +626,7 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 		mipi_dsih_dphy_write(dev, 0x1F, data, 1);
 	}
 
-	data[0] = ((phy->reference_freq/1000)-17)*4;//28;(Fcfg_clk(MHz)-17)*4]
+	data[0] = ((phy->reference_freq / 1000) - 17) * 4;//28;(Fcfg_clk(MHz)-17)*4]
 	mipi_dphy_CfgClkFreqRange(phy, data[0]);
 	mipi_dphy_pll_shadow_control_en(phy, 1);
 
@@ -621,7 +647,8 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 	data[0] =  0x00;
 	mipi_dsih_dphy_write(dev, 0x13, data, 1);
 	/* setup PLL
-	 * Reserved | pll_vco_cntrl_ovr_en | pll_vco_cntrl_ovr*/
+	 * Reserved | pll_vco_cntrl_ovr_en | pll_vco_cntrl_ovr
+	 */
 	data[0] = (1 << 6) | (ranges[range].vco_range);
 	mipi_dsih_dphy_write(dev, 0x12, data, 1);
 
@@ -635,7 +662,7 @@ int mipi_dsih_dphy_configure(struct mipi_dsi_dev *dev, uint8_t no_of_lanes,
 	no_of_bytes = 2;
 	/* 7 is dependent on no_of_bytes make sure 5 bits only of value are written at a time */
 	for (i = 0; i < no_of_bytes; i++)
-		data[i] = ((uint8_t)((((loop_divider - 2) >> (5 * i)) & 0x1F) | (i << 7) ));
+		data[i] = ((uint8_t)((((loop_divider - 2) >> (5 * i)) & 0x1F) | (i << 7)));
 
 	/* PLL loop divider ratio - SET no|reserved|feedback divider [7]|[6:5]|[4:0] */
 	mipi_dsih_dphy_write(dev, 0x18, data, no_of_bytes);
@@ -669,7 +696,7 @@ int mipi_dsih_dphy_close(struct mipi_dsi_dev *dev)
 {
 	dphy_t *phy = &dev->phy;
 
-	if (phy == NULL)
+	if (!phy)
 		return MIPI_RET(ENODEV);
 
 	mipi_dsih_dphy_reset(dev, 0);
@@ -678,6 +705,7 @@ int mipi_dsih_dphy_close(struct mipi_dsi_dev *dev)
 
 	return TRUE;
 }
+
 /*
  * Enable clock lane module
  *
@@ -689,6 +717,7 @@ void mipi_dsih_dphy_clock_en(struct mipi_dsi_dev *dev, int en)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_RSTZ, en, 2, 1);
 }
+
 /*
  * Reset D-PHY module
  *
@@ -700,6 +729,7 @@ void mipi_dsih_dphy_reset(struct mipi_dsi_dev *dev, int reset)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_RSTZ, reset, 1, 1);
 }
+
 /**
  * Power up/down D-PHY module
  *
@@ -711,6 +741,7 @@ void mipi_dsih_dphy_shutdown(struct mipi_dsi_dev *dev, int powerup)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_RSTZ, powerup, 0, 1);
 }
+
 /*
  * Force D-PHY PLL to stay on while in ULPS
  *
@@ -723,6 +754,7 @@ void mipi_dsih_dphy_force_pll(struct mipi_dsi_dev *dev, int force)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_RSTZ, force, 3, 1);
 }
+
 /**
  * Get force D-PHY PLL module
  * @param dev pointer to structure which holds information about the d-phy
@@ -733,6 +765,7 @@ int mipi_dsih_dphy_get_force_pll(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_dphy_read_part(dev, R_DPHY_RSTZ, 3, 1);
 }
+
 /**
  * Wake up or make sure D-PHY PLL module is awake
  * This function must be called after going into ULPS and before exiting it
@@ -748,20 +781,20 @@ int mipi_dsih_dphy_get_force_pll(struct mipi_dsi_dev *dev)
  */
 int mipi_dsih_dphy_wakeup_pll(struct mipi_dsi_dev *dev)
 {
-	unsigned i = 0;
+	unsigned int i = 0;
+
 	if (mipi_dsih_dphy_status(dev, 0x1) == 0) {
 		mipi_dsih_dphy_force_pll(dev, 1);
 		for (i = 0; i < DSIH_PHY_ACTIVE_WAIT; i++) {
-			if (mipi_dsih_dphy_status(dev, 0x1)) {
+			if (mipi_dsih_dphy_status(dev, 0x1))
 				break;
-			}
 		}
-		if (mipi_dsih_dphy_status(dev, 0x1) == 0) {
+		if (mipi_dsih_dphy_status(dev, 0x1) == 0)
 			return FALSE;
-		}
 	}
 	return TRUE;
 }
+
 /**
  * Configure minimum wait period for HS transmission request after a stop state
  *
@@ -773,6 +806,7 @@ void mipi_dsih_dphy_stop_wait_time(struct mipi_dsi_dev *dev, uint8_t no_of_byte_
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_IF_CFG, no_of_byte_cycles, 8, 8);
 }
+
 /**
  * Set number of active lanes
  *
@@ -784,6 +818,7 @@ void mipi_dsih_dphy_no_of_lanes(struct mipi_dsi_dev *dev, uint8_t no_of_lanes)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_IF_CFG, no_of_lanes - 1, 0, 2);
 }
+
 /**
  * Get number of currently active lanes
  *
@@ -795,6 +830,7 @@ uint8_t mipi_dsih_dphy_get_no_of_lanes(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_dphy_read_part(dev, R_DPHY_IF_CFG, 0, 2);
 }
+
 /**
  * Request the PHY module to start transmission of high speed clock.
  * This causes the clock lane to start transmitting DDR clock on the
@@ -810,6 +846,7 @@ void mipi_dsih_dphy_enable_hs_clk(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_LPCLK_CTRL, enable, 0, 1);
 }
+
 /**
  * One bit is asserted in the trigger_request (4bits) to cause the lane module
  * to cause the associated trigger to be sent across the lane interconnect.
@@ -826,32 +863,26 @@ int mipi_dsih_dphy_escape_mode_trigger(struct mipi_dsi_dev *dev, uint8_t trigger
 	uint8_t sum = 0;
 	int i = 0;
 
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < 4; i++)
 		sum += ((trigger_request >> i) & 1);
-	}
 	if (sum == 1) {
 		/* clear old trigger */
-		mipi_dsih_dphy_write_part(dev,
-								  R_DPHY_TX_TRIGGERS, 0x00, 0, 4);
-		mipi_dsih_dphy_write_part(dev,
-								  R_DPHY_TX_TRIGGERS, trigger_request, 0, 4);
+		mipi_dsih_dphy_write_part(dev, R_DPHY_TX_TRIGGERS, 0x00, 0, 4);
+		mipi_dsih_dphy_write_part(dev, R_DPHY_TX_TRIGGERS, trigger_request, 0, 4);
 
 		for (i = 0; i < DSIH_PHY_ACTIVE_WAIT; i++) {
-
-			if (mipi_dsih_dphy_status(dev, 0x0010)) {
+			if (mipi_dsih_dphy_status(dev, 0x0010))
 				break;
-			}
 		}
 
-		mipi_dsih_dphy_write_part(dev,
-								  R_DPHY_TX_TRIGGERS, 0x00, 0, 4);
-		if (i >= DSIH_PHY_ACTIVE_WAIT) {
+		mipi_dsih_dphy_write_part(dev, R_DPHY_TX_TRIGGERS, 0x00, 0, 4);
+		if (i >= DSIH_PHY_ACTIVE_WAIT)
 			return FALSE;
-		}
 		return TRUE;
 	}
 	return FALSE;
 }
+
 /**
  * ULPS mode request/exit on all active data lanes.
  * @param dev pointer to structure which holds information about the d-phy
@@ -867,8 +898,7 @@ int mipi_dsih_dphy_ulps_data_lanes(struct mipi_dsi_dev *dev, int enable)
 	uint16_t data_lanes_mask = 0;
 
 	if (enable) {
-		mipi_dsih_dphy_write_part(dev,
-								  R_DPHY_ULPS_CTRL, 1, 2, 1);
+		mipi_dsih_dphy_write_part(dev, R_DPHY_ULPS_CTRL, 1, 2, 1);
 		return TRUE;
 	} else {
 		if (mipi_dsih_dphy_status(dev, 0x1) == 0)
@@ -876,46 +906,45 @@ int mipi_dsih_dphy_ulps_data_lanes(struct mipi_dsi_dev *dev, int enable)
 
 		mipi_dsih_dphy_write_part(dev, R_DPHY_ULPS_CTRL, 1, 3, 1);
 		switch (mipi_dsih_dphy_get_no_of_lanes(dev)) {
-			case 3:
-			{
-				data_lanes_mask |= (1 << 12);
-			}
-			break;
-			case 2:
-			{
-				data_lanes_mask |= (1 << 10);
-			}
-			break;
+		case 3:
+		{
+			data_lanes_mask |= (1 << 12);
+		}
+		break;
+		case 2:
+		{
+			data_lanes_mask |= (1 << 10);
+		}
+		break;
 
-			case 1:
-			{
-				data_lanes_mask |= (1 << 8);
-			}
-			break;
+		case 1:
+		{
+			data_lanes_mask |= (1 << 8);
+		}
+		break;
 
-			case 0:
-			{
-				data_lanes_mask |= (1 << 5);
-			}
-			break;
+		case 0:
+		{
+			data_lanes_mask |= (1 << 5);
+		}
+		break;
 
-			default:
-				data_lanes_mask |= 0;
-				break;
+		default:
+			data_lanes_mask |= 0;
+			break;
 		}
 		for (timeout = 0; timeout < DSIH_PHY_ACTIVE_WAIT; timeout++) {
 			/* verify that the DPHY has left ULPM */
 
-			if (mipi_dsih_dphy_status(dev, data_lanes_mask) == data_lanes_mask) {
+			if (mipi_dsih_dphy_status(dev, data_lanes_mask) == data_lanes_mask)
 				break;
-			}
 			mdelay(5);
 		}
 
 		if (mipi_dsih_dphy_status(dev, data_lanes_mask) != data_lanes_mask) {
-			mipi_dbg_print(MIPI_DEBUG,"stat %x, mask %x",
-					 mipi_dsih_dphy_status(dev, data_lanes_mask),
-					 data_lanes_mask);
+			mipi_dbg_print(MIPI_DEBUG, "stat %x, mask %x",
+				       mipi_dsih_dphy_status(dev, data_lanes_mask),
+				       data_lanes_mask);
 			return FALSE;
 		}
 		mipi_dsih_dphy_write_part(dev, R_DPHY_ULPS_CTRL, 0, 2, 1);
@@ -923,6 +952,7 @@ int mipi_dsih_dphy_ulps_data_lanes(struct mipi_dsi_dev *dev, int enable)
 	}
 	return TRUE;
 }
+
 /*
  * ULPS mode request/exit on Clock Lane.
  *
@@ -950,9 +980,9 @@ int mipi_dsih_dphy_ulps_clk_lane(struct mipi_dsi_dev *dev, int enable)
 		for (timeout = 0; timeout < DSIH_PHY_ACTIVE_WAIT; timeout++) {
 			/* verify that the DPHY has left ULPM */
 			if (mipi_dsih_dphy_status(dev, clk_lane_mask) == clk_lane_mask) {
-				mipi_dbg_print(MIPI_DEBUG,"stat %x, mask %x",
-						 mipi_dsih_dphy_status(dev, clk_lane_mask),
-						 clk_lane_mask);
+				mipi_dbg_print(MIPI_DEBUG, "stat %x, mask %x",
+					       mipi_dsih_dphy_status(dev, clk_lane_mask),
+					       clk_lane_mask);
 				break;
 			}
 			mdelay(5);
@@ -965,6 +995,7 @@ int mipi_dsih_dphy_ulps_clk_lane(struct mipi_dsi_dev *dev, int enable)
 	}
 	return TRUE;
 }
+
 /*
  * Get D-PHY PPI status
  *
@@ -977,6 +1008,7 @@ uint32_t mipi_dsih_dphy_status(struct mipi_dsi_dev *dev, uint16_t mask)
 {
 	return mipi_dsih_dphy_read_word(dev, R_DPHY_STATUS) & mask;
 }
+
 /*
  * @param dev pointer to structure which holds information about the d-phy
  * module
@@ -986,6 +1018,7 @@ void mipi_dsih_dphy_test_clock(struct mipi_dsi_dev *dev, int value)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_TST_CRTL0, value, 1, 1);
 }
+
 /**
  * @param dev pointer to structure which holds information about the d-phy
  * module
@@ -995,6 +1028,7 @@ void mipi_dsih_dphy_test_clear(struct mipi_dsi_dev *dev, int value)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_TST_CRTL0, value, 0, 1);
 }
+
 /**
  * @param dev pointer to structure which holds information about the d-phy
  * module
@@ -1004,6 +1038,7 @@ void mipi_dsih_dphy_test_en(struct mipi_dsi_dev *dev, uint8_t on_falling_edge)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_TST_CRTL1, on_falling_edge, 16, 1);
 }
+
 /**
  * @param dev pointer to structure which holds information about the d-phy
  * module
@@ -1012,6 +1047,7 @@ uint8_t mipi_dsih_dphy_test_data_out(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_dphy_read_part(dev, R_DPHY_TST_CRTL1, 8, 8);
 }
+
 /**
  * @param dev pointer to structure which holds information about the d-phy
  * module
@@ -1021,6 +1057,7 @@ void mipi_dsih_dphy_test_data_in(struct mipi_dsi_dev *dev, uint8_t test_data)
 {
 	mipi_dsih_dphy_write_part(dev, R_DPHY_TST_CRTL1, test_data, 0, 8);
 }
+
 /**
  * Write to D-PHY module (encapsulating the digital interface)
  * @param dev pointer to structure which holds information about the d-phy
@@ -1030,20 +1067,20 @@ void mipi_dsih_dphy_test_data_in(struct mipi_dsi_dev *dev, uint8_t test_data)
  * @param data_length of the data array
  */
 #ifdef GEN_2
-void mipi_dsih_dphy_write(struct mipi_dsi_dev *dev, uint16_t address,
-						  uint8_t *data,
-						  uint8_t data_length)
+void mipi_dsih_dphy_write(struct mipi_dsi_dev *dev, uint16_t address, uint8_t *data,
+			  uint8_t data_length)
 {
-	unsigned i = 0;
+	unsigned int i = 0;
 
 	if (data != 0) {
-
-		mipi_dbg_print(MIPI_DEBUG,"TEST CODE: ADDR %X DATA %X\n", address, data[0]);
+		mipi_dbg_print(MIPI_DEBUG, "TEST CODE: ADDR %X DATA %X\n", address, data[0]);
 		/* set the TESTCLK input high in preparation
-		 * to latch in the desired test mode */
+		 * to latch in the desired test mode
+		 */
 		mipi_dsih_dphy_test_clock(dev, 1);
 		/* set the desired test code in the input 8-bit bus
-		 * TESTDIN[7:0] */
+		 * TESTDIN[7:0]
+		 */
 		mipi_dsih_dphy_test_data_in(dev, (uint8_t)address);
 		/* set TESTEN input high  */
 		mipi_dsih_dphy_test_en(dev, 1);
@@ -1052,16 +1089,19 @@ void mipi_dsih_dphy_write(struct mipi_dsi_dev *dev, uint16_t address,
 		 */
 		mipi_dsih_dphy_test_clock(dev, 0);
 		/* set TESTEN input low to disable further test mode
-		 * code latching  */
+		 * code latching
+		 */
 		mipi_dsih_dphy_test_en(dev, 0);
 		/* start writing MSB first */
 		for (i = data_length; i > 0; i--) {
 			/* set TESTDIN[7:0] to the desired test data
-			 * appropriate to the chosen test mode */
+			 * appropriate to the chosen test mode
+			 */
 			mipi_dsih_dphy_test_data_in(dev, data[i - 1]);
 			/* pulse TESTCLK high to capture this test data
 			 * into the macrocell; repeat these two steps
-			 * as necessary */
+			 * as necessary
+			 */
 			mipi_dsih_dphy_test_clock(dev, 1);
 			mipi_dsih_dphy_test_clock(dev, 0);
 		}
@@ -1070,11 +1110,10 @@ void mipi_dsih_dphy_write(struct mipi_dsi_dev *dev, uint16_t address,
 #endif
 
 #ifdef GEN_3
-void mipi_dsih_dphy_write(struct mipi_dsi_dev *dev, uint16_t address,
-						  uint8_t *data,
-						  uint8_t data_length)
+void mipi_dsih_dphy_write(struct mipi_dsi_dev *dev, uint16_t address, uint8_t *data,
+			  uint8_t data_length)
 {
-	unsigned i = 0;
+	unsigned int i = 0;
 
 	//mipi_dbg_print(MIPI_DEBUG,"TEST CODE: ADDR %X DATA %X\n", address, data[0]);
 	if (data != 0) {
@@ -1084,15 +1123,21 @@ void mipi_dsih_dphy_write(struct mipi_dsi_dev *dev, uint16_t address,
 		mipi_dsih_dphy_test_data_in(dev, (uint8_t)address);
 		/* set TESTEN input high  */
 		mipi_dsih_dphy_test_en(dev, 1);
-		/* drive the TESTCLK input low; the falling edge captures the chosen test code into the transceiver */
+		/* drive the TESTCLK input low; the falling edge captures the chosen test code
+		 * into the transceiver
+		 */
 		mipi_dsih_dphy_test_clock(dev, 0);
 		/* set TESTEN input low to disable further test mode code latching  */
 		mipi_dsih_dphy_test_en(dev, 0);
 		/* start writing MSB first */
 		for (i = data_length; i > 0; i--) {
-			/* set TESTDIN[7:0] to the desired test data appropriate to the chosen test mode */
+			/* set TESTDIN[7:0] to the desired test data appropriate to the
+			 * chosen test mode
+			 */
 			mipi_dsih_dphy_test_data_in(dev, data[i - 1]);
-			/* pulse TESTCLK high to capture this test data into the macrocell; repeat these two steps as necessary */
+			/* pulse TESTCLK high to capture this test data into the macrocell;
+			 * repeat these two steps as necessary
+			 */
 			mipi_dsih_dphy_test_clock(dev, 1);
 			mipi_dsih_dphy_test_clock(dev, 0);
 		}
@@ -1104,10 +1149,12 @@ void mipi_dsih_dphy_delay(struct mipi_dsi_dev *dev, int value)
 {
 	return;
 }
+
 void mipi_dsih_dphy_mmcm_pclk(struct mipi_dsi_dev *dev, uint32_t pclk)
 {
 	//FIXME: Pixel clock configuration is done in VPP
 }
+
 /* abstracting BSP */
 /**
  * Write to whole register to D-PHY module (encapsulating the bus interface)
@@ -1121,6 +1168,7 @@ void mipi_dsih_dphy_write_word(struct mipi_dsi_dev *dev, uint32_t reg_address, u
 {
 	iowrite32(dev->core_addr + reg_address, data);
 }
+
 /**
  * Write bit field to D-PHY module (encapsulating the bus interface)
  *
@@ -1131,7 +1179,8 @@ void mipi_dsih_dphy_write_word(struct mipi_dsi_dev *dev, uint32_t reg_address, u
  * @param shift from the right hand side of the register (big endian)
  * @param width of the bit field
  */
-void mipi_dsih_dphy_write_part(struct mipi_dsi_dev *dev, uint32_t reg_address, uint32_t data, uint8_t shift, uint8_t width)
+void mipi_dsih_dphy_write_part(struct mipi_dsi_dev *dev, uint32_t reg_address, uint32_t data,
+			       uint8_t shift, uint8_t width)
 {
 	uint32_t mask = 0;
 	uint32_t temp = 0;
@@ -1142,6 +1191,7 @@ void mipi_dsih_dphy_write_part(struct mipi_dsi_dev *dev, uint32_t reg_address, u
 	temp |= (data & mask) << shift;
 	mipi_dsih_dphy_write_word(dev, reg_address, temp);
 }
+
 /**
  * Read whole register from D-PHY module (encapsulating the bus interface)
  *
@@ -1158,6 +1208,7 @@ uint32_t mipi_dsih_dphy_read_word(struct mipi_dsi_dev *dev, uint32_t reg_address
 
 	return val;
 }
+
 /**
  * Read bit field from D-PHY module (encapsulating the bus interface)
  *
@@ -1168,7 +1219,8 @@ uint32_t mipi_dsih_dphy_read_word(struct mipi_dsi_dev *dev, uint32_t reg_address
  * @param width of the bit field
  * @return data bits to be written to D-PHY
  */
-uint32_t mipi_dsih_dphy_read_part(struct mipi_dsi_dev *dev, uint32_t reg_address, uint8_t shift, uint8_t width)
+uint32_t mipi_dsih_dphy_read_part(struct mipi_dsi_dev *dev, uint32_t reg_address,
+				  uint8_t shift, uint8_t width)
 {
 	return (mipi_dsih_dphy_read_word(dev, reg_address) >> shift) & ((1 << width) - 1);
 }
@@ -1183,6 +1235,7 @@ uint32_t mipi_dsih_dphy_read_part(struct mipi_dsi_dev *dev, uint32_t reg_address
 void mipi_dsih_dphy_set_base_dir_tx(struct mipi_dsi_dev *dev)
 {
 	uint8_t data[4]; /* maximum data for now are 4 bytes per test mode*/
+
 	data[0] = 0x01;
 	mipi_dsih_dphy_write(dev, 0xb0, data, 1);
 }
@@ -1197,7 +1250,7 @@ void mipi_dsih_dphy_set_base_dir_tx(struct mipi_dsi_dev *dev)
 uint16_t dsi_get_transition_times(struct mipi_dsi_dev *dev)
 {
 	dsih_dpi_video_t *video;
-	unsigned range = 0;
+	unsigned int range = 0;
 	struct {
 		uint16_t freq;
 		uint16_t clk_lp2hs;
@@ -1206,15 +1259,31 @@ uint16_t dsi_get_transition_times(struct mipi_dsi_dev *dev)
 		uint8_t data_hs2lp;
 	}
 #ifdef GEN_2
-	phy_transitions[] =
-		{
-			{90, 32, 20, 26, 13}, {100, 35, 23, 28, 14}, {110, 32, 22, 26, 13}, {130, 31, 20, 27, 13}, {140, 33, 22, 26, 14}, {150, 33, 21, 26, 14}, {170, 32, 20, 27, 13}, {180, 36, 23, 30, 15}, {200, 40, 22, 33, 15}, {220, 40, 22, 33, 15}, {240, 44, 24, 36, 16}, {250, 48, 24, 38, 17}, {270, 48, 24, 38, 17}, {300, 50, 27, 41, 18}, {330, 56, 28, 45, 18}, {350, 59, 28, 48, 19}, {400, 61, 30, 50, 20}, {450, 67, 31, 55, 21}, {500, 73, 31, 59, 22}, {550, 79, 36, 63, 24}, {600, 83, 37, 68, 25}, {650, 90, 38, 73, 27}, {700, 95, 40, 77, 28}, {750, 102, 40, 84, 28}, {800, 106, 42, 87, 30}, {850, 113, 44, 93, 31}, {900, 118, 47, 98, 32}, {950, 124, 47, 102, 34}, {1000, 130, 49, 107, 35}, {1050, 135, 51, 111, 37}, {1100, 139, 51, 114, 38}, {1150, 146, 54, 120, 40}, {1200, 153, 57, 125, 41}, {1250, 158, 58, 130, 42}, {1300, 163, 58, 135, 44}, {1350, 168, 60, 140, 45}, {1400, 172, 64, 144, 47}, {1450, 176, 65, 148, 48}, {1500, 181, 66, 153, 50}
-
-		};
+	phy_transitions[] = {
+			{90, 32, 20, 26, 13}, {100, 35, 23, 28, 14},
+			{110, 32, 22, 26, 13}, {130, 31, 20, 27, 13},
+			{140, 33, 22, 26, 14}, {150, 33, 21, 26, 14},
+			{170, 32, 20, 27, 13}, {180, 36, 23, 30, 15},
+			{200, 40, 22, 33, 15}, {220, 40, 22, 33, 15},
+			{240, 44, 24, 36, 16}, {250, 48, 24, 38, 17},
+			{270, 48, 24, 38, 17}, {300, 50, 27, 41, 18},
+			{330, 56, 28, 45, 18}, {350, 59, 28, 48, 19},
+			{400, 61, 30, 50, 20}, {450, 67, 31, 55, 21},
+			{500, 73, 31, 59, 22}, {550, 79, 36, 63, 24},
+			{600, 83, 37, 68, 25}, {650, 90, 38, 73, 27},
+			{700, 95, 40, 77, 28}, {750, 102, 40, 84, 28},
+			{800, 106, 42, 87, 30}, {850, 113, 44, 93, 31},
+			{900, 118, 47, 98, 32}, {950, 124, 47, 102, 34},
+			{1000, 130, 49, 107, 35}, {1050, 135, 51, 111, 37},
+			{1100, 139, 51, 114, 38}, {1150, 146, 54, 120, 40},
+			{1200, 153, 57, 125, 41}, {1250, 158, 58, 130, 42},
+			{1300, 163, 58, 135, 44}, {1350, 168, 60, 140, 45},
+			{1400, 172, 64, 144, 47}, {1450, 176, 65, 148, 48},
+			{1500, 181, 66, 153, 50}
+	};
 #endif
 #ifdef GEN_3
-	phy_transitions[] =
-		{
+	phy_transitions[] = {
 			{80, 21, 17, 15, 10},
 			{90, 23, 17, 16, 10},
 			{100, 22, 17, 16, 10},
@@ -1237,7 +1306,7 @@ uint16_t dsi_get_transition_times(struct mipi_dsi_dev *dev)
 			{350, 51, 35, 40, 20},
 			{400, 59, 37, 44, 21},
 			{450, 65, 40, 49, 23},
-			{500, 181,66, 153,50},/*{500, 71, 41, 54, 24},*/
+			{500, 181, 66, 153, 50},/*{500, 71, 41, 54, 24},*/
 			{550, 77, 44, 57, 26},
 			{600, 82, 46, 64, 27},
 			{650, 87, 48, 67, 28},
@@ -1269,33 +1338,34 @@ uint16_t dsi_get_transition_times(struct mipi_dsi_dev *dev)
 			{1950, 236, 95, 185, 56},
 			{2000, 243, 97, 190, 56},
 			{2050, 248, 99, 194, 58},
-			{2100, 252, 100,199, 59},
-			{2150, 259, 102,204, 61},
-			{2200, 266, 105,210, 62},
-			{2250, 269, 109,213, 63},
-			{2300, 272, 109,217, 65},
-			{2350, 281, 112,225, 66},
-			{2400, 283, 115,226, 66},
-			{2450, 282, 115,226, 67},
-			{2500, 281, 118,227, 67}
-		};
+			{2100, 252, 100, 199, 59},
+			{2150, 259, 102, 204, 61},
+			{2200, 266, 105, 210, 62},
+			{2250, 269, 109, 213, 63},
+			{2300, 272, 109, 217, 65},
+			{2350, 281, 112, 225, 66},
+			{2400, 283, 115, 226, 66},
+			{2450, 282, 115, 226, 67},
+			{2500, 281, 118, 227, 67}
+	};
 #endif
 
 	/* check DSI controller dev */
-	if (dev == NULL)
+	if (!dev)
 		return MIPI_RET(ENODEV);
 
 	video = &dev->dpi_video;
 
 	/* find ranges */
 	for (range = 0;
-		 (range < (sizeof(phy_transitions) / sizeof(phy_transitions[0]))) && (((video->byte_clock * 8) / 1000) > phy_transitions[range].freq);
-		 range++) {
+	     (range < (sizeof(phy_transitions) / sizeof(phy_transitions[0]))) &&
+	     (((video->byte_clock * 8) / 1000) > phy_transitions[range].freq);
+	     range++) {
 		;
 	}
-	if (range >= (sizeof(phy_transitions) / sizeof(phy_transitions[0]))) {
+	if (range >= (sizeof(phy_transitions) / sizeof(phy_transitions[0])))
 		return FALSE;
-	}
+
 	video->max_hs_to_lp_cycles = phy_transitions[range].data_hs2lp;
 	video->max_lp_to_hs_cycles = phy_transitions[range].data_lp2hs;
 	video->max_clk_hs_to_lp_cycles = phy_transitions[range].clk_hs2lp;

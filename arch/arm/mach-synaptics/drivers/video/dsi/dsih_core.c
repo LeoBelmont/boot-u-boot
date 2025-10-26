@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
-/**
+/*
  * Copyright (C) 2018 Synopsys, Inc.
  *
  * @file dsih_core.c
@@ -9,7 +9,26 @@
  * @author Luis Oliveira <luis.oliveira@synopsys.com>
  */
 /*
- * Copyright (C) 2024 Synaptics Incorporated
+ * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 or
+ * later as published by the Free Software Foundation.
+ *
+ * INFORMATION CONTAINED IN THIS DOCUMENT IS PROVIDED "AS-IS," AND
+ * SYNAPTICS EXPRESSLY DISCLAIMS ALL EXPRESS AND IMPLIED WARRANTIES,
+ * INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE, AND ANY WARRANTIES OF NON-INFRINGEMENT OF ANY
+ * INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL SYNAPTICS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR
+ * CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN CONNECTION WITH THE USE
+ * OF THE INFORMATION CONTAINED IN THIS DOCUMENT, HOWEVER CAUSED AND
+ * BASED ON ANY THEORY OF LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, AND EVEN IF SYNAPTICS WAS
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. IF A TRIBUNAL OF
+ * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
+ * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
+ * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
  */
 
 #include "includes.h"
@@ -19,11 +38,11 @@
 #include "dsih_hal.h"
 #include "avioGbl.h"
 
-/**
-* @short Init DSI parameters
-* @param[in] dev MIPI DSI device
-* @return none
-*/
+/*
+ * @short Init DSI parameters
+ * @param[in] dev MIPI DSI device
+ * @return none
+ */
 uint16_t mipi_dsi_init_param(struct mipi_dsi_dev *dev)
 {
 	dphy_t *phy = &dev->phy;
@@ -31,14 +50,14 @@ uint16_t mipi_dsi_init_param(struct mipi_dsi_dev *dev)
 	dsih_cmd_mode_video_t *edpi_video = &dev->cmd_mode_video;
 	uint16_t ret;
 
-	mipi_dbg_print(MIPI_INFO,"%s:DSI initialization\n", FUNC_NAME);
+	mipi_dbg_print(MIPI_INFO, "%s:DSI initialization\n", FUNC_NAME);
 #ifdef GEN_3
 	phy->reference_freq = 25000; /* [KHz] */
 #else
 	phy->reference_freq = 27000; /* [KHz] */
 #endif
-	if (dev == NULL) {
-		mipi_dbg_print(MIPI_ERROR,"Dev Null\n");
+	if (!dev) {
+		mipi_dbg_print(MIPI_ERROR, "Dev Null\n");
 		return MIPI_RET(ENODEV);
 	}
 	phy->base = MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_DPHYTX;
@@ -62,7 +81,7 @@ uint16_t mipi_dsi_init_param(struct mipi_dsi_dev *dev)
 	 */
 	ret = mipi_dsih_open(dev, COLOR_CODE_24BIT);
 
-	if (ret != TRUE)
+	if (!ret)
 		return ret;
 
 	/* initialise DPI video params */
@@ -104,49 +123,45 @@ uint16_t mipi_dsi_init_param(struct mipi_dsi_dev *dev)
 	return TRUE;
 }
 
-/**
-* @short Start DSI platform
-* @param[in] dev MIPI DSI device
-* @param[in] display Type of display
-* @param[in] video_mode Video mode or command mode
-* @param[in] lanes number of lanes
-* @return none
-*/
-void dsi_platform_init(struct mipi_dsi_dev *dev, int display, int video_mode,
-					   int lanes)
+/*
+ * @short Start DSI platform
+ * @param[in] dev MIPI DSI device
+ * @param[in] display Type of display
+ * @param[in] video_mode Video mode or command mode
+ * @param[in] lanes number of lanes
+ * @return none
+ */
+void dsi_platform_init(struct mipi_dsi_dev *dev, int display, int video_mode, int lanes)
 {
 	switch (video_mode) {
-		case COMMAND_MODE:
-			/* command mode */
-			mipi_dbg_print(MIPI_DEBUG,"%s:Command Mode\n", FUNC_NAME);
-			if (!pre_command_mode(dev, display, lanes)) {
-				mipi_dbg_print(MIPI_DEBUG,"%s:eDPI Video\n", FUNC_NAME);
-				if (!mipi_dsih_edpi_video(dev))
-					mipi_dbg_print(MIPI_ERROR,
-							"error configuring video\n");
+	case COMMAND_MODE:
+		/* command mode */
+		mipi_dbg_print(MIPI_DEBUG, "%s:Command Mode\n", FUNC_NAME);
+		if (!pre_command_mode(dev, display, lanes)) {
+			mipi_dbg_print(MIPI_DEBUG, "%s:eDPI Video\n", FUNC_NAME);
+			if (!mipi_dsih_edpi_video(dev))
+				mipi_dbg_print(MIPI_ERROR, "error configuring video\n");
 
-				copy_edpi_param_changes(&dev->cmd_mode_video,
+			copy_edpi_param_changes(&dev->cmd_mode_video,
 						&dev->cmd_mode_video_old);
-			}
-			break;
-		case VIDEO_MODE:
-			/* video mode */
-			mipi_dbg_print(MIPI_DEBUG,"%s:Video Mode\n", FUNC_NAME);
-			if (!pre_video_mode(dev, display, lanes)) {
-				mipi_dbg_print(MIPI_DEBUG,"%s:DPI Video\n", FUNC_NAME);
-				mipi_dbg_print(MIPI_DEBUG,"%s:Using %d lanes\n", FUNC_NAME, lanes);
-				if (mipi_dsih_dpi_video(dev))
-					mipi_dbg_print(MIPI_ERROR,
-							"error configuring video\n");
+		}
+		break;
+	case VIDEO_MODE:
+		/* video mode */
+		mipi_dbg_print(MIPI_DEBUG, "%s:Video Mode\n", FUNC_NAME);
+		if (!pre_video_mode(dev, display, lanes)) {
+			mipi_dbg_print(MIPI_DEBUG, "%s:DPI Video\n", FUNC_NAME);
+			mipi_dbg_print(MIPI_DEBUG, "%s:Using %d lanes\n", FUNC_NAME, lanes);
+			if (mipi_dsih_dpi_video(dev))
+				mipi_dbg_print(MIPI_ERROR, "error configuring video\n");
 
-				copy_dpi_param_changes(&dev->dpi_video,
-						&dev->dpi_video_old);
-			}
-			pre_video_mode(dev, display, lanes);
-			break;
-		default:
-			mipi_dbg_print(MIPI_ERROR,"Invalid mode\n");
-			break;
+			copy_dpi_param_changes(&dev->dpi_video, &dev->dpi_video_old);
+		}
+		pre_video_mode(dev, display, lanes);
+		break;
+	default:
+		mipi_dbg_print(MIPI_ERROR, "Invalid mode\n");
+		break;
 	}
 	mipi_dsih_reset_controller(dev);
 }
@@ -176,20 +191,20 @@ int mipi_dsi_init(struct mipi_dsi_dev *dev)
 {
 	int ret = 0;
 
-	mipi_dbg_print(MIPI_INFO,"****************************************\n");
-	mipi_dbg_print(MIPI_INFO,"%s:Installing SNPS MIPI DSI module\n", FUNC_NAME);
-	mipi_dbg_print(MIPI_INFO,"****************************************\n");
+	mipi_dbg_print(MIPI_INFO, "****************************************\n");
+	mipi_dbg_print(MIPI_INFO, "%s:Installing SNPS MIPI DSI module\n", FUNC_NAME);
+	mipi_dbg_print(MIPI_INFO, "****************************************\n");
 
-	mipi_dbg_print(MIPI_INFO,"%s:Device registration\n", FUNC_NAME);
+	mipi_dbg_print(MIPI_INFO, "%s:Device registration\n", FUNC_NAME);
 	if (!dev) {
-		mipi_dbg_print(MIPI_ERROR,"%s:Could not allocated mipi_dsi_dev\n", FUNC_NAME);
+		mipi_dbg_print(MIPI_ERROR, "%s:Could not allocated mipi_dsi_dev\n", FUNC_NAME);
 		return MIPI_RET(ENOMEM);
 	}
 	dev->device_name = "MIPI_DSI";
-	mipi_dbg_print(MIPI_INFO,"%s:Driver's name '%s'\n", FUNC_NAME, dev->device_name);
+	mipi_dbg_print(MIPI_INFO, "%s:Driver's name '%s'\n", FUNC_NAME, dev->device_name);
 
 	// Map memory blocks
-	mipi_dbg_print(MIPI_DEBUG,"%s:Map memory blocks\n", FUNC_NAME);
+	mipi_dbg_print(MIPI_DEBUG, "%s:Map memory blocks\n", FUNC_NAME);
 	dev->core_addr = MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_MEMMAP_MIPI;
 
 	//INIT

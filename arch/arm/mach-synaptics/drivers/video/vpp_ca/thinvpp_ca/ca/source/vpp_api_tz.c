@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \file vpp_api_tz.c
@@ -41,10 +41,10 @@
 
 //VPP API SHM internal control data structure
 typedef struct {
-    AMP_SHM_HANDLE            hShm;       /* shm handle */
-    UINT32                    *phy_addr;  /* shm physical addr */
-    UINT32                    *vir_addr;  /* shm virtul addr */
-    MV_OSAL_HANDLE_MUTEX_t     hLock;     /* Lock for shm */
+	AMP_SHM_HANDLE            hShm;       /* shm handle */
+	UINT32                    *phy_addr;  /* shm physical addr */
+	UINT32                    *vir_addr;  /* shm virtul addr */
+	MV_OSAL_HANDLE_MUTEX_t     hLock;     /* Lock for shm */
 } vpp_shm_t;
 
 /***********************************************************
@@ -55,7 +55,7 @@ typedef struct {
  **********************************************************/
 INT MV_VPPOBJ_Init(VPP_INIT_PARM *vpp_init_parm)
 {
-#if defined (VPP_ENABLE_INTERNAL_MEM_MGR)
+#if defined(VPP_ENABLE_INTERNAL_MEM_MGR)
 
 	AMP_SHM_HANDLE shm_handle;
 	int result;
@@ -69,7 +69,7 @@ INT MV_VPPOBJ_Init(VPP_INIT_PARM *vpp_init_parm)
 		vpp_init_parm->uiShmSize = SHM_SHARE_SZ;
 	} else {
 		//vpp/vpp_rsv carveout does not exist, Then allocate from other carve-out
-		shm_handle = (uintptr_t) VPP_ALLOC_ALLIGNED(SHM_SHARE_SZ, PAGE_SIZE);
+		shm_handle = (uintptr_t)VPP_ALLOC_ALLIGNED(SHM_SHARE_SZ, PAGE_SIZE);
 		if (!shm_handle)
 			return MV_VPP_ENOMEM;
 		vpp_init_parm->uiShmPA = (UINT32)shm_handle;
@@ -99,8 +99,8 @@ INT MV_VPPOBJ_Init(VPP_INIT_PARM *vpp_init_parm)
  ***********************************************/
 INT MV_VPPOBJ_Create(void)
 {
-    VppCreate();
-    return MV_VPP_OK;
+	VppCreate();
+	return MV_VPP_OK;
 }
 
 /***************************************
@@ -109,11 +109,11 @@ INT MV_VPPOBJ_Create(void)
  * RETURN: NONE
  **************************************/
 INT MV_VPPOBJ_Config(INT handle,
-                     const INT *pvinport_cfg,
-                     const INT *pdv_cfg,
-                     const INT *pzorder_cfg,
-                     const INT *pvoutport_cfg,
-                     const INT *pfeature_cfg)
+		     const INT *pvinport_cfg,
+		     const INT *pdv_cfg,
+		     const INT *pzorder_cfg,
+		     const INT *pvoutport_cfg,
+		     const INT *pfeature_cfg)
 {
 	return VppConfig(handle, pvinport_cfg, pdv_cfg, pzorder_cfg, pvoutport_cfg, pfeature_cfg);
 }
@@ -131,15 +131,15 @@ INT MV_VPPOBJ_Config(INT handle,
  *       which belongs to that CPCB or DV.
  *******************************************************************/
 INT MV_VPPOBJ_SetCPCBOutputResolution(INT handle,
-                                      INT cpcbID,
-                                      INT resID,
-                                      INT bit_depth)
+				      INT cpcbID,
+				      INT resID,
+				      INT bit_depth)
 {
-    HRESULT Ret = MV_VPP_OK;
+	HRESULT Ret = MV_VPP_OK;
 
-    Ret = VppSetOutRes(cpcbID, resID, bit_depth);
+	Ret = VppSetOutRes(cpcbID, resID, bit_depth);
 
-    return (Ret);
+	return Ret;
 }
 
 /********************************************************************************
@@ -157,7 +157,7 @@ INT MV_VPPOBJ_SetCPCBOutputResolution(INT handle,
  ********************************************************************************/
 INT MV_VPPOBJ_SetHdmiVideoFmt(INT handle, INT color_fmt, INT bit_depth, INT pixel_rept)
 {
-    return VppHdmiSetVidFmt(color_fmt, bit_depth, pixel_rept);
+	return VppHdmiSetVidFmt(color_fmt, bit_depth, pixel_rept);
 }
 
 /********************************************************************************
@@ -172,7 +172,7 @@ INT MV_VPPOBJ_SetHdmiVideoFmt(INT handle, INT color_fmt, INT bit_depth, INT pixe
  ********************************************************************************/
 INT MV_VPPOBJ_SetHdmiTxControl(VOID)
 {
-    return VppSetHdmiTxControl(1);
+	return VppSetHdmiTxControl(1);
 }
 
 /******************************************************************************
@@ -188,46 +188,46 @@ INT MV_VPPOBJ_SetHdmiTxControl(VOID)
  *         MV_ECMDQFULL - command queue is full
  ******************************************************************************/
 INT MV_VPPOBJ_OpenDispWindow(INT handle,
-                             INT planeID,
-                             VPP_WIN *win,
-                             VPP_WIN_ATTR *attr)
+			     INT planeID,
+			     VPP_WIN *win,
+			     VPP_WIN_ATTR *attr)
 {
-    HRESULT Ret = MV_VPP_OK;
-    int params[8];
+	HRESULT Ret = MV_VPP_OK;
+	int params[8];
 
-    if (!win)
-        return (MV_VPP_EBADPARAM);
+	if (!win)
+		return (MV_VPP_EBADPARAM);
 
-    if ((win->width<=0) || (win->height<=0))
-        return (MV_VPP_EBADPARAM);
+	if (win->width <= 0 || win->height <= 0)
+		return (MV_VPP_EBADPARAM);
 
-    params[0] = planeID;
-    params[1] = win->x;
-    params[2] = win->y;
-    params[3] = win->width;
-    params[4] = win->height;
+	params[0] = planeID;
+	params[1] = win->x;
+	params[2] = win->y;
+	params[3] = win->width;
+	params[4] = win->height;
 
-    /* set video plane background window */
-    if (attr) {
-        params[5] = attr->bgcolor;
-        params[6] = attr->alpha;
-        params[7] = attr->globalAlphaFlag;
-    } else {
-        params[5] = -1;
-        params[6] = -1;
-        params[7] = -1;
-    }
+	/* set video plane background window */
+	if (attr) {
+		params[5] = attr->bgcolor;
+		params[6] = attr->alpha;
+		params[7] = attr->globalAlphaFlag;
+	} else {
+		params[5] = -1;
+		params[6] = -1;
+		params[7] = -1;
+	}
 
-    Ret = VppOpenDispWin(params[0],
-                   params[1],
-                   params[2],
-                   params[3],
-                   params[4],
-                   params[5],
-                   params[6],
-                   params[7]);
+	Ret = VppOpenDispWin(params[0],
+			     params[1],
+			     params[2],
+			     params[3],
+			     params[4],
+			     params[5],
+			     params[6],
+			     params[7]);
 
-    return (Ret);
+	return Ret;
 }
 
 /*******************************************************************
@@ -241,7 +241,7 @@ INT MV_VPPOBJ_OpenDispWindow(INT handle,
  *******************************************************************/
 INT MV_VPPOBJ_SetDisplayMode(INT handle, INT planeID, INT mode)
 {
-    return VppSetDispMode(planeID, mode);
+	return VppSetDispMode(planeID, mode);
 }
 
 /*******************************************************************
@@ -255,8 +255,9 @@ INT MV_VPPOBJ_SetDisplayMode(INT handle, INT planeID, INT mode)
  *******************************************************************/
 INT MV_VPPOBJ_DisplayFrame(INT handle, INT planeID, VOID *frame)
 {
-	VBUF_INFO *pVBufInfo,*pElInfo = NULL;
+	VBUF_INFO *pVBufInfo, *pElInfo = NULL;
 	INT ret, DolbyValid = 0;
+
 	pVBufInfo = (VBUF_INFO *)frame;
 
 #if CONFIG_MV_AMP_TEE_ENABLE
@@ -265,16 +266,16 @@ INT MV_VPPOBJ_DisplayFrame(INT handle, INT planeID, VOID *frame)
 
 	debug("%s:%d: m_is_compressed:%p, m_primaries:%p m_iDisplayOETF:%p m_vitmyuvRangeIn:%p"
 		"m_thdr_present_mode:%p, m_dv_status:%p, m_sar_height:%p, m_pbuf_start = 0x%p\n",
-		__func__, __LINE__, &(pVBufInfo->m_is_compressed),
-		&(pVBufInfo->m_primaries), &(pVBufInfo->m_iDisplayOETF),
-		&(pVBufInfo->m_vitmyuvRangeIn), &(pVBufInfo->m_thdr_present_mode),
-		&(pVBufInfo->m_dv_status), &(pVBufInfo->m_sar_height),
+		__func__, __LINE__, &pVBufInfo->m_is_compressed,
+		&pVBufInfo->m_primaries, &pVBufInfo->m_iDisplayOETF,
+		&pVBufInfo->m_vitmyuvRangeIn, &pVBufInfo->m_thdr_present_mode,
+		&pVBufInfo->m_dv_status, &pVBufInfo->m_sar_height,
 		(pVBufInfo->m_pbuf_start));
 
 	/* pass frame info */
 	ret = VppPassVbufInfo((UINT32 *)pVBufInfo, sizeof(VBUF_INFO),
-			(UINT32 *)pElInfo,sizeof(VBUF_INFO),
-			planeID, DolbyValid, DISPLAY_FRAME);
+			      (UINT32 *)pElInfo, sizeof(VBUF_INFO),
+			      planeID, DolbyValid, DISPLAY_FRAME);
 	if (ret != 0) {
 		debug("VppPassVbufInfo failed\n");
 		return ret;
@@ -299,7 +300,7 @@ INT MV_VPPOBJ_SetRefWindow(INT handle, INT planeID, VPP_WIN *win)
 
 	Ret = VppSetRefWin(planeID, win->x, win->y, win->width, win->height);
 
-	return (Ret);
+	return Ret;
 }
 
 /******************************************************************************
@@ -315,20 +316,20 @@ INT MV_VPPOBJ_SetRefWindow(INT handle, INT planeID, VPP_WIN *win)
  *         MV_ECMDQFULL - command queue is full
  ******************************************************************************/
 INT MV_VPPOBJ_ChangeDispWindow(INT handle,
-        INT planeID,
-        VPP_WIN *win,
-        VPP_WIN_ATTR *attr)
+			       INT planeID,
+			       VPP_WIN *win,
+			       VPP_WIN_ATTR *attr)
 {
 	HRESULT Ret = MV_VPP_OK;
 	int params[8];
 
-	if((!win)&&(!attr))
+	if (!win && !attr)
 		return MV_VPP_EBADPARAM;
 
 	params[0] = planeID;
 
 	if (win) {
-		if ((win->width<=2) || (win->height<=2))
+		if (win->width <= 2 || win->height <= 2)
 			return (MV_VPP_EBADPARAM);
 
 		params[1] = win->x;
@@ -352,21 +353,21 @@ INT MV_VPPOBJ_ChangeDispWindow(INT handle,
 	}
 
 	Ret = VppChangeDispWin(params[0],
-			params[1],
-			params[2],
-			params[3],
-			params[4],
-			params[5],
-			params[6],
-			params[7]);
+			       params[1],
+			       params[2],
+			       params[3],
+			       params[4],
+			       params[5],
+			       params[6],
+			       params[7]);
 
-	return (Ret);
+	return Ret;
 }
 
 /***************************************************
  * FUNCTION: mute/un-mute a plane
  * PARAMS:  planeID - plane to mute/un-mute
- *          mute - 1: mute, 0: un-mute
+ *          1: mute, 0: un-mute
  * RETURN: MV_VPP_OK - succeed
  *         MV_VPP_ENODEV - no device
  *         MV_EBADPARAM - invalid parameters
@@ -374,7 +375,7 @@ INT MV_VPPOBJ_ChangeDispWindow(INT handle,
  ***********************************************/
 INT MV_VPPOBJ_SetPlaneMute(INT handle, INT planeID, INT mute)
 {
-    return VppSetPlaneMute(planeID, mute);
+	return VppSetPlaneMute(planeID, mute);
 }
 
 /************************************************************************
@@ -385,12 +386,12 @@ INT MV_VPPOBJ_SetPlaneMute(INT handle, INT planeID, INT mute)
  ************************************************************************/
 uintptr_t MV_VPPOBJ_RecycleFrames(int handle, int planeID)
 {
-    return (uintptr_t)VppRecycleFrame(planeID);
+	return (uintptr_t)VppRecycleFrame(planeID);
 }
 
 int MV_VPPOBJ_Stop(int handle)
 {
-    return Vppstop();
+	return Vppstop();
 }
 
 int MV_VPPOBJ_LoadMipiConfig(VPP_MIPI_LOAD_CONFIG *pConfigParams)
@@ -409,7 +410,7 @@ int MV_VPPOBJ_LoadMipiConfig(VPP_MIPI_LOAD_CONFIG *pConfigParams)
  **************************************/
 INT MV_VPPOBJ_Reset(void)
 {
-    return VppReset();
+	return VppReset();
 }
 
 /***********************************************
@@ -422,9 +423,9 @@ INT MV_VPPOBJ_Reset(void)
  ***********************************************/
 INT MV_VPPOBJ_Destroy(INT handle)
 {
-    VppDestroy();
+	VppDestroy();
 
-    return (MV_VPP_OK);
+	return MV_VPP_OK;
 }
 
 /***************************************************

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <dt-bindings/clock/platypus.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -140,7 +140,7 @@
 			compatible = "synaptics,chipctrl-reset";
 			reg = <0xea0000 0x10000>;
 			#reset-cells = <4>;
-                };
+		};
 
 		gic: interrupt-controller@901000 {
 			compatible = "arm,gic-400";
@@ -296,7 +296,9 @@
 				phy-names = "usb2-phy0";
 				clocks = <&osc>, <&clkgate CLK_USB0CORE>, <&clkgate CLK_USBOTG>;
 				clock-names = "gate";
-				resets = <&reset 0x680 9 0 1>, <&reset 0x688 3 1 0>, <&reset 0x688 4 1 0>;
+				resets = <&reset 0x680 9 0 1>,
+					<&reset 0x688 3 1 0>,
+					<&reset 0x688 4 1 0>;
 				interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
 				dr_mode = "otg";
 				g-rx-fifo-size = <512>;
@@ -412,8 +414,9 @@
 				};
 			};
 /**************************************************************************************
-    Put all new nodes before this line - DTBO overlay feature updates below entries
-***************************************************************************************/
+ * Put all new nodes before this line - DTBO overlay feature updates below entries
+ **************************************************************************************
+ */
 			i2c0: i2c@1800 {
 				compatible = "snps,designware-i2c";
 				reg = <0x1800 0x100>;

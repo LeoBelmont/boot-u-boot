@@ -1,6 +1,6 @@
-/// SPDX-License-Identifier: GPL-2.0+
+// SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include "ctypes.h"
 #include "io.h"
@@ -36,8 +36,8 @@
 #define	__LITTLE_ENDIAN
 #endif
 
-#define IO32WR(X, Y) BFM_HOST_Bus_Write32(Y, X);
-#define IO32RD(X, Y) X = *((volatile int*)(uintptr_t)(Y));
+#define IO32WR(X, Y) BFM_HOST_Bus_Write32(Y, X)
+#define IO32RD(X, Y) X = *((volatile int *)(uintptr_t)(Y))
 
 #define	bTST(x, b)			(((x) >> (b)) & 1)
 
@@ -62,41 +62,38 @@ UNSG32 sizeof_hdl_dhub2d = sizeof(HDL_dhub2d);
 
 /**	SECTION - API definitions for $SemaHub
  */
-/******************************************************************************************************************
-*	Function: semaphore_hdl
-*	Description: Initialize HDL_semaphore with a $SemaHub BIU instance.
-******************************************************************************************************************/
-void	semaphore_hdl(
-					UNSG32 ra, /*!	Base address of a BIU instance of $SemaHub !*/
-					void *hdl /*!	Handle to HDL_semaphore !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_hdl
+ *	Description: Initialize HDL_semaphore with a $SemaHub BIU instance.
+ ****************************************************************************************/
+void	semaphore_hdl(UNSG32 ra, /* Base address of a BIU instance of $SemaHub !*/
+		      void *hdl /* Handle to HDL_semaphore !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 
 	sem->ra = ra;
 /**	ENDOFFUNCTION: semaphore_hdl **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_cfg
-*	Description: Configurate a semaphore's depth & reset pointers.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ
-******************************************************************************************************************/
-UNSG32	semaphore_cfg(
-					void *hdl, /*! Handle to HDL_semaphore !*/
-					SIGN32 id,	/*! Semaphore ID in $SemaHub !*/
-					SIGN32 depth, /*! Semaphore (virtual FIFO) depth !*/
-					T64b cfgQ[] /*!	Pass NULL to directly init SemaHub, or
- 								 * Pass non-zero to receive programming sequence
-								 * in (adr,data) pairs
-								!*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_cfg
+ *	Description: Configurate a semaphore's depth & reset pointers.
+ *	Return:	UNSG32 - Number of (adr,pair) added to cfgQ
+ ****************************************************************************************/
+UNSG32	semaphore_cfg(void *hdl, /*! Handle to HDL_semaphore !*/
+		      SIGN32 id, /*! Semaphore ID in $SemaHub !*/
+		      SIGN32 depth, /*! Semaphore (virtual FIFO) depth !*/
+		      T64b cfgQ[] /* Pass NULL to directly init SemaHub, or
+				   * Pass non-zero to receive programming sequence
+				   * in (adr,data) pairs
+				   */)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 
 	T32Semaphore_CFG cfg;
 	UNSG32 i = 0, a;
-	a = sem->ra + RA_SemaHub_ARR + id*sizeof(SIE_Semaphore);
+
+	a = sem->ra + RA_SemaHub_ARR + id * sizeof(SIE_Semaphore);
 
 	cfg.u32 = 0; cfg.uCFG_DEPTH = sem->depth[id] = depth;
 	IO32CFG(cfgQ, i, a + RA_Semaphore_CFG, cfg.u32);
@@ -105,24 +102,27 @@ UNSG32	semaphore_cfg(
 /**	ENDOFFUNCTION: semaphore_cfg **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_intr_enable
-*	Description: Configurate interrupt enable bits of a semaphore.
-******************************************************************************************************************/
-void	semaphore_intr_enable(
-					void		*hdl,				/*!	Handle to HDL_semaphore !*/
-					SIGN32		id,					/*!	Semaphore ID in $SemaHub !*/
-					SIGN32		empty,				/*!	Interrupt enable for CPU at condition 'empty' !*/
-					SIGN32		full,				/*!	Interrupt enable for CPU at condition 'full' !*/
-					SIGN32		almostEmpty,		/*!	Interrupt enable for CPU at condition 'almostEmpty' !*/
-					SIGN32		almostFull,			/*!	Interrupt enable for CPU at condition 'almostFull' !*/
-					SIGN32		cpu					/*!	CPU ID (0/1/2) !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_intr_enable
+ *	Description: Configurate interrupt enable bits of a semaphore.
+ ****************************************************************************************/
+void	semaphore_intr_enable(void *hdl, /* Handle to HDL_semaphore !*/
+			      SIGN32 id, /* Semaphore ID in $SemaHub !*/
+			      SIGN32 empty, /* Interrupt enable for CPU at condition 'empty' !*/
+			      SIGN32 full, /* Interrupt enable for CPU at condition 'full' !*/
+			      SIGN32 almostEmpty, /* Interrupt enable for CPU
+						   * at condition 'almostEmpty'
+						   */
+			      SIGN32 almostFull, /* Interrupt enable for CPU
+						  * at condition 'almostFull'
+						  */
+			      SIGN32 cpu	/* CPU ID (0/1/2) !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 	T32SemaINTR_mask mask;
 	UNSG32 a;
-	a = sem->ra + RA_SemaHub_ARR + id*sizeof(SIE_Semaphore);
+
+	a = sem->ra + RA_SemaHub_ARR + id * sizeof(SIE_Semaphore);
 
 	mask.u32 = 0;
 	mask.umask_empty = empty;
@@ -130,45 +130,42 @@ void	semaphore_intr_enable(
 	mask.umask_almostEmpty = almostEmpty;
 	mask.umask_almostFull = almostFull;
 
-	IO32WR(mask.u32, a + RA_Semaphore_INTR + cpu*sizeof(SIE_SemaINTR));
+	IO32WR(mask.u32, a + RA_Semaphore_INTR + cpu * sizeof(SIE_SemaINTR));
 /**	ENDOFFUNCTION: semaphore_intr_enable **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_query
-*	Description: Query current status (counter & pointer) of a semaphore.
-*	Return:			UNSG32						-	Current available unit level
-******************************************************************************************************************/
-UNSG32	semaphore_query(
-					void		*hdl,				/*!	Handle to HDL_semaphore !*/
-					SIGN32		id,					/*!	Semaphore ID in $SemaHub !*/
-					SIGN32		master,				/*!	0/1 as procuder/consumer query !*/
-					UNSG32		*ptr				/*!	Non-zero to receive semaphore r/w pointer !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_query
+ *	Description: Query current status (counter & pointer) of a semaphore.
+ *	Return:	UNSG32 - Current available unit level
+ ****************************************************************************************/
+UNSG32	semaphore_query(void *hdl, /* Handle to HDL_semaphore !*/
+			SIGN32 id, /*!	Semaphore ID in $SemaHub !*/
+			SIGN32 master, /* 0/1 as procuder/consumer query !*/
+			UNSG32 *ptr /* Non-zero to receive semaphore r/w pointer !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 	T32SemaQuery_RESP	resp;
 	T32SemaQueryMap_ADDR map;
 
 	map.u32 = 0; map.uADDR_ID = id; map.uADDR_master = master;
 	IO32RD(resp.u32, sem->ra + RA_SemaHub_Query + map.u32);
 
-	if(ptr) *ptr = resp.uRESP_PTR;
+	if (ptr)
+		*ptr = resp.uRESP_PTR;
 	return resp.uRESP_CNT;
 /**	ENDOFFUNCTION: semaphore_query **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_push
-*	Description: Producer semaphore push.
-******************************************************************************************************************/
-void	semaphore_push(
-					void		*hdl,				/*!	Handle to HDL_semaphore !*/
-					SIGN32		id,					/*!	Semaphore ID in $SemaHub !*/
-					SIGN32		delta				/*!	Delta to push as a producer !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_push
+ *	Description: Producer semaphore push.
+ ****************************************************************************************/
+void	semaphore_push(void *hdl,   /* Handle to HDL_semaphore !*/
+		       SIGN32 id,   /* Semaphore ID in $SemaHub !*/
+		       SIGN32 delta /* Delta to push as a producer !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 	T32SemaHub_PUSH push;
 
 	push.u32 = 0; push.uPUSH_ID = id; push.uPUSH_delta = delta;
@@ -176,17 +173,15 @@ void	semaphore_push(
 /**	ENDOFFUNCTION: semaphore_push **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_push
-*	Description: Consumer semaphore pop.
-******************************************************************************************************************/
-void	semaphore_pop(
-					void		*hdl,				/*!	Handle to HDL_semaphore !*/
-					SIGN32		id,					/*!	Semaphore ID in $SemaHub !*/
-					SIGN32		delta				/*!	Delta to pop as a consumer !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_push
+ *	Description: Consumer semaphore pop.
+ ****************************************************************************************/
+void	semaphore_pop(void *hdl, /*!	Handle to HDL_semaphore !*/
+		      SIGN32 id, /* Semaphore ID in $SemaHub !*/
+		      SIGN32 delta /* Delta to pop as a consumer !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 	T32SemaHub_POP pop;
 
 	pop.u32 = 0; pop.uPOP_ID = id; pop.uPOP_delta = delta;
@@ -194,20 +189,18 @@ void	semaphore_pop(
 /**	ENDOFFUNCTION: semaphore_pop **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_chk_empty
-*	Description: Check 'empty' status of a semaphore (or all semaphores).
-*	Return:			UNSG32						-	status bit of given semaphore, or
-*													status bits of all semaphores if id==-1
-******************************************************************************************************************/
-UNSG32	semaphore_chk_empty(
-					void		*hdl,				/*!	Handle to HDL_semaphore !*/
-					SIGN32		id					/*!	Semaphore ID in $SemaHub
-														-1 to return all 32b of the interrupt status
-														!*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_chk_empty
+ *	Description: Check 'empty' status of a semaphore (or all semaphores).
+ *	Return:	UNSG32 - status bit of given semaphore, or
+ *			 status bits of all semaphores if id==-1
+ ****************************************************************************************/
+UNSG32	semaphore_chk_empty(void *hdl, /* Handle to HDL_semaphore !*/
+			    SIGN32 id  /* Semaphore ID in $SemaHub
+					* -1 to return all 32b of the interrupt status
+					*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 	UNSG32 d;
 
 	IO32RD(d, sem->ra + RA_SemaHub_empty);
@@ -215,20 +208,18 @@ UNSG32	semaphore_chk_empty(
 /**	ENDOFFUNCTION: semaphore_chk_empty **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_chk_full
-*	Description: Check 'full' status of a semaphore (or all semaphores).
-*	Return:			UNSG32						-	status bit of given semaphore, or
-*													status bits of all semaphores if id==-1
-******************************************************************************************************************/
-UNSG32	semaphore_chk_full(
-					void *hdl, /*!	Handle to HDL_semaphore !*/
-					SIGN32 id /*! Semaphore ID in $SemaHub
-								* -1 to return all 32b of the interrupt status
-								* !*/
-					)
+/*****************************************************************************************
+ *	Function: semaphore_chk_full
+ *	Description: Check 'full' status of a semaphore (or all semaphores).
+ *	Return:	UNSG32 - status bit of given semaphore, or
+ *			 status bits of all semaphores if id==-1
+ *****************************************************************************************/
+UNSG32	semaphore_chk_full(void *hdl, /*!	Handle to HDL_semaphore !*/
+			   SIGN32 id /* Semaphore ID in $SemaHub
+				      * -1 to return all 32b of the interrupt status
+				      */)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 	UNSG32 d;
 
 	IO32RD(d, sem->ra + RA_SemaHub_full);
@@ -236,20 +227,18 @@ UNSG32	semaphore_chk_full(
 /**	ENDOFFUNCTION: semaphore_chk_full **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_chk_almostEmpty
-*	Description: Check 'almostEmpty' status of a semaphore (or all semaphores).
-*	Return:			UNSG32						-	status bit of given semaphore, or
-*													status bits of all semaphores if id==-1
-******************************************************************************************************************/
-UNSG32	semaphore_chk_almostEmpty(
-					void *hdl, /*!	Handle to HDL_semaphore !*/
-					SIGN32 id /*!	Semaphore ID in $SemaHub
-									* -1 to return all 32b of the interrupt status
-									* !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_chk_almostEmpty
+ *	Description: Check 'almostEmpty' status of a semaphore (or all semaphores).
+ *	Return:	UNSG32 - status bit of given semaphore, or
+ *			 status bits of all semaphores if id==-1
+ ****************************************************************************************/
+UNSG32	semaphore_chk_almostEmpty(void *hdl, /*!	Handle to HDL_semaphore !*/
+				  SIGN32 id /* Semaphore ID in $SemaHub
+					     * -1 to return all 32b of the interrupt status
+					     */)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 	UNSG32 d;
 
 	IO32RD(d, sem->ra + RA_SemaHub_almostEmpty);
@@ -257,20 +246,18 @@ UNSG32	semaphore_chk_almostEmpty(
 /**	ENDOFFUNCTION: semaphore_chk_almostEmpty **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_chk_almostFull
-*	Description: Check 'almostFull' status of a semaphore (or all semaphores).
-*	Return:			UNSG32						-	status bit of given semaphore, or
-*													status bits of all semaphores if id==-1
-******************************************************************************************************************/
-UNSG32	semaphore_chk_almostFull(
-					void *hdl, /*!	Handle to HDL_semaphore !*/
-					SIGN32 id /*!	Semaphore ID in $SemaHub
-									* -1 to return all 32b of the interrupt status
-									* !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_chk_almostFull
+ *	Description: Check 'almostFull' status of a semaphore (or all semaphores).
+ *	Return: UNSG32 - status bit of given semaphore, or
+ *			 status bits of all semaphores if id==-1
+ ****************************************************************************************/
+UNSG32	semaphore_chk_almostFull(void *hdl, /*!	Handle to HDL_semaphore !*/
+				 SIGN32 id /* Semaphore ID in $SemaHub
+					    * -1 to return all 32b of the interrupt status
+					    */)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 	UNSG32 d;
 
 	IO32RD(d, sem->ra + RA_SemaHub_almostFull);
@@ -278,127 +265,115 @@ UNSG32	semaphore_chk_almostFull(
 /**	ENDOFFUNCTION: semaphore_chk_almostFull **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_clr_empty
-*	Description: Clear 'empty' status of a semaphore.
-******************************************************************************************************************/
-void	semaphore_clr_empty(
-					void *hdl,				/*!	Handle to HDL_semaphore !*/
-					SIGN32 id					/*!	Semaphore ID in $SemaHub !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_clr_empty
+ *	Description: Clear 'empty' status of a semaphore.
+ ****************************************************************************************/
+void	semaphore_clr_empty(void *hdl,	/*!	Handle to HDL_semaphore !*/
+			    SIGN32 id	/*!	Semaphore ID in $SemaHub !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 
-	IO32WR(1<<id, sem->ra + RA_SemaHub_empty);
+	IO32WR(1 << id, sem->ra + RA_SemaHub_empty);
 /**	ENDOFFUNCTION: semaphore_clr_empty **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_clr_full
-*	Description: Clear 'full' status of a semaphore.
-******************************************************************************************************************/
-void	semaphore_clr_full(
-					void *hdl,				/*!	Handle to HDL_semaphore !*/
-					SIGN32 id					/*!	Semaphore ID in $SemaHub !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_clr_full
+ *	Description: Clear 'full' status of a semaphore.
+ ****************************************************************************************/
+void	semaphore_clr_full(void *hdl,	/*!	Handle to HDL_semaphore !*/
+			   SIGN32 id	/*!	Semaphore ID in $SemaHub !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 
-	IO32WR(1<<id, sem->ra + RA_SemaHub_full);
+	IO32WR(1 << id, sem->ra + RA_SemaHub_full);
 /**	ENDOFFUNCTION: semaphore_clr_full **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_clr_almostEmpty
-*	Description: Clear 'almostEmpty' status of a semaphore.
-******************************************************************************************************************/
-void	semaphore_clr_almostEmpty(
-					void *hdl, /*!	Handle to HDL_semaphore !*/
-					SIGN32 id /*!	Semaphore ID in $SemaHub !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_clr_almostEmpty
+ *	Description: Clear 'almostEmpty' status of a semaphore.
+ ****************************************************************************************/
+void	semaphore_clr_almostEmpty(void *hdl, /*!	Handle to HDL_semaphore !*/
+				  SIGN32 id /*!	Semaphore ID in $SemaHub !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 
-	IO32WR(1<<id, sem->ra + RA_SemaHub_almostEmpty);
+	IO32WR(1 << id, sem->ra + RA_SemaHub_almostEmpty);
 /**	ENDOFFUNCTION: semaphore_clr_almostEmpty **/
 }
 
-/******************************************************************************************************************
-*	Function: semaphore_clr_almostFull
-*	Description: Clear 'almostFull' status of a semaphore.
-******************************************************************************************************************/
-void	semaphore_clr_almostFull(
-					void *hdl, /*!	Handle to HDL_semaphore !*/
-					SIGN32 id /*!	Semaphore ID in $SemaHub !*/
-					)
+/****************************************************************************************
+ *	Function: semaphore_clr_almostFull
+ *	Description: Clear 'almostFull' status of a semaphore.
+ ****************************************************************************************/
+void	semaphore_clr_almostFull(void *hdl, /*!	Handle to HDL_semaphore !*/
+				 SIGN32 id /*!	Semaphore ID in $SemaHub !*/)
 {
-	HDL_semaphore *sem = (HDL_semaphore*)hdl;
+	HDL_semaphore *sem = (HDL_semaphore *)hdl;
 
-	IO32WR(1<<id, sem->ra + RA_SemaHub_almostFull);
+	IO32WR(1 << id, sem->ra + RA_SemaHub_almostFull);
 /**	ENDOFFUNCTION: semaphore_clr_almostFull **/
 }
 
 /**	ENDOFSECTION
-*/
-
-
+ */
 
 /**	SECTION - API definitions for $HBO
-*/
-/******************************************************************************************************************
-*	Function: hbo_hdl
-*	Description: Initialize HDL_hbo with a $HBO BIU instance.
-******************************************************************************************************************/
+ */
+/****************************************************************************************
+ *	Function: hbo_hdl
+ *	Description: Initialize HDL_hbo with a $HBO BIU instance.
+ ****************************************************************************************/
 void	hbo_hdl(UNSG32 mem, /*!	Base address of HBO SRAM !*/
-				UNSG32 ra, /*!	Base address of a BIU instance of $HBO !*/
-				void *hdl /*!	Handle to HDL_hbo !*/
-				)
+		UNSG32 ra, /*!	Base address of a BIU instance of $HBO !*/
+		void *hdl /*!	Handle to HDL_hbo !*/)
 {
-	HDL_hbo *hbo = (HDL_hbo*)hdl;
-	HDL_semaphore *fifoCtl = &(hbo->fifoCtl);
+	HDL_hbo *hbo = (HDL_hbo *)hdl;
+	HDL_semaphore *fifoCtl = &hbo->fifoCtl;
 
 	hbo->mem = mem; hbo->ra = ra;
 	semaphore_hdl(ra + RA_HBO_FiFoCtl, fifoCtl);
 /**	ENDOFFUNCTION: hbo_hdl **/
 }
 
-/******************************************************************************************************************
-*	Function: hbo_fifoCtl
-*	Description: Get HDL_semaphore pointer from a HBO instance.
-*	Return:			void*						-	Handle for HBO.FiFoCtl
-******************************************************************************************************************/
-void*	hbo_fifoCtl(void *hdl /*!	Handle to HDL_hbo !*/
+/****************************************************************************************
+ *	Function: hbo_fifoCtl
+ *	Description: Get HDL_semaphore pointer from a HBO instance.
+ *	Return:	void* - Handle for HBO.FiFoCtl
+ ****************************************************************************************/
+void *hbo_fifoCtl(void *hdl /*!	Handle to HDL_hbo !*/
 					)
 {
-	HDL_hbo				*hbo = (HDL_hbo*)hdl;
-	HDL_semaphore		*fifoCtl = &(hbo->fifoCtl);
+	HDL_hbo	*hbo = (HDL_hbo *)hdl;
+	HDL_semaphore *fifoCtl = &hbo->fifoCtl;
 
 	return fifoCtl;
 /**	ENDOFFUNCTION: hbo_fifoCtl **/
 }
 
-/******************************************************************************************************************
-*	Function: hbo_queue_cfg
-*	Description: Configurate a FIFO's base, depth & reset pointers.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ
-******************************************************************************************************************/
-UNSG32	hbo_queue_cfg(
-					void *hdl, /*! Handle to HDL_hbo !*/
-					SIGN32 id, /*! Queue ID in $HBO !*/
-					UNSG32 base, /*! Channel FIFO base address (byte address) !*/
-					SIGN32 depth, /*! Channel FIFO depth, in 64b word !*/
-					SIGN32 enable, /*! 0 to disable, 1 to enable !*/
-					T64b cfgQ[]   /*! Pass NULL to directly init HBO, or
-									Pass non-zero to receive programming sequence
-									in (adr,data) pairs
-									!*/
-					)
+/*****************************************************************************************
+ *	Function: hbo_queue_cfg
+ *	Description: Configurate a FIFO's base, depth & reset pointers.
+ *	Return:	UNSG32 - Number of (adr,pair) added to cfgQ
+ *****************************************************************************************/
+UNSG32	hbo_queue_cfg(void *hdl, /*! Handle to HDL_hbo !*/
+		      SIGN32 id, /*! Queue ID in $HBO !*/
+		      UNSG32 base, /*! Channel FIFO base address (byte address) !*/
+		      SIGN32 depth, /*! Channel FIFO depth, in 64b word !*/
+		      SIGN32 enable, /*! 0 to disable, 1 to enable !*/
+		      T64b cfgQ[]   /* Pass NULL to directly init HBO, or
+				     * Pass non-zero to receive programming sequence
+				     * in (adr,data) pairs
+				     */)
 {
-	HDL_hbo *hbo = (HDL_hbo*)hdl;
-	HDL_semaphore *fifoCtl = &(hbo->fifoCtl);
+	HDL_hbo *hbo = (HDL_hbo *)hdl;
+	HDL_semaphore *fifoCtl = &hbo->fifoCtl;
 	T32FiFo_CFG cfg;
 	UNSG32 i = 0, a;
-	a = hbo->ra + RA_HBO_ARR + id*sizeof(SIE_FiFo);
+
+	a = hbo->ra + RA_HBO_ARR + id * sizeof(SIE_FiFo);
 	IO32CFG(cfgQ, i, a + RA_FiFo_START, 0);
 
 	cfg.u32 = 0; cfg.uCFG_BASE = hbo->base[id] = base;
@@ -411,58 +386,53 @@ UNSG32	hbo_queue_cfg(
 /**	ENDOFFUNCTION: hbo_queue_cfg **/
 }
 
-/******************************************************************************************************************
-*	Function: hbo_queue_enable
-*	Description: HBO FIFO enable/disable.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ
-******************************************************************************************************************/
-UNSG32	hbo_queue_enable(
-					void *hdl, /*!	Handle to HDL_hbo !*/
-					SIGN32 id, /*!	Queue ID in $HBO !*/
-					SIGN32 enable, /*!	0 to disable, 1 to enable !*/
-					T64b cfgQ[] /*!	Pass NULL to directly init HBO, or
-									Pass non-zero to receive programming sequence
-									in (adr,data) pairs
-								!*/
-					)
+/****************************************************************************************
+ *	Function: hbo_queue_enable
+ *	Description: HBO FIFO enable/disable.
+ *	Return:	UNSG32 - Number of (adr,pair) added to cfgQ
+ ****************************************************************************************/
+UNSG32	hbo_queue_enable(void *hdl, /*!	Handle to HDL_hbo !*/
+			 SIGN32 id, /*!	Queue ID in $HBO !*/
+			 SIGN32 enable, /*! 0 to disable, 1 to enable !*/
+			 T64b cfgQ[] /*	Pass NULL to directly init HBO, or
+				      * Pass non-zero to receive programming sequence
+				      * in (adr,data) pairs
+				      */)
 {
-	HDL_hbo *hbo = (HDL_hbo*)hdl;
+	HDL_hbo *hbo = (HDL_hbo *)hdl;
 	UNSG32 i = 0, a;
 
-	a = hbo->ra + RA_HBO_ARR + id*sizeof(SIE_FiFo);
+	a = hbo->ra + RA_HBO_ARR + id * sizeof(SIE_FiFo);
 
 	IO32CFG(cfgQ, i, a + RA_FiFo_START, enable);
 	return i;
 /**	ENDOFFUNCTION: hbo_queue_enable **/
 }
 
-/******************************************************************************************************************
-*	Function: hbo_queue_clear
-*	Description: Issue HBO FIFO clear (will NOT wait for finish).
-******************************************************************************************************************/
-void	hbo_queue_clear(
-					void *hdl, /*!	Handle to HDL_hbo !*/
-					SIGN32 id /*!	Queue ID in $HBO !*/
-					)
+/****************************************************************************************
+ *	Function: hbo_queue_clear
+ *	Description: Issue HBO FIFO clear (will NOT wait for finish).
+ ****************************************************************************************/
+void	hbo_queue_clear(void *hdl, /*!	Handle to HDL_hbo !*/
+			SIGN32 id /*!	Queue ID in $HBO !*/)
 {
-	HDL_hbo				*hbo = (HDL_hbo*)hdl;
+	HDL_hbo	*hbo = (HDL_hbo *)hdl;
 	UNSG32 a;
-	a = hbo->ra + RA_HBO_ARR + id*sizeof(SIE_FiFo);
+
+	a = hbo->ra + RA_HBO_ARR + id * sizeof(SIE_FiFo);
 
 	IO32WR(1, a + RA_FiFo_CLEAR);
 /**	ENDOFFUNCTION: hbo_queue_enable **/
 }
 
-/******************************************************************************************************************
-*	Function: hbo_queue_busy
-*	Description: Read HBO 'BUSY' status for all channel FIFOs.
-*	Return:			UNSG32						-	'BUSY' status bits of all channels
-******************************************************************************************************************/
-UNSG32	hbo_queue_busy(
-					void *hdl /*!	Handle to HDL_hbo !*/
-					)
+/****************************************************************************************
+ *	Function: hbo_queue_busy
+ *	Description: Read HBO 'BUSY' status for all channel FIFOs.
+ *	Return:	UNSG32 - 'BUSY' status bits of all channels
+ ****************************************************************************************/
+UNSG32	hbo_queue_busy(void *hdl /*!	Handle to HDL_hbo !*/)
 {
-	HDL_hbo *hbo = (HDL_hbo*)hdl;
+	HDL_hbo *hbo = (HDL_hbo *)hdl;
 	UNSG32 d;
 
 	IO32RD(d, hbo->ra + RA_HBO_BUSY);
@@ -470,232 +440,221 @@ UNSG32	hbo_queue_busy(
 /**	ENDOFFUNCTION: hbo_queue_busy **/
 }
 
-/******************************************************************************************************************
-*	Function: hbo_queue_clear_done
-*	Description: Wait for a given channel or all channels to be cleared.
-******************************************************************************************************************/
-void	hbo_queue_clear_done(
-					void *hdl, /*!	Handle to HDL_hbo !*/
-					SIGN32 id /*!	Queue ID in $HBO
-								-1 to wait for all channel clear done
-								!*/
-					)
+/****************************************************************************************
+ *	Function: hbo_queue_clear_done
+ *	Description: Wait for a given channel or all channels to be cleared.
+ ****************************************************************************************/
+void	hbo_queue_clear_done(void *hdl, /*!	Handle to HDL_hbo !*/
+			     SIGN32 id /* Queue ID in $HBO
+					* -1 to wait for all channel clear done
+					*/)
 {
 	UNSG32 d;
-	do{
-	d = hbo_queue_busy(hdl);
-	if(id >= 0) d = bTST(d, id);
-	} while(d);
+
+	do {
+		d = hbo_queue_busy(hdl);
+		if (id >= 0)
+			d = bTST(d, id);
+	} while (d);
 
 /**	ENDOFFUNCTION: hbo_queue_clear_done **/
 }
 
 /**	ENDOFSECTION
-*/
+ */
 
 /**	SECTION - API definitions for $dHubReg
-*/
-/******************************************************************************************************************
-*	Function: dhub_hdl
-*	Description: Initialize HDL_dhub with a $dHub BIU instance.
-******************************************************************************************************************/
-void	dhub_hdl( UNSG32 mem, /*! Base address of dHub.HBO SRAM !*/
-					UNSG32 ra, /*!	Base address of a BIU instance of $dHub !*/
-					void *hdl /*!	Handle to HDL_dhub !*/
-					)
+ */
+/****************************************************************************************
+ *	Function: dhub_hdl
+ *	Description: Initialize HDL_dhub with a $dHub BIU instance.
+ ****************************************************************************************/
+void	dhub_hdl(UNSG32 mem, /*! Base address of dHub.HBO SRAM !*/
+		 UNSG32 ra, /*!	Base address of a BIU instance of $dHub !*/
+		 void *hdl /*!	Handle to HDL_dhub !*/)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
-	HDL_hbo *hbo = &(dhub->hbo);
-	HDL_semaphore *semaHub = &(dhub->semaHub);
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
+	HDL_hbo *hbo = &dhub->hbo;
+	HDL_semaphore *semaHub = &dhub->semaHub;
 
 	dhub->ra = ra;
 	semaphore_hdl(ra + RA_dHubReg_SemaHub, semaHub);
-	hbo_hdl(mem, ra + RA_dHubReg_HBO, hbo );
+	hbo_hdl(mem, ra + RA_dHubReg_HBO, hbo);
 /**	ENDOFFUNCTION: dhub_hdl **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_semaphore
-*	Description: Get HDL_semaphore pointer from a dHub instance.
-*	Return:			void*						-	Handle for dHub.SemaHub
-******************************************************************************************************************/
-void*	dhub_semaphore(
-					void *hdl /*!	Handle to HDL_dhub !*/
-					)
+/****************************************************************************************
+ *	Function: dhub_semaphore
+ *	Description: Get HDL_semaphore pointer from a dHub instance.
+ *	Return: void* - Handle for dHub.SemaHub
+ ****************************************************************************************/
+void *dhub_semaphore(void *hdl /*!	Handle to HDL_dhub !*/)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
-	HDL_semaphore *semaHub = &(dhub->semaHub);
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
+	HDL_semaphore *semaHub = &dhub->semaHub;
 
 	return semaHub;
 /**	ENDOFFUNCTION: dhub_semaphore **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_hbo
-*	Description: Get HDL_hbo pointer from a dHub instance.
-*	Return:			void*						-	Handle for dHub.HBO
-******************************************************************************************************************/
-void*	dhub_hbo(void *hdl /*!	Handle to HDL_dhub !*/
-				)
+/****************************************************************************************
+ *	Function: dhub_hbo
+ *	Description: Get HDL_hbo pointer from a dHub instance.
+ *	Return:	void* - Handle for dHub.HBO
+ ****************************************************************************************/
+void *dhub_hbo(void *hdl /*!	Handle to HDL_dhub !*/)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
-	HDL_hbo *hbo = &(dhub->hbo);
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
+	HDL_hbo *hbo = &dhub->hbo;
 
 	return hbo;
 /**	ENDOFFUNCTION: dhub_hbo **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_cfg
-*	Description: Configurate a dHub channel.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ, or (when cfgQ==NULL)
-*													0 if either cmdQ or dataQ in HBO is still busy
-******************************************************************************************************************/
-UNSG32	dhub_channel_cfg(
-					void *hdl, /*!	Handle to HDL_dhub !*/
-					SIGN32 id, /*!	Channel ID in $dHubReg !*/
-					UNSG32 baseCmd, /*!	Channel FIFO base address (byte address) for cmdQ !*/
-					UNSG32 baseData, /*!	Channel FIFO base address (byte address) for dataQ !*/
-					SIGN32 depthCmd, /*!	Channel FIFO depth for cmdQ, in 64b word !*/
-					SIGN32 depthData, /*!	Channel FIFO depth for dataQ, in 64b word !*/
-					SIGN32 MTU, /*!	See 'dHubChannel.CFG.MTU' !*/
-					SIGN32 QoS, /*!	See 'dHubChannel.CFG.QoS' !*/
-					SIGN32 selfLoop, /*!	See 'dHubChannel.CFG.selfLoop' !*/
-					SIGN32 enable, /*!	0 to disable, 1 to enable !*/
-					T64b cfgQ[] /*!	Pass NULL to directly init dHub, or
-								Pass non-zero to receive programming sequence
-								in (adr,data) pairs
-								!*/
-					)
+/****************************************************************************************
+ *	Function: dhub_channel_cfg
+ *	Description: Configurate a dHub channel.
+ *	Return:	UNSG32 - Number of (adr,pair) added to cfgQ, or (when cfgQ==NULL)
+ *			 0 if either cmdQ or dataQ in HBO is still busy
+ ****************************************************************************************/
+UNSG32	dhub_channel_cfg(void *hdl, /*!	Handle to HDL_dhub !*/
+			 SIGN32 id, /*!	Channel ID in $dHubReg !*/
+			 UNSG32 baseCmd, /* Channel FIFO base address (byte address) for cmdQ !*/
+			 UNSG32 baseData, /* Channel FIFO base address (byte address) for dataQ !*/
+			 SIGN32 depthCmd, /*!	Channel FIFO depth for cmdQ, in 64b word !*/
+			 SIGN32 depthData, /*!	Channel FIFO depth for dataQ, in 64b word !*/
+			 SIGN32 MTU, /*!	See 'dHubChannel.CFG.MTU' !*/
+			 SIGN32 QoS, /*!	See 'dHubChannel.CFG.QoS' !*/
+			 SIGN32 selfLoop, /*!	See 'dHubChannel.CFG.selfLoop' !*/
+			 SIGN32 enable, /*!	0 to disable, 1 to enable !*/
+			 T64b cfgQ[] /* Pass NULL to directly init dHub, or
+				      * Pass non-zero to receive programming sequence
+				      * in (adr,data) pairs
+				      */)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
-	HDL_hbo *hbo = &(dhub->hbo);
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
+	HDL_hbo *hbo = &dhub->hbo;
 	T32dHubChannel_CFG	cfg;
 	UNSG32 i = 0, a, cmdID = dhub_id2hbo_cmdQ(id), dataID = dhub_id2hbo_data(id);
 
-	xdbg ("hal_dhub::  value of id is %0d \n" , id ) ;
-	xdbg ("hal_dhub::  value of baseCmd   is %0d \n" , baseCmd ) ;
-	xdbg ("hal_dhub::  value of baseData  is %0d \n" , baseData ) ;
-	xdbg ("hal_dhub::  value of depthCmd  is %0d \n" , depthCmd ) ;
-	xdbg ("hal_dhub::  value of depthData is %0d \n" , depthData ) ;
-	xdbg ("hal_dhub::  value of MTU       is %0d \n" , MTU ) ;
-	xdbg ("hal_dhub::  value of QOS       is %0d \n" , QoS ) ;
-	xdbg ("hal_dhub::  value of SelfLoop  is %0d \n" , selfLoop ) ;
-	xdbg ("hal_dhub::  value of Enable    is %0d \n" , enable ) ;
+	xdbg("hal_dhub::  value of id is %0d\n", id);
+	xdbg("hal_dhub::  value of baseCmd   is %0d\n", baseCmd);
+	xdbg("hal_dhub::  value of baseData  is %0d\n", baseData);
+	xdbg("hal_dhub::  value of depthCmd  is %0d\n", depthCmd);
+	xdbg("hal_dhub::  value of depthData is %0d\n", depthData);
+	xdbg("hal_dhub::  value of MTU       is %0d\n", MTU);
+	xdbg("hal_dhub::  value of QOS       is %0d\n", QoS);
+	xdbg("hal_dhub::  value of SelfLoop  is %0d\n", selfLoop);
+	xdbg("hal_dhub::  value of Enable    is %0d\n", enable);
 
-	if(!cfgQ) {
+	if (!cfgQ) {
 		hbo_queue_enable(hbo,  cmdID, 0, NULL);
 		hbo_queue_clear(hbo,  cmdID);
 		hbo_queue_enable(hbo, dataID, 0, NULL);
 		hbo_queue_clear(hbo, dataID);
 	}
-	a = dhub->ra + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel);
+	a = dhub->ra + RA_dHubReg_ARR + id * sizeof(SIE_dHubChannel);
 	IO32CFG(cfgQ, i, a + RA_dHubChannel_START, 0);
 
 	cfg.u32 = 0; cfg.uCFG_MTU = MTU; cfg.uCFG_QoS = QoS; cfg.uCFG_selfLoop = selfLoop;
-	switch(MTU) {
-		case dHubChannel_CFG_MTU_8byte:
-			dhub->MTUb[id] = 3;
-			break;
-		case dHubChannel_CFG_MTU_32byte:
-			dhub->MTUb[id] = 5;
-			break;
-		case dHubChannel_CFG_MTU_128byte:
-			dhub->MTUb[id] = 7;
-			break;
-		case dHubChannel_CFG_MTU_64byte :
-			dhub->MTUb[id] = 6;
-			break;
-		case dHubChannel_CFG_MTU_256byte:
-			dhub->MTUb[id] = 8;
-			break;
-		case dHubChannel_CFG_MTU_1024byte:
-			dhub->MTUb[id] = 10;
-			break;
-		case dHubChannel_CFG_MTU_4096byte:
-			dhub->MTUb[id] = 12;
-			break;
+	switch (MTU) {
+	case dHubChannel_CFG_MTU_8byte:
+		dhub->MTUb[id] = 3;
+		break;
+	case dHubChannel_CFG_MTU_32byte:
+		dhub->MTUb[id] = 5;
+		break;
+	case dHubChannel_CFG_MTU_128byte:
+		dhub->MTUb[id] = 7;
+		break;
+	case dHubChannel_CFG_MTU_64byte:
+		dhub->MTUb[id] = 6;
+		break;
+	case dHubChannel_CFG_MTU_256byte:
+		dhub->MTUb[id] = 8;
+		break;
+	case dHubChannel_CFG_MTU_1024byte:
+		dhub->MTUb[id] = 10;
+		break;
+	case dHubChannel_CFG_MTU_4096byte:
+		dhub->MTUb[id] = 12;
+		break;
 	}
-	xdbg ("hal_dhub::  addr of ChannelCFG is %0x data is %0x \n" , a + RA_dHubChannel_CFG , cfg.u32  ) ;
+	xdbg("hal_dhub:: addr of ChannelCFG is %0x data is %0x\n", a + RA_dHubChannel_CFG, cfg.u32);
 	IO32CFG(cfgQ, i, a + RA_dHubChannel_CFG, cfg.u32);
 
-	i += hbo_queue_cfg(hbo,  cmdID, baseCmd , depthCmd , enable, cfgQ ? (cfgQ + i) : NULL);
+	i += hbo_queue_cfg(hbo,  cmdID, baseCmd, depthCmd, enable, cfgQ ? (cfgQ + i) : NULL);
 	i += hbo_queue_cfg(hbo, dataID, baseData, depthData, enable, cfgQ ? (cfgQ + i) : NULL);
-	xdbg ("hal_dhub::  addr of ChannelEN is %0x data is %0x \n" , a + RA_dHubChannel_START , enable  ) ;
+	xdbg("hal_dhub:: addr of ChannelEN is %0x data is %0x\n", a + RA_dHubChannel_START, enable);
 	IO32CFG(cfgQ, i, a + RA_dHubChannel_START, enable);
 
-return i;
+	return i;
 /**	ENDOFFUNCTION: dhub_channel_cfg **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_enable
-*	Description: dHub channel enable/disable.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ
-******************************************************************************************************************/
-UNSG32	dhub_channel_enable(
-					void *hdl, /*!	Handle to HDL_dhub !*/
-					SIGN32 id, /*!	Channel ID in $dHubReg !*/
-					SIGN32 enable, /*!	0 to disable, 1 to enable !*/
-					T64b cfgQ[] /*!	Pass NULL to directly init dHub, or
-								 Pass non-zero to receive programming sequence
-								 in (adr,data) pairs
-								!*/
-					)
+/****************************************************************************************
+ *	Function: dhub_channel_enable
+ *	Description: dHub channel enable/disable.
+ *	Return:	UNSG32 - Number of (adr,pair) added to cfgQ
+ ****************************************************************************************/
+UNSG32	dhub_channel_enable(void *hdl, /*!	Handle to HDL_dhub !*/
+			    SIGN32 id, /*!	Channel ID in $dHubReg !*/
+			    SIGN32 enable, /*!	0 to disable, 1 to enable !*/
+			    T64b cfgQ[] /* Pass NULL to directly init dHub, or
+					 * Pass non-zero to receive programming sequence
+					 * in (adr,data) pairs
+					 */)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
 	UNSG32 i = 0, a;
-	a = dhub->ra + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel);
+
+	a = dhub->ra + RA_dHubReg_ARR + id * sizeof(SIE_dHubChannel);
 
 	IO32CFG(cfgQ, i, a + RA_dHubChannel_START, enable);
 	return i;
 /**	ENDOFFUNCTION: dhub_channel_enable **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_clear
-*	Description: Issue dHub channel clear (will NOT wait for finish).
-******************************************************************************************************************/
-void	dhub_channel_clear(
-					void *hdl, /*!	Handle to HDL_dhub !*/
-					SIGN32 id /*!	Channel ID in $dHubReg !*/
-					)
+/****************************************************************************************
+ *	Function: dhub_channel_clear
+ *	Description: Issue dHub channel clear (will NOT wait for finish).
+ ****************************************************************************************/
+void	dhub_channel_clear(void *hdl, /*! Handle to HDL_dhub !*/
+			   SIGN32 id /*! Channel ID in $dHubReg !*/)
 {
-	HDL_dhub			*dhub = (HDL_dhub*)hdl;
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
 	UNSG32 a;
-	a = dhub->ra + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel);
+
+	a = dhub->ra + RA_dHubReg_ARR + id * sizeof(SIE_dHubChannel);
 
 	IO32WR(1, a + RA_dHubChannel_CLEAR);
 /**	ENDOFFUNCTION: dhub_channel_clear **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_flush
-*	Description: Issue dHub channel (H2M only) flush (will NOT wait for finish).
-******************************************************************************************************************/
-void	dhub_channel_flush(
-					void *hdl, /*!	Handle to HDL_dhub !*/
-					SIGN32 id /*!	Channel ID in $dHubReg !*/
-					)
+/****************************************************************************************
+ *	Function: dhub_channel_flush
+ *	Description: Issue dHub channel (H2M only) flush (will NOT wait for finish).
+ ****************************************************************************************/
+void	dhub_channel_flush(void *hdl, /* Handle to HDL_dhub !*/
+			   SIGN32 id /* Channel ID in $dHubReg !*/)
 {
 	UNSG32 a;
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
-	a = dhub->ra + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel);
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
+
+	a = dhub->ra + RA_dHubReg_ARR + id * sizeof(SIE_dHubChannel);
 
 	IO32WR(1, a + RA_dHubChannel_FLUSH);
 /**	ENDOFFUNCTION: dhub_channel_flush **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_busy
-*	Description: Read dHub 'BUSY' status for all channel FIFOs.
-*	Return:			UNSG32						-	'BUSY' status bits of all channels
-******************************************************************************************************************/
-UNSG32	dhub_channel_busy(
-					void *hdl				/*!	Handle to HDL_dhub !*/
-					)
+/****************************************************************************************
+ *	Function: dhub_channel_busy
+ *	Description: Read dHub 'BUSY' status for all channel FIFOs.
+ *	Return:	UNSG32 - 'BUSY' status bits of all channels
+ ****************************************************************************************/
+UNSG32	dhub_channel_busy(void *hdl /*!	Handle to HDL_dhub !*/)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
 	UNSG32 d;
 
 	IO32RD(d, dhub->ra + RA_dHubReg_BUSY);
@@ -703,16 +662,14 @@ UNSG32	dhub_channel_busy(
 /**	ENDOFFUNCTION: dhub_channel_busy **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_pending
-*	Description: Read dHub 'PENDING' status for all channel FIFOs.
-*	Return:			UNSG32						-	'PENDING' status bits of all channels
-******************************************************************************************************************/
-UNSG32	dhub_channel_pending(
-					void *hdl /*! Handle to HDL_dhub !*/
-					)
+/****************************************************************************************
+ *	Function: dhub_channel_pending
+ *	Description: Read dHub 'PENDING' status for all channel FIFOs.
+ *	Return:	UNSG32 - 'PENDING' status bits of all channels
+ ****************************************************************************************/
+UNSG32	dhub_channel_pending(void *hdl /*! Handle to HDL_dhub !*/)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
 	UNSG32 d;
 
 	IO32RD(d, dhub->ra + RA_dHubReg_PENDING);
@@ -720,48 +677,46 @@ UNSG32	dhub_channel_pending(
 /**	ENDOFFUNCTION: dhub_channel_pending **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub_channel_clear_done
-*	Description: Wait for a given channel or all channels to be cleared.
-******************************************************************************************************************/
-void	dhub_channel_clear_done(
-					void *hdl, /*! Handle to HDL_dhub !*/
-					SIGN32 id /*! Channel ID in $dHubReg
-								-1 to wait for all channel clear done
-							  !*/
-					)
+/****************************************************************************************
+ *	Function: dhub_channel_clear_done
+ *	Description: Wait for a given channel or all channels to be cleared.
+ ****************************************************************************************/
+void	dhub_channel_clear_done(void *hdl, /*! Handle to HDL_dhub !*/
+				SIGN32 id /* Channel ID in $dHubReg
+					   * -1 to wait for all channel clear done
+					   */)
 {
 	UNSG32 d;
-	do{
-	d = dhub_channel_busy(hdl);
-	d |= dhub_channel_pending(hdl);
-	if(id >= 0) d = bTST(d, id);
-	} while(d);
+
+	do {
+		d = dhub_channel_busy(hdl);
+		d |= dhub_channel_pending(hdl);
+		if (id >= 0)
+			d = bTST(d, id);
+	} while (d);
 
 /**	ENDOFFUNCTION: dhub_channel_clear_done **/
 }
 
-void	dhub_channel_generate_cmd(
-					void *hdl, /*! Handle to HDL_dhub !*/
-					SIGN32 id, /*! Channel ID in $dHubReg !*/
-					UNSG32 addr, /*! CMD: buffer address !*/
-					SIGN32 size, /*! CMD: number of bytes to transfer !*/
-					SIGN32 semOnMTU, /*! CMD: semaphore operation at CMD/MTU (0/1) !*/
-					SIGN32 chkSemId, /*! CMD: non-zero to check semaphore !*/
-					SIGN32 updSemId, /*! CMD: non-zero to update semaphore !*/
-					SIGN32 interrupt, /*! CMD: raise interrupt at CMD finish !*/
-					SIGN32 *pData
-					)
+void	dhub_channel_generate_cmd(void *hdl, /*! Handle to HDL_dhub !*/
+				  SIGN32 id, /*! Channel ID in $dHubReg !*/
+				  UNSG32 addr, /*! CMD: buffer address !*/
+				  SIGN32 size, /*! CMD: number of bytes to transfer !*/
+				  SIGN32 semOnMTU, /*! CMD: semaphore operation at CMD/MTU (0/1) */
+				  SIGN32 chkSemId, /*! CMD: non-zero to check semaphore !*/
+				  SIGN32 updSemId, /*! CMD: non-zero to update semaphore !*/
+				  SIGN32 interrupt, /*! CMD: raise interrupt at CMD finish !*/
+				  SIGN32 *pData)
 {
-	HDL_dhub *dhub = (HDL_dhub *) hdl;
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
 	SIE_dHubCmd cmd;
 	SIGN32 i, *pcmd;
 
 	cmd.ie_HDR.u32dHubCmdHDR_DESC = 0;
 	i = size >> dhub->MTUb[id];
-	if ((i << dhub->MTUb[id]) < size)
+	if ((i << dhub->MTUb[id]) < size) {
 		cmd.ie_HDR.uDESC_size = size;
-	else {
+	} else {
 		cmd.ie_HDR.uDESC_sizeMTU = 1;
 		cmd.ie_HDR.uDESC_size  = i;
 	}
@@ -774,65 +729,63 @@ void	dhub_channel_generate_cmd(
 	cmd.ie_HDR.uDESC_interrupt = interrupt;
 	cmd.uMEM_addr = addr;
 
-	pcmd = (SIGN32 *) (&cmd);
+	pcmd = (SIGN32 *)(&cmd);
 	pData[0] = pcmd[0];
 	pData[1] = pcmd[1];
 /**	ENDOFFUNCTION: dhub_channel_generate_cmd **/
 }
 
 /**	ENDOFSECTION
-*/
+ */
 
 /**	SECTION - API definitions for $dHubReg2D
-*/
-/******************************************************************************************************************
-*	Function: dhub2d_hdl
-*	Description: Initialize HDL_dhub2d with a $dHub2D BIU instance.
-******************************************************************************************************************/
+ */
+/****************************************************************************************
+ *	Function: dhub2d_hdl
+ *	Description: Initialize HDL_dhub2d with a $dHub2D BIU instance.
+ ****************************************************************************************/
 void	dhub2d_hdl(UNSG32 mem, /*!	Base address of dHub2D.dHub.HBO SRAM !*/
-					UNSG32 ra, /*!	Base address of a BIU instance of $dHub2D !*/
-					void *hdl /*!	Handle to HDL_dhub2d !*/
-					)
+		   UNSG32 ra, /*!	Base address of a BIU instance of $dHub2D !*/
+		   void *hdl /*!	Handle to HDL_dhub2d !*/)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
-	HDL_dhub *dhub = &(dhub2d->dhub);
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
+	HDL_dhub *dhub = &dhub2d->dhub;
 
 	dhub2d->ra = ra;
 	dhub_hdl(mem, ra + RA_dHubReg2D_dHub, dhub);
 /**	ENDOFFUNCTION: dhub2d_hdl **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub2d_channel_cfg
-*	Description: Configurate a dHub2D channel.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ
-******************************************************************************************************************/
-UNSG32	dhub2d_channel_cfg(
-					void *hdl, /*!	Handle to HDL_dhub2d !*/
-					SIGN32 id, /*!	Channel ID in $dHubReg2D !*/
-					UNSG32 addr, /*!	CMD: 2D-buffer address !*/
-					SIGN32 stride, /*!	CMD: line stride size in bytes !*/
-					SIGN32 width, /*!	CMD: buffer width in bytes !*/
-					SIGN32 height, /*!	CMD: buffer height in lines !*/
-					SIGN32 semLoop, /*!	CMD: loop size (1~4) of semaphore operations !*/
-					SIGN32 semOnMTU, /*!	CMD: semaphore operation at CMD/MTU (0/1) !*/
-					SIGN32 chkSemId[], /*!	CMD: semaphore loop pattern - non-zero to check !*/
-					SIGN32 updSemId[], /*!	CMD: semaphore loop pattern - non-zero to update !*/
-					SIGN32 interrupt, /*!	CMD: raise interrupt at CMD finish !*/
-					SIGN32 enable, /*!	0 to disable, 1 to enable !*/
-					T64b cfgQ[] /*!	Pass NULL to directly init dHub2D, or
- 									Pass non-zero to receive programming sequence
-									in (adr,data) pairs
-								!*/
-					)
+/****************************************************************************************
+ *	Function: dhub2d_channel_cfg
+ *	Description: Configurate a dHub2D channel.
+ *	Return: UNSG32 - Number of (adr,pair) added to cfgQ
+ ****************************************************************************************/
+UNSG32	dhub2d_channel_cfg(void *hdl, /*!	Handle to HDL_dhub2d !*/
+			   SIGN32 id, /*!	Channel ID in $dHubReg2D !*/
+			   UNSG32 addr, /*!	CMD: 2D-buffer address !*/
+			   SIGN32 stride, /*!	CMD: line stride size in bytes !*/
+			   SIGN32 width, /*!	CMD: buffer width in bytes !*/
+			   SIGN32 height, /*!	CMD: buffer height in lines !*/
+			   SIGN32 semLoop, /*!	CMD: loop size (1~4) of semaphore operations !*/
+			   SIGN32 semOnMTU, /*!	CMD: semaphore operation at CMD/MTU (0/1) !*/
+			   SIGN32 chkSemId[], /*CMD: semaphore loop pattern - non-zero to check !*/
+			   SIGN32 updSemId[], /*CMD: semaphore loop pattern - non-zero to update !*/
+			   SIGN32 interrupt, /*!	CMD: raise interrupt at CMD finish !*/
+			   SIGN32 enable, /*!	0 to disable, 1 to enable !*/
+			   T64b cfgQ[] /* Pass NULL to directly init dHub2D, or
+					* Pass non-zero to receive programming sequence
+					* in (adr,data) pairs
+					*/)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
-	HDL_dhub *dhub = &(dhub2d->dhub);
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
+	HDL_dhub *dhub = &dhub2d->dhub;
 	SIE_dHubCmd2D cmd;
 	SIE_dHubCmdHDR hdr;
 	SIGN32 i, size = width;
 	UNSG32 a, j = 0;
-	a = dhub2d->ra + RA_dHubReg2D_ARR + id*sizeof(SIE_dHubCmd2D);
+
+	a = dhub2d->ra + RA_dHubReg2D_ARR + id * sizeof(SIE_dHubCmd2D);
 	IO32CFG(cfgQ, j, a + RA_dHubCmd2D_START, 0);
 
 	cmd.uMEM_addr = addr;
@@ -843,21 +796,20 @@ UNSG32	dhub2d_channel_cfg(
 
 	hdr.u32dHubCmdHDR_DESC = 0;
 	i = size >> dhub->MTUb[id];
-	if((i << dhub->MTUb[id]) < size)
+	if ((i << dhub->MTUb[id]) < size) {
 		hdr.uDESC_size = size;
-	else {
+	} else {
 		hdr.uDESC_sizeMTU = 1;
 		hdr.uDESC_size = i;
-						}
+	}
 	hdr.uDESC_semOpMTU = semOnMTU;
-	for(i = 0; i < semLoop; i ++) {
-		if (chkSemId) {
+	for (i = 0; i < semLoop; i++) {
+		if (chkSemId)
 			hdr.uDESC_chkSemId = chkSemId[i];
-		}
-		if (updSemId) {
+		if (updSemId)
 			hdr.uDESC_updSemId = updSemId[i];
-		}
-		IO32CFG(cfgQ, j, a + RA_dHubCmd2D_HDR + i*sizeof(SIE_dHubCmdHDR), hdr.u32dHubCmdHDR_DESC);
+		IO32CFG(cfgQ, j, a + RA_dHubCmd2D_HDR + i * sizeof(SIE_dHubCmdHDR),
+			hdr.u32dHubCmdHDR_DESC);
 	}
 	IO32CFG(cfgQ, j, a + RA_dHubCmd2D_START, enable);
 
@@ -865,78 +817,74 @@ UNSG32	dhub2d_channel_cfg(
 /**	ENDOFFUNCTION: dhub2d_channel_cfg **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub2d_channel_enable
-*	Description: dHub2D channel enable/disable.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ
-******************************************************************************************************************/
-UNSG32	dhub2d_channel_enable(
-					void *hdl, /*! Handle to HDL_dhub2d !*/
-					SIGN32 id, /*! Channel ID in $dHubReg2D !*/
-					SIGN32 enable, /*! 0 to disable, 1 to enable !*/
-					T64b cfgQ[] /*!	Pass NULL to directly init dHub2D, or
-									Pass non-zero to receive programming sequence
-									in (adr,data) pairs
-								!*/
-					)
+/****************************************************************************************
+ *	Function: dhub2d_channel_enable
+ *	Description: dHub2D channel enable/disable.
+ *	Return:	UNSG32 - Number of (adr,pair) added to cfgQ
+ ****************************************************************************************/
+UNSG32	dhub2d_channel_enable(void *hdl, /*! Handle to HDL_dhub2d !*/
+			      SIGN32 id, /*! Channel ID in $dHubReg2D !*/
+			      SIGN32 enable, /*! 0 to disable, 1 to enable !*/
+			      T64b cfgQ[] /* Pass NULL to directly init dHub2D, or
+					   * Pass non-zero to receive programming sequence
+					   * in (adr,data) pairs
+					   */)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
 	UNSG32 i = 0, a;
-	a = dhub2d->ra + RA_dHubReg2D_ARR + id*sizeof(SIE_dHubCmd2D);
+
+	a = dhub2d->ra + RA_dHubReg2D_ARR + id * sizeof(SIE_dHubCmd2D);
 
 	IO32CFG(cfgQ, i, a + RA_dHubCmd2D_START, enable);
 	return i;
 /**	ENDOFFUNCTION: dhub2d_channel_enable **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub2d_channel_clear
-*	Description: Issue dHub2D channel clear (will NOT wait for finish).
-******************************************************************************************************************/
-void	dhub2d_channel_clear(
-					void *hdl, /*!	Handle to HDL_dhub2d !*/
-					SIGN32 id /*!	Channel ID in $dHubReg2D !*/
-					)
+/****************************************************************************************
+ *	Function: dhub2d_channel_clear
+ *	Description: Issue dHub2D channel clear (will NOT wait for finish).
+ ****************************************************************************************/
+void	dhub2d_channel_clear(void *hdl, /*!	Handle to HDL_dhub2d !*/
+			     SIGN32 id /*!	Channel ID in $dHubReg2D !*/)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
 	UNSG32 a;
-	a = dhub2d->ra + RA_dHubReg2D_ARR + id*sizeof(SIE_dHubCmd2D);
+
+	a = dhub2d->ra + RA_dHubReg2D_ARR + id * sizeof(SIE_dHubCmd2D);
 
 	IO32WR(1, a + RA_dHubCmd2D_CLEAR);
-	return ;
+	return;
 /**	ENDOFFUNCTION: dhub2d_channel_clear **/
 }
 
 /******************************************************************************
-*	Function: dhub2nd_channel_cfg
-*	Description: Configurate a dHub2D channel.
-*	Return:	UNSG32		Number of (adr,pair) added to cfgQ
-*******************************************************************************/
-UNSG32	dhub2nd_channel_cfg(
-		void		*hdl,				/*!	Handle to HDL_dhub2d !*/
-		SIGN32		id,					/*!	Channel ID in $dHubReg2D !*/
-		UNSG32		addr,				/*!	CMD: 2ND-buffer address !*/
-		SIGN32		burst,				/*!	CMD: line stride size in bytes !*/
-		SIGN32		step1,				/*!	CMD: buffer width in bytes !*/
-		SIGN32		size1,				/*!	CMD: buffer height in lines !*/
-		SIGN32		step2,				/*!	CMD: loop size (1~4) of semaphore operations !*/
-		SIGN32		size2,				/*!	CMD: semaphore operation at CMD/MTU (0/1) !*/
-		SIGN32		chkSemId,			/*!	CMD: semaphore loop pattern - non-zero to check !*/
-		SIGN32		updSemId,			/*!	CMD: semaphore loop pattern - non-zero to update !*/
-		SIGN32		interrupt,			/*!	CMD: raise interrupt at CMD finish !*/
-		SIGN32		enable,				/*!	0 to disable, 1 to enable !*/
-		T64b		cfgQ[]				/*!	Pass NULL to directly init dHub2ND, or
-								Pass non-zero to receive programming sequence
-								in (adr,data) pairs
-								!*/
-		)
+ *	Function: dhub2nd_channel_cfg
+ *	Description: Configurate a dHub2D channel.
+ *	Return:	UNSG32		Number of (adr,pair) added to cfgQ
+ ******************************************************************************/
+UNSG32	dhub2nd_channel_cfg(void *hdl, /*! Handle to HDL_dhub2d !*/
+			    SIGN32 id, /*! Channel ID in $dHubReg2D !*/
+			    UNSG32 addr, /*! CMD: 2ND-buffer address !*/
+			    SIGN32 burst, /*! CMD: line stride size in bytes !*/
+			    SIGN32 step1, /*! CMD: buffer width in bytes !*/
+			    SIGN32 size1, /*! CMD: buffer height in lines !*/
+			    SIGN32 step2, /*! CMD: loop size (1~4) of semaphore operations !*/
+			    SIGN32 size2, /*! CMD: semaphore operation at CMD/MTU (0/1) !*/
+			    SIGN32 chkSemId, /* CMD: semaphore loop pattern - non-zero to check */
+			    SIGN32 updSemId, /* CMD: semaphore loop pattern - non-zero to update */
+			    SIGN32 interrupt, /* CMD: raise interrupt at CMD finish */
+			    SIGN32 enable, /*! 0 to disable, 1 to enable !*/
+			    T64b cfgQ[] /* Pass NULL to directly init dHub2ND, or
+					 * Pass non-zero to receive programming sequence
+					 * in (adr,data) pairs
+					 */)
 {
-	HDL_dhub2d			*dhub2d = (HDL_dhub2d*)hdl;
-	SIE_dHubCmd2ND		cmd;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
+	SIE_dHubCmd2ND  cmd;
 	T32dHubChannel_ROB_MAP stdHubChannelRob_Map;
 	UNSG32 a, j = 0;
 
-	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id*sizeof(SIE_dHubCmd2ND);
+	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id * sizeof(SIE_dHubCmd2ND);
 	IO32CFG(cfgQ, j, a + RA_dHubCmd2ND_START, 0);
 
 	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id * sizeof(SIE_dHubCmd2ND);
@@ -944,8 +892,9 @@ UNSG32	dhub2nd_channel_cfg(
 
 	stdHubChannelRob_Map.u32 = 0;
 
-	if (0 != updSemId) {
-		if(chkSemId & 0x1)/*Assuming all Luma channel will be odd and chroma will be even */
+	if (updSemId != 0) {
+		/* Assuming all Luma channel will be odd and chroma will be even */
+		if (chkSemId & 0x1)
 			stdHubChannelRob_Map.uROB_MAP_ID = 2;
 		else
 			stdHubChannelRob_Map.uROB_MAP_ID = 1;
@@ -953,10 +902,11 @@ UNSG32	dhub2nd_channel_cfg(
 		stdHubChannelRob_Map.uROB_MAP_ID = 0;
 	}
 
-	a = dhub2d->ra + RA_dHubReg2D_dHub + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel) + RA_dHubChannel_ROB_MAP;
-	IO32CFG(cfgQ, j, a , stdHubChannelRob_Map.u32);
+	a = dhub2d->ra + RA_dHubReg2D_dHub + RA_dHubReg_ARR + id * sizeof(SIE_dHubChannel) +
+		RA_dHubChannel_ROB_MAP;
+	IO32CFG(cfgQ, j, a, stdHubChannelRob_Map.u32);
 
-	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id*sizeof(SIE_dHubCmd2ND);
+	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id * sizeof(SIE_dHubCmd2ND);
 
 	cmd.uMEM_addr = addr;
 	IO32CFG(cfgQ, j, a + RA_dHubCmd2ND_MEM, cmd.u32dHubCmd2ND_MEM);
@@ -967,7 +917,7 @@ UNSG32	dhub2nd_channel_cfg(
 	cmd.uDESC_chkSemId = chkSemId;
 	cmd.uDESC_updSemId = updSemId;
 
-	if (0 != updSemId) {
+	if (updSemId != 0) {
 		cmd.uDESC_ovrdQos = 1;
 		cmd.uDESC_disSem  = 1;
 		cmd.uDESC_qosSel  = 1;
@@ -994,58 +944,54 @@ UNSG32	dhub2nd_channel_cfg(
 	/** ENDOFFUNCTION: dhub2d_channel_cfg **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub2nd_channel_enable
-*	Description: dHub2ND channel enable/disable.
-*	Return:			UNSG32						-	Number of (adr,pair) added to cfgQ
-******************************************************************************************************************/
-UNSG32	dhub2nd_channel_enable(
-					void *hdl, /*!	Handle to HDL_dhub2d !*/
-					SIGN32 id, /*!	Channel ID in $dHubReg2D !*/
-					SIGN32 enable, /*!	0 to disable, 1 to enable !*/
-					T64b cfgQ[] /*!	Pass NULL to directly init dHub2D, or
-									Pass non-zero to receive programming sequence
-									in (adr,data) pairs
-								!*/
-					)
+/****************************************************************************************
+ *	Function: dhub2nd_channel_enable
+ *	Description: dHub2ND channel enable/disable.
+ *	Return: UNSG32 - Number of (adr,pair) added to cfgQ
+ ****************************************************************************************/
+UNSG32	dhub2nd_channel_enable(void *hdl, /*!	Handle to HDL_dhub2d !*/
+			       SIGN32 id, /*!	Channel ID in $dHubReg2D !*/
+			       SIGN32 enable, /*! 0 to disable, 1 to enable !*/
+			       T64b cfgQ[] /* Pass NULL to directly init dHub2D, or
+					    * Pass non-zero to receive programming sequence
+					    * in (adr,data) pairs
+					    */)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
 	UNSG32 i = 0, a;
-	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id*sizeof(SIE_dHubCmd2ND);
+
+	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id * sizeof(SIE_dHubCmd2ND);
 
 	IO32CFG(cfgQ, i, a + RA_dHubCmd2ND_START, enable);
 	return i;
 /**	ENDOFFUNCTION: dhub2nd_channel_enable **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub2nd_channel_clear
-*	Description: Issue dHub2ND channel clear (will NOT wait for finish).
-******************************************************************************************************************/
-void	dhub2nd_channel_clear(
-					void *hdl, /*!	Handle to HDL_dhub2d !*/
-					SIGN32 id /*!	Channel ID in $dHubReg2D !*/
-					)
+/****************************************************************************************
+ *	Function: dhub2nd_channel_clear
+ *	Description: Issue dHub2ND channel clear (will NOT wait for finish).
+ ****************************************************************************************/
+void	dhub2nd_channel_clear(void *hdl, /*!	Handle to HDL_dhub2d !*/
+			      SIGN32 id /*!	Channel ID in $dHubReg2D !*/)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
 	UNSG32 a;
-	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id*sizeof(SIE_dHubCmd2ND);
 
-	IO32WR( 1, a + RA_dHubCmd2ND_CLEAR);
-	return ;
+	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id * sizeof(SIE_dHubCmd2ND);
+
+	IO32WR(1, a + RA_dHubCmd2ND_CLEAR);
+	return;
 /**	ENDOFFUNCTION: dhub2nd_channel_clear **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub2d_channel_busy
-*	Description: Read dHub2D 'BUSY' status for all channel FIFOs.
-*	Return:			UNSG32						-	'BUSY' status bits of all channels
-******************************************************************************************************************/
-UNSG32	dhub2d_channel_busy(
-					void *hdl /*!	Handle to HDL_dhub2d !*/
-					)
+/****************************************************************************************
+ *	Function: dhub2d_channel_busy
+ *	Description: Read dHub2D 'BUSY' status for all channel FIFOs.
+ *	Return:	UNSG32 - 'BUSY' status bits of all channels
+ ****************************************************************************************/
+UNSG32	dhub2d_channel_busy(void *hdl /*!	Handle to HDL_dhub2d !*/)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
 	UNSG32 d;
 
 	IO32RD(d, dhub2d->ra + RA_dHubReg2D_BUSY);
@@ -1053,18 +999,20 @@ UNSG32	dhub2d_channel_busy(
 /**	ENDOFFUNCTION: dhub2d_channel_busy **/
 }
 
-/******************************************************************************************************************
-*	Function: dhub2d_channel_clear_done
-*	Description: Wait for a given channel or all channels to be cleared.
-******************************************************************************************************************/
+/****************************************************************************************
+ *	Function: dhub2d_channel_clear_done
+ *	Description: Wait for a given channel or all channels to be cleared.
+ ****************************************************************************************/
 void	dhub2d_channel_clear_done(void *hdl, /*! Handle to HDL_dhub2d !*/
 				  SIGN32 id /*! Channel ID in $dHubReg2D !*/)
 {
 	UNSG32 d;
-	do{
+
+	do {
 		d = dhub2d_channel_busy(hdl);
-		if(id >= 0) d = bTST(d, id);
-	} while(d);
+		if (id >= 0)
+			d = bTST(d, id);
+	} while (d);
 
 	/**	ENDOFFUNCTION: dhub2d_channel_clear_done **/
 }
@@ -1089,11 +1037,9 @@ void BCM_SCHED_SetMux(UNSG32 QID, UNSG32 TrigEvent)
 
 		GA_REG_WORD32_WRITE(MEMMAP_AVIO_BCM_REG_BASE + addr, TrigEvent);
 	} else if ((QID >= BCM_SCHED_Q14) && (QID <= BCM_SCHED_Q18)) {
-		addr = RA_AVIO_BCM_Q14 + (QID-BCM_SCHED_Q14) * 4;
+		addr = RA_AVIO_BCM_Q14 + (QID - BCM_SCHED_Q14) * 4;
 		GA_REG_WORD32_WRITE(MEMMAP_AVIO_BCM_REG_BASE + addr, TrigEvent);
 	}
-
-	return;
 }
 
 int BCM_SCHED_AutoPushCmd(UNSG32 QID, UNSG8 uchEnable)
@@ -1101,14 +1047,14 @@ int BCM_SCHED_AutoPushCmd(UNSG32 QID, UNSG8 uchEnable)
 	volatile UNSG32 uiBcmQ_AutoPushSts = 0;
 
 	/* parameter error */
-	if ((QID > BCM_SCHED_Q18) || (uchEnable >1))
-			return -1;
+	if (QID > BCM_SCHED_Q18 || uchEnable > 1)
+		return -1;
 
 	//Read the BCM Auto Push register
 	GA_REG_WORD32_READ(MEMMAP_AVIO_BCM_REG_BASE + RA_AVIO_BCM_AUTOPUSH, &uiBcmQ_AutoPushSts);
 
 	//Enable AutoPush for requested Queue.
-	if(uchEnable)
+	if (uchEnable)
 		uiBcmQ_AutoPushSts |= (1 << QID);
 	else
 		uiBcmQ_AutoPushSts &= ~(1 << QID);
@@ -1123,14 +1069,13 @@ int BCM_SCHED_PushCmd(UNSG32 QID, SIGN32 *pCmd, UNSG32 *cfgQ)
 {
 	UNSG32 value, addr, j;
 
-	if ((QID > BCM_SCHED_Q18) || !pCmd)
+	if (QID > BCM_SCHED_Q18 || !pCmd)
 		return -1; /* parameter error */
 
 	if (!cfgQ) {
 		GA_REG_WORD32_READ(MEMMAP_AVIO_BCM_REG_BASE + RA_AVIO_BCM_FULL_STS, &value);
-		if (value & (1 << QID)) {
+		if (value & (1 << QID))
 			return 0; /* Q FIFO is full */
-		}
 	}
 
 	if (pCmd) {
@@ -1156,11 +1101,10 @@ void BCM_SCHED_GetEmptySts(UNSG32 QID, UNSG32 *EmptySts)
 	UNSG32 bcmQ_sts;
 
 	GA_REG_WORD32_READ(MEMMAP_AVIO_BCM_REG_BASE + RA_AVIO_BCM_EMP_STS, &bcmQ_sts);
-	if (bcmQ_sts & (1 << QID)) {
+	if (bcmQ_sts & (1 << QID))
 		*EmptySts = 1;
-	} else {
+	else
 		*EmptySts = 0;
-	}
 }
 
 /****************************************************
@@ -1245,159 +1189,151 @@ void dhub2nd_channel_start_seq(void *hdl, SIGN32 id)
 	dhub_channel_enable(&((HDL_dhub2d *)hdl)->dhub, id, 1, NULL);
 }
 
-/******************************************************************************************************************
+/****************************************************************************************
  *  DHub/HBO clear/disable/enable functions
  *  Same as original ones, but use BCM buffer for VIP VBI clear sequence.
- ******************************************************************************************************************/
-void	dhub_channel_clear_bcmbuf(
-		void *hdl, /*!	Handle to HDL_dhub !*/
-		SIGN32 id, /*!	Channel ID in $dHubReg !*/
-		BCMBUF *pbcmbuf
-		)
+ ****************************************************************************************/
+void	dhub_channel_clear_bcmbuf(void *hdl, /*!	Handle to HDL_dhub !*/
+				  SIGN32 id, /*!	Channel ID in $dHubReg !*/
+				  BCMBUF *pbcmbuf)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
 	UNSG32 a;
-	a = dhub->ra + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel);
 
-	if (pbcmbuf == NULL)
+	a = dhub->ra + RA_dHubReg_ARR + id * sizeof(SIE_dHubChannel);
+
+	if (!pbcmbuf)
 		return;
 
 	/*save the data to the buffer*/
 	*pbcmbuf->writer = 1;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	*pbcmbuf->writer = a + RA_dHubChannel_CLEAR;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 
 	//IO32WR(1, a + RA_dHubChannel_CLEAR);
 }
 
-UNSG32	dhub_channel_enable_bcmbuf(
-		void *hdl, /*!	Handle to HDL_dhub !*/
-		SIGN32 id, /*!	Channel ID in $dHubReg !*/
-		SIGN32 enable, /*!	0 to disable, 1 to enable !*/
-		BCMBUF *pbcmbuf
-		)
+UNSG32	dhub_channel_enable_bcmbuf(void *hdl, /*!	Handle to HDL_dhub !*/
+				   SIGN32 id, /*!	Channel ID in $dHubReg !*/
+				   SIGN32 enable, /*!	0 to disable, 1 to enable !*/
+				   BCMBUF *pbcmbuf)
 {
-	HDL_dhub *dhub = (HDL_dhub*)hdl;
+	HDL_dhub *dhub = (HDL_dhub *)hdl;
 	UNSG32 i = 0, a;
-	a = dhub->ra + RA_dHubReg_ARR + id*sizeof(SIE_dHubChannel);
+
+	a = dhub->ra + RA_dHubReg_ARR + id * sizeof(SIE_dHubChannel);
 
 	*pbcmbuf->writer = enable;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	*pbcmbuf->writer = a + RA_dHubChannel_START;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 
 	//IO32CFG(cfgQ, i, a + RA_dHubChannel_START, enable);
 	return i;
 }
 
-void	hbo_queue_clear_bcmbuf(
-		void *hdl, /*!	Handle to HDL_hbo !*/
-		SIGN32 id, /*!	Queue ID in $HBO !*/
-		BCMBUF *pbcmbuf
-		)
+void	hbo_queue_clear_bcmbuf(void *hdl, /*!	Handle to HDL_hbo !*/
+			       SIGN32 id, /*!	Queue ID in $HBO !*/
+			       BCMBUF *pbcmbuf)
 {
-	HDL_hbo *hbo = (HDL_hbo*)hdl;
+	HDL_hbo *hbo = (HDL_hbo *)hdl;
 	UNSG32 a;
-	a = hbo->ra + RA_HBO_ARR + id*sizeof(SIE_FiFo);
 
-	if (pbcmbuf == NULL)
+	a = hbo->ra + RA_HBO_ARR + id * sizeof(SIE_FiFo);
+
+	if (!pbcmbuf)
 		return;
 
 	/*save the data to the buffer*/
 	*pbcmbuf->writer = 1;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	*pbcmbuf->writer = a + RA_FiFo_CLEAR;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 
 	//IO32WR(1, a + RA_FiFo_CLEAR);
 	/**	ENDOFFUNCTION: hbo_queue_enable **/
 }
 
-UNSG32	hbo_queue_enable_bcmbuf(
-		void *hdl, /*!	Handle to HDL_hbo !*/
-		SIGN32 id, /*!	Queue ID in $HBO !*/
-		SIGN32 enable, /*!	0 to disable, 1 to enable !*/
-		BCMBUF *pbcmbuf
-		)
+UNSG32	hbo_queue_enable_bcmbuf(void *hdl, /*!	Handle to HDL_hbo !*/
+				SIGN32 id, /*!	Queue ID in $HBO !*/
+				SIGN32 enable, /*!	0 to disable, 1 to enable !*/
+				BCMBUF *pbcmbuf)
 {
-	HDL_hbo				*hbo = (HDL_hbo*)hdl;
+	HDL_hbo	*hbo = (HDL_hbo *)hdl;
 	UNSG32 i = 0, a;
-	a = hbo->ra + RA_HBO_ARR + id*sizeof(SIE_FiFo);
+
+	a = hbo->ra + RA_HBO_ARR + id * sizeof(SIE_FiFo);
 
 	*pbcmbuf->writer = enable;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	*pbcmbuf->writer = a + RA_FiFo_START;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 
 	//IO32CFG(cfgQ, i, a + RA_FiFo_START, enable);
 	return i;
 }
 
-void  dhub2d_channel_enable_bcmbuf(
-	void *hdl, /*! Handle to HDL_dhub2d !*/
-	SIGN32 id, /*! Channel ID in $dHubReg2D !*/
-	SIGN32 enable, /*! 0 to disable, 1 to enable !*/
-	BCMBUF *pbcmbuf
-	)
+void  dhub2d_channel_enable_bcmbuf(void *hdl, /*! Handle to HDL_dhub2d !*/
+				   SIGN32 id, /*! Channel ID in $dHubReg2D !*/
+				   SIGN32 enable, /*! 0 to disable, 1 to enable !*/
+				   BCMBUF *pbcmbuf)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
 	UNSG32 a;
-	a = dhub2d->ra + RA_dHubReg2D_ARR + id*sizeof(SIE_dHubCmd2D);
+
+	a = dhub2d->ra + RA_dHubReg2D_ARR + id * sizeof(SIE_dHubCmd2D);
 
 	/*save the data to the buffer*/
 	*pbcmbuf->writer = enable;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	*pbcmbuf->writer = a + RA_dHubCmd2D_START;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 
 	// IO32CFG(cfgQ, i, a + RA_dHubCmd2D_START, enable);
-	return ;
+	return;
 	/** ENDOFFUNCTION: dhub2d_channel_enable **/
 }
 
-void	dhub2d_channel_clear_bcmbuf(
-	void *hdl, /*! Handle to HDL_dhub2d !*/
-	SIGN32 id, /*! Channel ID in $dHubReg2D !*/
-	BCMBUF *pbcmbuf
-	)
+void	dhub2d_channel_clear_bcmbuf(void *hdl, /*! Handle to HDL_dhub2d !*/
+				    SIGN32 id, /*! Channel ID in $dHubReg2D !*/
+				    BCMBUF *pbcmbuf)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
 	UNSG32 a;
-	a = dhub2d->ra + RA_dHubReg2D_ARR + id*sizeof(SIE_dHubCmd2D);
+
+	a = dhub2d->ra + RA_dHubReg2D_ARR + id * sizeof(SIE_dHubCmd2D);
 
 	/*save the data to the buffer*/
 	*pbcmbuf->writer = 1;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	*pbcmbuf->writer = a + RA_dHubCmd2D_CLEAR;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 
 	//IO32WR( 1, a + RA_dHubCmd2D_CLEAR);
-	return ;
+	return;
 	/**	ENDOFFUNCTION: dhub2d_channel_clear **/
 }
-void	dhub2nd_channel_clear_bcmbuf(
-	void *hdl, /*! Handle to HDL_dhub2d !*/
-	SIGN32 id, /*!	Channel ID in $dHubReg2D !*/
-	BCMBUF *pbcmbuf
-	)
+
+void	dhub2nd_channel_clear_bcmbuf(void *hdl, /*! Handle to HDL_dhub2d !*/
+				     SIGN32 id, /*!	Channel ID in $dHubReg2D !*/
+				     BCMBUF *pbcmbuf)
 {
-	HDL_dhub2d *dhub2d = (HDL_dhub2d*)hdl;
+	HDL_dhub2d *dhub2d = (HDL_dhub2d *)hdl;
 	UNSG32 a;
-	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id*sizeof(SIE_dHubCmd2ND);
+
+	a = dhub2d->ra + RA_dHubReg2D_ARR_2ND + id * sizeof(SIE_dHubCmd2ND);
 
 	/*save the data to the buffer*/
 	*pbcmbuf->writer = 1;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 	*pbcmbuf->writer = a + RA_dHubCmd2ND_CLEAR;
-	pbcmbuf->writer ++;
+	pbcmbuf->writer++;
 
 	//IO32WR( 1, a + RA_dHubCmd2D_CLEAR);
-	return ;
+	return;
 /**	ENDOFFUNCTION: dhub2d_channel_clear **/
 }
-
-
 
 /****************************************************
  *  dhub2d_channel_clear_seq()
@@ -1455,7 +1391,6 @@ void dhub_channel_clear_seq(void *hdl, SIGN32 id, BCMBUF *pbcmbuf)
 	dhub_channel_enable_bcmbuf(hdl, id, 1, pbcmbuf);
 }
 
-
 /****************************************************
  *  dhub2d_channel_clear_seq()
  *
@@ -1487,10 +1422,7 @@ void dhub2nd_channel_clear_seq_bcm(void *hdl, SIGN32 id, BCMBUF *pbcmbuf)
 /**	ENDOFSECTION
  */
 
-
-
-
-/**	ENDOFFILE: hal_dhub.c *********************************************************************************************
+/**	ENDOFFILE: hal_dhub.c ************************************************************
  */
 #ifdef __LINUX_KERNEL__
 #include <linux/module.h>

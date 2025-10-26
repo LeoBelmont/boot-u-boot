@@ -1,26 +1,26 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 or
- * later as published by the Free Software Foundation.
- *
- * INFORMATION CONTAINED IN THIS DOCUMENT IS PROVIDED "AS-IS," AND
- * SYNAPTICS EXPRESSLY DISCLAIMS ALL EXPRESS AND IMPLIED WARRANTIES,
- * INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE, AND ANY WARRANTIES OF NON-INFRINGEMENT OF ANY
- * INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL SYNAPTICS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR
- * CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN CONNECTION WITH THE USE
- * OF THE INFORMATION CONTAINED IN THIS DOCUMENT, HOWEVER CAUSED AND
- * BASED ON ANY THEORY OF LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, AND EVEN IF SYNAPTICS WAS
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. IF A TRIBUNAL OF
- * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
- * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
- * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 or
+ * later as published by the Free Software Foundation.
+ *
+ * INFORMATION CONTAINED IN THIS DOCUMENT IS PROVIDED "AS-IS," AND
+ * SYNAPTICS EXPRESSLY DISCLAIMS ALL EXPRESS AND IMPLIED WARRANTIES,
+ * INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE, AND ANY WARRANTIES OF NON-INFRINGEMENT OF ANY
+ * INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL SYNAPTICS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR
+ * CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN CONNECTION WITH THE USE
+ * OF THE INFORMATION CONTAINED IN THIS DOCUMENT, HOWEVER CAUSED AND
+ * BASED ON ANY THEORY OF LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, AND EVEN IF SYNAPTICS WAS
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. IF A TRIBUNAL OF
+ * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
+ * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
+ * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
+ */
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \file GaloisTime.h
@@ -56,9 +56,9 @@
 #ifndef _GALOISTIME_H_
 #define _GALOISTIME_H_
 
-#if defined( __LINUX__ )
+#if defined(__LINUX__)
 #include "time.h"
-#elif defined( __ECOS__ )
+#elif defined(__ECOS__)
 #include <sys/time.h>
 #endif
 
@@ -82,70 +82,70 @@ extern unsigned long *ptr_system_clock_second;
 extern unsigned int MV_Time_System_Timer_Clock;			// GaloisTime.c
 extern unsigned long _CYGNUM_HAL_RTC_PERIOD_value;		// galois_misc.c
 
-#define CMD_PFTIMER_GET_VALUE 				(0x1000)
+#define CMD_PFTIMER_GET_VALUE (0x1000)
 
 #define CMD_ICCEXTRA_GET_SYSTIME			(0x1F07)
 #define CMD_ICCEXTRA_TEST_01				(0x1F08)
 #define CMD_ICCEXTRA_GET_CLOCK				(0x1F09)
 #define CMD_ICCEXTRA_GET_CLOCK_ALL			(0x1F10)
 
-#define MV_Time_FLOAT_TO_FIXED(x, fract_bits)	((INT32)((x) * (0x01LL << fract_bits)))
-#define MV_Time_TIMER_Diff(x_new, y_old)	( (x_new < y_old) ? (y_old - x_new): ~(x_new - y_old))
+#define MV_Time_FLOAT_TO_FIXED(x, fract_bits)	((INT32)((x) * (0x01LL << (fract_bits))))
+#define MV_Time_TIMER_Diff(x_new, y_old) \
+	(((x_new) < (y_old)) ? ((y_old) - (x_new)) : ~((x_new) - (y_old)))
 
 typedef struct _system_clock_data {
-         unsigned long   	m_Clock_Second;
-         unsigned long     	m_Clock_Timer;
-         unsigned long		m_Hardware_Timer;
+	unsigned long m_Clock_Second;
+	unsigned long m_Clock_Timer;
+	unsigned long m_Hardware_Timer;
 } system_clock_data_t;
 
 #endif
 
 #if defined(WIN32) || defined(__UBOOT__)
 struct timespec {
-         long   	tv_sec;         		/* seconds */
-         long     	tv_nsec;        		/* nanoseconds */
+	long tv_sec;	/* seconds */
+	long tv_nsec;	/* nanoseconds */
 };
 
 #endif
 
-
 typedef struct timespec MV_TimeSpec_t, *pMV_TimeSpec_t;
-typedef struct timeval 	MV_TimeVal_t, *pMV_TimeVal_t;
-
+typedef struct timeval MV_TimeVal_t, *pMV_TimeVal_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief OSAL Data Structure: MV_HANDLE_Time_t | Handle to a time object
 //!
 ////////////////////////////////////////////////////////////////////////////////
-typedef PVOID 	MV_HANDLE_Time_t;
-typedef PVOID 	*pMV_HANDLE_Time_t;
-
+typedef PVOID MV_HANDLE_Time_t;
+typedef PVOID *pMV_HANDLE_Time_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief OSAL Data Structure: MV_HANDLE_TimePlay_t | Handle to a time object for playing
 //!
 ////////////////////////////////////////////////////////////////////////////////
-typedef PVOID 	MV_HANDLE_TimePlay_t;
-typedef PVOID 	*pMV_HANDLE_TimePlay_t;
+typedef PVOID MV_HANDLE_TimePlay_t;
+typedef PVOID *pMV_HANDLE_TimePlay_t;
 
 typedef struct {
-            UINT16 is_pi;	    /* if 1: pi_id is playitem id; don¡¯t care sub_pi_id and sync_pi_id
-							    if 0: sub_pi_id is sub playitem id; if sync_pi_id == 0xffff, sub playitem is
-							    not synced with playitem; otherwise sync_pi_id is the playitem id synced with the sub playitem id */
-            UINT16 pi_id;       /* 0xffff: invalid; otherwise playitem id */
-            UINT16 sub_pi_id;   /* 0xffff: invalid; otherwise sub playitem id */
-            UINT16 sync_pi_id;  /* 0xffff: invalid; otherwise playitem id synced with the sub playitem id */
+	UINT16 is_pi;/* if 1: pi_id is playitem id; dont care sub_pi_id and sync_pi_id
+		      * if 0: sub_pi_id is sub playitem id; if sync_pi_id == 0xffff,
+		      * sub playitem is not synced with playitem; otherwise sync_pi_id
+		      * is the playitem id synced with the sub playitem id
+		      */
+	UINT16 pi_id;       /* 0xffff: invalid; otherwise playitem id */
+	UINT16 sub_pi_id;   /* 0xffff: invalid; otherwise sub playitem id */
+	UINT16 sync_pi_id;// 0xffff: invalid; otherwise playitem id synced with the sub playitem id
 } MV_PlayItem_ID_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief OSAL Data Structure: MV_TimePTS_t | PTS time stamp
 //!
 ////////////////////////////////////////////////////////////////////////////////
-typedef struct _MV_TimePTS
-{						// PTS is a 33bit unsigned integer
-	UINT32 m_high;		// Only the lowest bit is available for calculating, MSB has some special meanings
+typedef struct _MV_TimePTS {	// PTS is a 33bit unsigned integer
+	UINT32 m_high;		// Only the lowest bit is available for calculating,
+				// MSB has some special meanings
 	UINT32 m_low;		// 32bit is available
-  MV_PlayItem_ID_t PI;
+	MV_PlayItem_ID_t PI;
 } MV_TimePTS_t, *pMV_TimePTS_t;
 
 #define MV_TIMEPTS_INITVALUE        {0, 0, }
@@ -156,66 +156,52 @@ typedef struct _MV_TimePTS
 #define MV_TIMEPTS_PTSPERMINUTE		(MV_TIMEPTS_FREQUENCY * 60)
 #define MV_TIMEPTS_PTSPERSEC		(MV_TIMEPTS_FREQUENCY)
 
-#define	RESET_PTS(x)		        do{(x).m_high = 0; (x).m_low=0;}while(0)
+#define	RESET_PTS(x) \
+	do { \
+		(x).m_high = 0; \
+		(x).m_low = 0;\
+	} while (0)
 #define	IS_PTS_VALID(x)		        ((x).m_high & MV_TIMEPTS_VALIDMASK)
-#define	SET_PTS_VALID(x)	        do{(x).m_high |= MV_TIMEPTS_VALIDMASK;}while(0)
-
+#define	SET_PTS_VALID(x)	        ((x).m_high |= MV_TIMEPTS_VALIDMASK)
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief OSAL Data Structure: MV_TimePTSCounter_t | PTS time Counter
 //!
 ////////////////////////////////////////////////////////////////////////////////
-typedef struct _MV_TimePTSCounter
-{
+typedef struct _MV_TimePTSCounter {
 	MV_TimePTS_t	m_Counter;
-	INT				m_Counter_Residua_Numerator;
-
-	INT				m_Counter_Step_Integer;
-	INT				m_Counter_Step_Numerator;
-	UINT			m_Counter_Step_Denominator;
+	INT		m_Counter_Residua_Numerator;
+	INT		m_Counter_Step_Integer;
+	INT		m_Counter_Step_Numerator;
+	UINT		m_Counter_Step_Denominator;
 
 } MV_TimePTSCounter_t, *pMV_TimePTSCounter_t;
-
-
-
-
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //----------------------------------TimePlay------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-
-typedef enum _MV_TimePlay_FrameType
-{
+typedef enum _MV_TimePlay_FrameType {
 	MV_TimePlay_FrameType_50 = 50,
 	MV_TimePlay_FrameType_60 = 60,
 	MV_TimePlay_FrameType_75 = 75
 
 } MV_TimePlay_FrameType_t;
 
-
-typedef enum _MV_TimePlay_TimeType
-{
+typedef enum _MV_TimePlay_TimeType {
 	MV_TimePlay_TimeType_Str = 0,
 	MV_TimePlay_TimeType_Num = 1,
 	MV_TimePlay_TimeType_BCD = 2
 
 } MV_TimePlay_TimeType_t;
 
-
-typedef struct _MV_TimePlay_TimeCommon
-{
+typedef struct _MV_TimePlay_TimeCommon {
 	MV_TimePlay_TimeType_t m_TimeType;
 	MV_TimePlay_FrameType_t m_FrameType;
 
 } MV_TimePlay_TimeCommon_t, *pMV_TimePlay_TimeCommon_t;
 
-
-typedef struct _MV_TimePlay_TimeStr
-{
+typedef struct _MV_TimePlay_TimeStr {
 	MV_TimePlay_TimeType_t m_TimeType;
 	MV_TimePlay_FrameType_t m_FrameType;
 
@@ -223,9 +209,7 @@ typedef struct _MV_TimePlay_TimeStr
 
 } MV_TimePlay_TimeStr_t, *pMV_TimePlay_TimeStr_t;
 
-
-typedef struct _MV_TimePlay_TimeNum
-{
+typedef struct _MV_TimePlay_TimeNum {
 	MV_TimePlay_TimeType_t m_TimeType;
 	MV_TimePlay_FrameType_t m_FrameType;
 
@@ -236,9 +220,7 @@ typedef struct _MV_TimePlay_TimeNum
 
 } MV_TimePlay_TimeNum_t, *pMV_TimePlay_TimeNum_t;
 
-
-typedef struct _MV_TimePlay_TimeBCD		// BCD = 8421
-{
+typedef struct _MV_TimePlay_TimeBCD {		// BCD = 8421
 	MV_TimePlay_TimeType_t m_TimeType;
 	MV_TimePlay_FrameType_t m_FrameType;
 
@@ -249,21 +231,17 @@ typedef struct _MV_TimePlay_TimeBCD		// BCD = 8421
 
 } MV_TimePlay_TimeBCD_t, *pMV_TimePlay_TimeBCD_t;
 
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //----------------------------------TimePTS-------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_Equal
 //!
 //! Description: whether a and b is equal
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (IN): The pointer to the b which type is MV_TimePTS_t
 //!
 //! \return Return:		>0	= Equal
 //!						0	= Not Equal
@@ -272,14 +250,13 @@ typedef struct _MV_TimePlay_TimeBCD		// BCD = 8421
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTS_Equal(MV_TimePTS_t *a, MV_TimePTS_t *b);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_Compare
 //!
 //! Description: compare a with b
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (IN): The pointer to the b which type is MV_TimePTS_t
 //!
 //! \return Return:		>0	= a > b
 //!						0	= a = b
@@ -289,47 +266,44 @@ HRESULT  MV_TimePTS_Equal(MV_TimePTS_t *a, MV_TimePTS_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT MV_TimePTS_Compare(MV_TimePTS_t *a, MV_TimePTS_t *b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_Set
 //!
 //! Description: Set a number to the PTS time value;
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(IN):	The vaule of a PTS time
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (IN): The value of a PTS time
 //!
 //! \return Return:		S_OK
-//! 					E_OUTOFRANGE
+//!				E_OUTOFRANGE
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTS_Set(MV_TimePTS_t *a, UINT64 b);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_Get
 //!
 //! Description: Get a number from the PTS time value;
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(IN):	The vaule of a PTS time
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (IN): The value of a PTS time
 //!
 //! \return Return:		S_OK
-//! 					E_OUTOFRANGE
+//!				E_OUTOFRANGE
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 UINT64  MV_TimePTS_Get(MV_TimePTS_t *a);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_Add
 //!
-//! Description: Add a to b, if the result greater than 33bit number, the exceeding bit will be ommited.
+//! Description: Add a to b, if the result greater than 33bit number,
+//!		 the exceeding bit will be ommited.
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (IN): The pointer to the b which type is MV_TimePTS_t
 //!
 //! \return Return:		result of (a+b)
 //!
@@ -337,15 +311,13 @@ UINT64  MV_TimePTS_Get(MV_TimePTS_t *a);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimePTS_t MV_TimePTS_Add(MV_TimePTS_t *a, MV_TimePTS_t *b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_Sub
 //!
 //! Description: Subtract b from a
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (IN): The pointer to the b which type is MV_TimePTS_t
 //!
 //! \return Return:		result of (a-b), but a signed integer
 //!
@@ -358,8 +330,8 @@ INT64  MV_TimePTS_Sub(MV_TimePTS_t *a, MV_TimePTS_t *b);
 //!
 //! Description: the PTS difference between a and b,
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (IN): The pointer to the b which type is MV_TimePTS_t
 //!
 //! \param pts_diff	(OUT):	Give the diff value, NOTE UINT32;
 //! \return Return:		with wrapper around compare between the two PTS,
@@ -370,13 +342,12 @@ INT64  MV_TimePTS_Sub(MV_TimePTS_t *a, MV_TimePTS_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 INT32  MV_TimePTS_Diff(MV_TimePTS_t *a, MV_TimePTS_t *b, UINT32 *pts_diff);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_SetbyPTS
 //!
 //! Description: Set a PTS to the PTS time value;
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
 //!
 //! \return Return:		the result of PTS
 //!
@@ -384,15 +355,14 @@ INT32  MV_TimePTS_Diff(MV_TimePTS_t *a, MV_TimePTS_t *b, UINT32 *pts_diff);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimePTS_t  MV_TimePTS_SetbyPTS(MV_TimePTS_t *a);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_AddbyUINT64
 //!
-//! Description: Add a to b, if the result greater than 33bit number, the exceeding bit will be ommited.
+//! Description: Add a to b, if the result greater than 33bit number,
+//!		 the exceeding bit will be ommited.
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(IN):	The vaule of a PTS time
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (IN): The value of a PTS time
 //!
 //! \return Return:		result of (a+b)
 //!
@@ -400,18 +370,12 @@ MV_TimePTS_t  MV_TimePTS_SetbyPTS(MV_TimePTS_t *a);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimePTS_t MV_TimePTS_AddbyUINT64(MV_TimePTS_t *a, UINT64 b);
 
-
-
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_ToTimeVal
 //!
 //! Description: convert the time which type is MV_TimePTS_t to the time which type is MV_TimeVal_t
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
 //!
 //! \return Return:		the time which type is MV_TimeVal_t
 //!
@@ -419,13 +383,12 @@ MV_TimePTS_t MV_TimePTS_AddbyUINT64(MV_TimePTS_t *a, UINT64 b);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimeVal_t  MV_TimePTS_ToTimeVal(MV_TimePTS_t *a);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_ToTimeSpec
 //!
 //! Description: convert the time which type is MV_TimePTS_t to the time which type is MV_TimeSpec_t
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
 //!
 //! \return Return:		the time which type is MV_TimeSpec_t
 //!
@@ -433,31 +396,27 @@ MV_TimeVal_t  MV_TimePTS_ToTimeVal(MV_TimePTS_t *a);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimeSpec_t  MV_TimePTS_ToTimeSpec(MV_TimePTS_t *a);
 
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_ToTimePlay
 //!
-//! Description: convert the time which type is MV_TimePTS_t to the time which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! Description: convert the time which type is MV_TimePTS_t to the time
+//!		 which type is one of
+//!		 (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
-//! \param b 	(OUT):	The pointer to the b which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
+//! \param b (OUT): The pointer to the b which type is one of
+//!		    (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT MV_TimePTS_ToTimePlay(MV_TimePTS_t *a, MV_HANDLE_TimePlay_t b);
 
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //----------------------------------TimePTSConter-------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_Set
@@ -465,15 +424,14 @@ HRESULT MV_TimePTS_ToTimePlay(MV_TimePTS_t *a, MV_HANDLE_TimePlay_t b);
 //! Description: Set the PTS Counter by PTS value
 //!
 //! \param pCounter	(IN/OUT):	The pointer to the counter
-//! \param a 			(IN):	The pointer to the a which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTSCounter_Set(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_SetStep
@@ -486,32 +444,27 @@ HRESULT  MV_TimePTSCounter_Set(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
 //! \param Denominator	(IN):	The Denominator of step ( unit = PTS )
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
-HRESULT  MV_TimePTSCounter_SetStep(pMV_TimePTSCounter_t pCounter,
-									INT 				Integer,
-									INT 				Numerator,
-									UINT 				Denominator);
-
+HRESULT  MV_TimePTSCounter_SetStep(pMV_TimePTSCounter_t pCounter, INT Integer,
+				   INT Numerator, UINT Denominator);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_Get
 //!
 //! Description: Get the PTS Counter by PTS value
 //!
-//! \param pCounter	(IN/OUT):	The pointer to the counter
-//! \param a 			(IN):	The pointer to the a which type is MV_TimePTS_t
+//! \param pCounter	(IN/OUT): The pointer to the counter
+//! \param a		(IN): The pointer to the a which type is MV_TimePTS_t
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTSCounter_Get(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_GetStep
@@ -524,15 +477,12 @@ HRESULT  MV_TimePTSCounter_Get(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
 //! \param Denominator	(OUT):	The Denominator of step ( unit = PTS )
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
-HRESULT  MV_TimePTSCounter_GetStep(pMV_TimePTSCounter_t pCounter,
-									INT 				*Integer,
-									INT 				*Numerator,
-									UINT 				*Denominator);
-
+HRESULT  MV_TimePTSCounter_GetStep(pMV_TimePTSCounter_t pCounter, INT *Integer,
+				   INT *Numerator, UINT	*Denominator);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_Step
@@ -542,14 +492,12 @@ HRESULT  MV_TimePTSCounter_GetStep(pMV_TimePTSCounter_t pCounter,
 //! \param pCounter		(IN):	The pointer to the counter
 //!
 //! \return Return:		S_OK
-//!						E_OUTOFRANGE
-//! 					E_INVALIDARG
+//!				E_OUTOFRANGE
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTSCounter_Step(pMV_TimePTSCounter_t pCounter);
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_MultiStep
@@ -560,14 +508,12 @@ HRESULT  MV_TimePTSCounter_Step(pMV_TimePTSCounter_t pCounter);
 //! \param Multiple		(IN):	The Multiple of the steps
 //!
 //! \return Return:		S_OK
-//!						E_OUTOFRANGE
-//! 					E_INVALIDARG
+//!				E_OUTOFRANGE
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTSCounter_MultiStep(pMV_TimePTSCounter_t pCounter, UINT Multiple);
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_Add
@@ -578,29 +524,28 @@ HRESULT  MV_TimePTSCounter_MultiStep(pMV_TimePTSCounter_t pCounter, UINT Multipl
 //! \param a		(IN):	The value of the PTS time
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTSCounter_Add(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_Sub
 //!
-//! Description: sub a PTS value from the counter (if result is less than zero, result is zero and returns E_OUTOFRANGE.)
+//! Description: sub a PTS value from the counter
+//!		 (if result is less than zero, result is zero and returns E_OUTOFRANGE.)
 //!
 //! \param pCounter	(IN/OUT):	The pointer to the counter
 //! \param a		(IN):	The value of the PTS time
 //!
 //! \return Return:		S_OK
-//!						E_OUTOFRANGE
-//! 					E_INVALIDARG
+//!				E_OUTOFRANGE
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTSCounter_Sub(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_Equal
@@ -616,7 +561,6 @@ HRESULT  MV_TimePTSCounter_Sub(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTSCounter_Equal(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTSCounter_Compare
@@ -634,24 +578,17 @@ HRESULT  MV_TimePTSCounter_Equal(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a)
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePTSCounter_Compare(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *a);
 
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //----------------------------------TimeSpec-------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeSpec_Equal
 //!
 //! Description: whether a and b is equal
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeSpec_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimeSpec_t
+//! \param a (IN): The pointer to the a which type is MV_TimeSpec_t
+//! \param b (IN): The pointer to the b which type is MV_TimeSpec_t
 //!
 //! \return Return:		>0	= Equal
 //!						0	= Not Equal
@@ -660,14 +597,13 @@ HRESULT  MV_TimePTSCounter_Compare(pMV_TimePTSCounter_t pCounter, MV_TimePTS_t *
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimeSpec_Equal(MV_TimeSpec_t *a, MV_TimeSpec_t *b);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeSpec_Compare
 //!
 //! Description: compare a with b
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeSpec_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimeSpec_t
+//! \param a (IN): The pointer to the a which type is MV_TimeSpec_t
+//! \param b (IN): The pointer to the b which type is MV_TimeSpec_t
 //!
 //! \return Return:		>0	= a > b
 //!						0	= a = b
@@ -677,17 +613,13 @@ HRESULT  MV_TimeSpec_Equal(MV_TimeSpec_t *a, MV_TimeSpec_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimeSpec_Compare(MV_TimeSpec_t *a, MV_TimeSpec_t *b);
 
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeSpec_Add
 //!
 //! Description: Add a to b
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeSpec_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimeSpec_t
+//! \param a (IN): The pointer to the a which type is MV_TimeSpec_t
+//! \param b (IN): The pointer to the b which type is MV_TimeSpec_t
 //!
 //! \return Return:		result of (a+b)
 //!
@@ -695,15 +627,13 @@ HRESULT  MV_TimeSpec_Compare(MV_TimeSpec_t *a, MV_TimeSpec_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimeSpec_t  MV_TimeSpec_Add(MV_TimeSpec_t *a, MV_TimeSpec_t *b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeSpec_Sub
 //!
 //! Description: Subtract b from a
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeSpec_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimeSpec_t
+//! \param a (IN): The pointer to the a which type is MV_TimeSpec_t
+//! \param b (IN): The pointer to the b which type is MV_TimeSpec_t
 //!
 //! \return Return:		result of (a-b)
 //!
@@ -711,14 +641,13 @@ MV_TimeSpec_t  MV_TimeSpec_Add(MV_TimeSpec_t *a, MV_TimeSpec_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimeSpec_t  MV_TimeSpec_Sub(MV_TimeSpec_t *a, MV_TimeSpec_t *b);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeSpec_ToTimePTS
 //!
 //! Description: convert the time which type is MV_TimeSpec_t to the time which type is MV_TimePTS_t
-//! warning:	the time should be greater than zero.
+//! warning: the time should be greater than zero.
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
 //!
 //! \return Return:		the time which type is MV_TimePTS_t
 //!
@@ -726,39 +655,36 @@ MV_TimeSpec_t  MV_TimeSpec_Sub(MV_TimeSpec_t *a, MV_TimeSpec_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimePTS_t  MV_TimeSpec_ToTimePTS(MV_TimeSpec_t *a);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeSpec_ToTimePlay
 //!
-//! Description: convert the time which type is MV_TimeSpec_t to the time which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! Description: convert the time which type is MV_TimeSpec_t to the time
+//!		 which type is one of
+//!		 (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //! warning:	the time should be greater than zero.
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeSpec_t
-//! \param b 	(OUT):	The pointer to the b which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param a (IN): The pointer to the a which type is MV_TimeSpec_t
+//! \param b (OUT): The pointer to the b which type is one of
+//!		    (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimeSpec_ToTimePlay(MV_TimeSpec_t *a, MV_HANDLE_TimePlay_t b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //----------------------------------TimeVal-------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeVal_Equal
 //!
 //! Description: whether a and b is equal
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeVal_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimeVal_t
+//! \param a (IN): The pointer to the a which type is MV_TimeVal_t
+//! \param b (IN): The pointer to the b which type is MV_TimeVal_t
 //!
 //! \return Return:		>0	= Equal
 //!						0	= Not Equal
@@ -767,14 +693,13 @@ HRESULT  MV_TimeSpec_ToTimePlay(MV_TimeSpec_t *a, MV_HANDLE_TimePlay_t b);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimeVal_Equal(MV_TimeVal_t *a, MV_TimeVal_t *b);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeVal_Compare
 //!
 //! Description: compare a with b
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeVal_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimeVal_t
+//! \param a (IN): The pointer to the a which type is MV_TimeVal_t
+//! \param b (IN): The pointer to the b which type is MV_TimeVal_t
 //!
 //! \return Return:		>0	= a > b
 //!						0	= a = b
@@ -784,15 +709,13 @@ HRESULT  MV_TimeVal_Equal(MV_TimeVal_t *a, MV_TimeVal_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimeVal_Compare(MV_TimeVal_t *a, MV_TimeVal_t *b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeVal_Add
 //!
 //! Description: Add a to b
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeVal_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimeVal_t
+//! \param a (IN): The pointer to the a which type is MV_TimeVal_t
+//! \param b (IN): The pointer to the b which type is MV_TimeVal_t
 //!
 //! \return Return:		result of (a+b)
 //!
@@ -800,15 +723,13 @@ HRESULT  MV_TimeVal_Compare(MV_TimeVal_t *a, MV_TimeVal_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimeVal_t  MV_TimeVal_Add(MV_TimeVal_t *a, MV_TimeVal_t *b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeVal_Sub
 //!
 //! Description: Subtract b from a
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeVal_t
-//! \param b 	(IN):	The pointer to the b which type is MV_TimeVal_t
+//! \param a (IN): The pointer to the a which type is MV_TimeVal_t
+//! \param b (IN): The pointer to the b which type is MV_TimeVal_t
 //!
 //! \return Return:		result of (a-b)
 //!
@@ -816,14 +737,13 @@ MV_TimeVal_t  MV_TimeVal_Add(MV_TimeVal_t *a, MV_TimeVal_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimeVal_t  MV_TimeVal_Sub(MV_TimeVal_t *a, MV_TimeVal_t *b);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeVal_ToTimePTS
 //!
 //! Description: convert the time which type is MV_TimeVal_t to the time which type is MV_TimePTS_t
-//! warning:	the time should be greater than zero.
+//! warning: the time should be greater than zero.
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is MV_TimePTS_t
 //!
 //! \return Return:		the time which type is MV_TimePTS_t
 //!
@@ -831,71 +751,73 @@ MV_TimeVal_t  MV_TimeVal_Sub(MV_TimeVal_t *a, MV_TimeVal_t *b);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimePTS_t  MV_TimeVal_ToTimePTS(MV_TimeVal_t *a);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeVal_ToTimePlay
 //!
-//! Description: convert the time which type is MV_TimeVal_t to the time which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! Description: convert the time which type is MV_TimeVal_t to the time
+//!		 which type is one of
+//!		 (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
-//! \param a 	(IN):	The pointer to the a which type is MV_TimeVal_t
-//! \param b 	(OUT):	The pointer to the b which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param a (IN): The pointer to the a which type is MV_TimeVal_t
+//! \param b (OUT): The pointer to the b which type is one of
+//!		    (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimeVal_ToTimePlay(MV_TimeVal_t *a, MV_HANDLE_TimePlay_t b);
 
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //----------------------------------TimePlay-------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePlay_ToTimePTS
 //!
-//! Description: convert the time which type is MV_HANDLE_TimePlay_t to the time which type is MV_TimePTS_t
+//! Description: convert the time which type is MV_HANDLE_TimePlay_t to the time
+//!		 which type is MV_TimePTS_t
 //!
-//! \param a 	(IN):	The pointer to the a which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
-//! \param b 	(OUT):	The pointer to the b which type is MV_TimePTS_t
+//! \param a (IN): The pointer to the a which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param b (OUT): The pointer to the b which type is MV_TimePTS_t
 //!
-//! \return Return:		the time which type is MV_TimePTS_t
+//! \return Return: the time which type is MV_TimePTS_t
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimePTS_t MV_TimePlay_ToTimePTS(MV_HANDLE_TimePlay_t a);
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePlay_SetByPTS
 //!
 //! Description: Set a MV_HANDLE_TimePlay_t, if b is null, set by 0;
 //!
-//! \param a 		(IN/OUT):	The pointer to the a which type is MV_HANDLE_TimePlay_t which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
-//! \param FrameType	(IN):	The frame type to the MV_HANDLE_TimePlay_t
-//! \param TimeType		(IN):	The time type to the MV_HANDLE_TimePlay_t
-//! \param b 			(IN):	The pointer to the b which type is MV_TimePTS_t
+//! \param a (IN/OUT): The pointer to the a which type is MV_HANDLE_TimePlay_t
+//!		       which type is one of
+//!		       (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param FrameType (IN): The frame type to the MV_HANDLE_TimePlay_t
+//! \param TimeType (IN): The time type to the MV_HANDLE_TimePlay_t
+//! \param b (IN): The pointer to the b which type is MV_TimePTS_t
 //!
 //! \return Return:		S_OK
-//! 					E_INVALIDARG
+//!				E_INVALIDARG
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
-HRESULT MV_TimePlay_SetByPTS(MV_HANDLE_TimePlay_t a, MV_TimePlay_FrameType_t FrameType, MV_TimePlay_TimeType_t TimeType, MV_TimePTS_t *b);
-
+HRESULT MV_TimePlay_SetByPTS(MV_HANDLE_TimePlay_t a, MV_TimePlay_FrameType_t FrameType,
+			     MV_TimePlay_TimeType_t TimeType, MV_TimePTS_t *b);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePlay_Equal
 //!
 //! Description: whether a and b is equal
 //!
-//! \param a 	(IN):	The pointer to the a which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
-//! \param b 	(IN):	The pointer to the b which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param a (IN): The pointer to the a which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param b (IN): The pointer to the b which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
 //! \return Return:		>0	= Equal
 //!						0	= Not Equal
@@ -905,14 +827,15 @@ HRESULT MV_TimePlay_SetByPTS(MV_HANDLE_TimePlay_t a, MV_TimePlay_FrameType_t Fra
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePlay_Equal(MV_HANDLE_TimePlay_t a, MV_HANDLE_TimePlay_t b);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePlay_Compare
 //!
 //! Description: compare a with b
 //!
-//! \param a 	(IN):	The pointer to the a which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
-//! \param b 	(IN):	The pointer to the b which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param a (IN): The pointer to the a which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param b (IN): The pointer to the b which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
 //! \return Return:		1	= a > b
 //!						0	= a = b
@@ -922,15 +845,15 @@ HRESULT  MV_TimePlay_Equal(MV_HANDLE_TimePlay_t a, MV_HANDLE_TimePlay_t b);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePlay_Compare(MV_HANDLE_TimePlay_t a, MV_HANDLE_TimePlay_t b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePlay_Add
 //!
 //! Description: Add a to b, return the result to a
 //!
-//! \param a(IN/OUT):	The pointer to the a which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
-//! \param b 	(IN):	The pointer to the b which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param a(IN/OUT): The pointer to the a which type is one of
+//!		      (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param b (IN): The pointer to the b which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
 //! \return Return:		S_OK (a = a + b)
 //!
@@ -938,32 +861,32 @@ HRESULT  MV_TimePlay_Compare(MV_HANDLE_TimePlay_t a, MV_HANDLE_TimePlay_t b);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT  MV_TimePlay_Add(MV_HANDLE_TimePlay_t a, MV_HANDLE_TimePlay_t b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePlay_Sub
 //!
 //! Description: Subtract b from a, return the result to a
 //!
-//! \param a(IN/OUT):	The pointer to the a which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
-//! \param b 	(IN):	The pointer to the b which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param a(IN/OUT): The pointer to the a which type is one of
+//!		      (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param b (IN): The pointer to the b which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
 //!
 //! \return Return:		>0 (a = a - b)
-//! 					=0 (a = 0)
-//!						<0 (a = b - a)
+//!				=0 (a = 0)
+//!				<0 (a = b - a)
 //!
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT MV_TimePlay_Sub(MV_HANDLE_TimePlay_t a, MV_HANDLE_TimePlay_t b);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePlay_ToTimeVal
 //!
-//! Description: convert the time which type is MV_HANDLE_TimePlay_t to the time which type is MV_TimeVal_t
+//! Description: convert the time which type is MV_HANDLE_TimePlay_t to the time
+//!		 which type is MV_TimeVal_t
 //!
-//! \param a 	(IN):	The pointer to the a which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
-//! \param b 	(OUT):	The pointer to the b which type is MV_TimeVal_t
+//! \param a (IN): The pointer to the a which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param b (OUT): The pointer to the b which type is MV_TimeVal_t
 //!
 //! \return Return:		the time which type is MV_TimeVal_t
 //!
@@ -971,15 +894,15 @@ HRESULT MV_TimePlay_Sub(MV_HANDLE_TimePlay_t a, MV_HANDLE_TimePlay_t b);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimeVal_t  MV_TimePlay_ToTimeVal(MV_HANDLE_TimePlay_t a);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePlay_ToTimeSpec
 //!
-//! Description: convert the time which type is MV_HANDLE_TimePlay_t to the time which type is MV_TimeSpec_t
+//! Description: convert the time which type is MV_HANDLE_TimePlay_t to the time which
+//!              type is MV_TimeSpec_t
 //!
-//! \param a 	(IN):	The pointer to the a which type is one of (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
-//! \param b 	(OUT):	The pointer to the b which type is MV_TimeSpec_t
+//! \param a (IN): The pointer to the a which type is one of
+//!		   (MV_TimePlay_TimeStr_t, MV_TimePlay_TimeNum_t, MV_TimePlay_TimeBCD_t)
+//! \param b (OUT): The pointer to the b which type is MV_TimeSpec_t
 //!
 //! \return Return:		the time which type is MV_TimeSpec_t
 //!
@@ -987,13 +910,9 @@ MV_TimeVal_t  MV_TimePlay_ToTimeVal(MV_HANDLE_TimePlay_t a);
 ////////////////////////////////////////////////////////////////////////////////
 MV_TimeSpec_t  MV_TimePlay_ToTimeSpec(MV_HANDLE_TimePlay_t a);
 
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //----------------------------------Timing--------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimeSpec_Delay
@@ -1009,7 +928,6 @@ MV_TimeSpec_t  MV_TimePlay_ToTimeSpec(MV_HANDLE_TimePlay_t a);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT MV_TimeSpec_Delay(MV_TimeSpec_t *pTime);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_TimePTS_Delay
 //!
@@ -1023,7 +941,6 @@ HRESULT MV_TimeSpec_Delay(MV_TimeSpec_t *pTime);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT MV_TimePTS_Delay(MV_TimePTS_t *pTime);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_Time_GetOSTimeMS
 //!
@@ -1034,8 +951,7 @@ HRESULT MV_TimePTS_Delay(MV_TimePTS_t *pTime);
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
-UINT32 MV_Time_GetOSTimeMS( void );
-
+UINT32 MV_Time_GetOSTimeMS(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_Time_Init
@@ -1049,7 +965,6 @@ UINT32 MV_Time_GetOSTimeMS( void );
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT MV_Time_Init(void);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_Time_Exit
 //!
@@ -1062,7 +977,6 @@ HRESULT MV_Time_Init(void);
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT MV_Time_Exit(void);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_Time_GetPFTIMER
 //!
@@ -1073,8 +987,7 @@ HRESULT MV_Time_Exit(void);
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
-UINT32 MV_Time_GetPFTIMER( void );
-
+UINT32 MV_Time_GetPFTIMER(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_Time_GetSysTime
@@ -1096,7 +1009,6 @@ UINT32 MV_Time_GetPFTIMER( void );
 ////////////////////////////////////////////////////////////////////////////////
 HRESULT MV_Time_GetSysTime(MV_TimeSpec_t *pTimeSpec);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    MV_Time_GetSysTimeMS
 //!
@@ -1107,8 +1019,7 @@ HRESULT MV_Time_GetSysTime(MV_TimeSpec_t *pTimeSpec);
 //!
 //!
 ////////////////////////////////////////////////////////////////////////////////
-UINT32 MV_Time_GetSysTimeMS( void );
-
+UINT32 MV_Time_GetSysTimeMS(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! \brief Function:    Output_MV_TimePTS
@@ -1131,13 +1042,12 @@ UINT32 MV_Time_GetTIMER6(void);
 
 UINT32 MV_Time_GetTIMER7(void);
 
-INT64 MV_Get_System_Time_Tick( void );
+INT64 MV_Get_System_Time_Tick(void);
 
 void  MV_TimeSpec_Normaized(MV_TimeSpec_t *a, long sec, long nsec);
 
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif

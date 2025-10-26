@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef _HAL_VPP_WRAP_H
 #define _HAL_VPP_WRAP_H
@@ -32,8 +32,8 @@ struct vpp_fops {
 	int (*MV_VPP_InitVPPS)(struct berlin_fb_priv *priv);
 	int (*MV_VPP_Create)(void);
 	int (*MV_VPP_Reset)(void);
-	int (*MV_VPP_Config)(const int *pvinport_cfg, const int *pdv_cfg,
-				const int *pzorder_cfg, const int *pvoutport_cfg, const int *pfeature_cfg);
+	int (*MV_VPP_Config)(const int *pvinport_cfg, const int *pdv_cfg, const int *pzorder_cfg,
+			     const int *pvoutport_cfg, const int *pfeature_cfg);
 	int (*MV_VPP_Set_Format)(struct berlin_fb_priv *priv);
 	int (*MV_VPP_SetHdmiTxControl)(void);
 	int (*MV_VPP_Config_Display)(struct berlin_fb_priv *priv);
@@ -50,8 +50,8 @@ void wrap_vpp_initialize_fops(struct vpp_fops *vpp_fops);
 int wrap_MV_VPP_InitVPPS(struct berlin_fb_priv *priv);
 int wrap_MV_VPP_Create(void);
 int wrap_MV_VPP_Reset(void);
-int wrap_MV_VPP_Config(const int *pvinport_cfg, const int *pdv_cfg,
-			const int *pzorder_cfg, const int *pvoutport_cfg, const int *pfeature_cfg);
+int wrap_MV_VPP_Config(const int *pvinport_cfg, const int *pdv_cfg, const int *pzorder_cfg,
+		       const int *pvoutport_cfg, const int *pfeature_cfg);
 int wrap_MV_VPP_Set_Format(struct berlin_fb_priv *priv);
 int wrap_MV_VPP_SetHdmiTxControl(void);
 int wrap_MV_VPP_Config_Display(struct berlin_fb_priv *priv);

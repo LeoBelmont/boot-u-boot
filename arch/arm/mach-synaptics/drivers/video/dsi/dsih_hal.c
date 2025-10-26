@@ -8,6 +8,28 @@
  *
  * @author Luis Oliveira <luis.oliveira@synopsys.com>
  */
+/*
+ * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 or
+ * later as published by the Free Software Foundation.
+ *
+ * INFORMATION CONTAINED IN THIS DOCUMENT IS PROVIDED "AS-IS," AND
+ * SYNAPTICS EXPRESSLY DISCLAIMS ALL EXPRESS AND IMPLIED WARRANTIES,
+ * INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE, AND ANY WARRANTIES OF NON-INFRINGEMENT OF ANY
+ * INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL SYNAPTICS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR
+ * CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN CONNECTION WITH THE USE
+ * OF THE INFORMATION CONTAINED IN THIS DOCUMENT, HOWEVER CAUSED AND
+ * BASED ON ANY THEORY OF LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, AND EVEN IF SYNAPTICS WAS
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. IF A TRIBUNAL OF
+ * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
+ * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
+ * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
+ */
 
 #include "dsih_hal.h"
 
@@ -19,13 +41,14 @@
  */
 void mipi_dsih_write_word(struct mipi_dsi_dev *dev, uint32_t reg_address, uint32_t data)
 {
-	if(dev == NULL) {
-		mipi_dbg_print(MIPI_ERROR,"%s:Device is null\n", FUNC_NAME);
+	if (!dev) {
+		mipi_dbg_print(MIPI_ERROR, "%s:Device is null\n", FUNC_NAME);
 		return;
 	}
 
 	iowrite32(dev->core_addr + reg_address, data);
 }
+
 /**
  * Write a bit field o a 32-bit word to the DSI Host core
  * @param dev pointer to structure holding the DSI Host core information
@@ -34,7 +57,8 @@ void mipi_dsih_write_word(struct mipi_dsi_dev *dev, uint32_t reg_address, uint32
  * @param shift bit shift from the left (system is BIG ENDIAN)
  * @param width of bit field
  */
-void mipi_dsih_write_part(struct mipi_dsi_dev *dev, uint32_t reg_address, uint32_t data, uint8_t shift, uint8_t width)
+void mipi_dsih_write_part(struct mipi_dsi_dev *dev, uint32_t reg_address, uint32_t data,
+			  uint8_t shift, uint8_t width)
 {
 	uint32_t mask = (1 << width) - 1;
 	uint32_t temp = mipi_dsih_read_word(dev, reg_address);
@@ -43,6 +67,7 @@ void mipi_dsih_write_part(struct mipi_dsi_dev *dev, uint32_t reg_address, uint32
 	temp |= (data & mask) << shift;
 	mipi_dsih_write_word(dev, reg_address, temp);
 }
+
 /**
  * Write a 32-bit word to the DSI Host core
  * @param dev pointer to structure holding the DSI Host core information
@@ -53,14 +78,15 @@ uint32_t mipi_dsih_read_word(struct mipi_dsi_dev *dev, uint32_t reg_address)
 {
 	uint32_t ret;
 
-	if(dev == NULL){
-		mipi_dbg_print(MIPI_ERROR,"%s:Device is null\n", FUNC_NAME);
+	if (!dev) {
+		mipi_dbg_print(MIPI_ERROR, "%s:Device is null\n", FUNC_NAME);
 		return MIPI_RET(ENODEV);
 	}
 	ioread32(dev->core_addr + reg_address, &ret);
 
 	return ret;
 }
+
 /**
  * Write a 32-bit word to the DSI Host core
  * @param dev pointer to structure holding the DSI Host core information
@@ -69,10 +95,12 @@ uint32_t mipi_dsih_read_word(struct mipi_dsi_dev *dev, uint32_t reg_address)
  * @param width of bit field
  * @return bit field read from register
  */
-uint32_t mipi_dsih_read_part(struct mipi_dsi_dev *dev, uint32_t reg_address, uint8_t shift, uint8_t width)
+uint32_t mipi_dsih_read_part(struct mipi_dsi_dev *dev, uint32_t reg_address, uint8_t shift,
+			     uint8_t width)
 {
 	return (mipi_dsih_read_word(dev, reg_address) >> shift) & ((1 << width) - 1);
 }
+
 /**
  * Get DSI Host core version
  * @param dev pointer to structure holding the DSI Host core information
@@ -82,6 +110,7 @@ uint32_t mipi_dsih_hal_get_version(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_word(dev, R_DSI_HOST_VERSION);
 }
+
 /**
  * Modify power status of DSI Host core
  * @param dev pointer to structure holding the DSI Host core information
@@ -91,6 +120,7 @@ void mipi_dsih_hal_power(struct mipi_dsi_dev *dev, int on)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_PWR_UP, on, 0, 1);
 }
+
 /**
  * Get the power status of the DSI Host core
  * @param dev pointer to structure holding the DSI Host core information
@@ -100,6 +130,7 @@ int mipi_dsih_hal_get_power(struct mipi_dsi_dev *dev)
 {
 	return (int)(mipi_dsih_read_part(dev, R_DSI_HOST_PWR_UP, 0, 1));
 }
+
 /**
  * Write transmission escape timeout
  * a safe guard so that the state machine would reset if transmission
@@ -111,6 +142,7 @@ void mipi_dsih_hal_tx_escape_division(struct mipi_dsi_dev *dev, uint8_t tx_escap
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_CLK_MGR, tx_escape_division, 0, 8);
 }
+
 /**
  * Write the DPI video virtual channel destination
  * @param dev pointer to structure holding the DSI Host core information
@@ -120,6 +152,7 @@ void mipi_dsih_hal_dpi_video_vc(struct mipi_dsi_dev *dev, uint8_t vc)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_DPI_VCID, (uint32_t)(vc), 0, 2);
 }
+
 /**
  * Get the DPI video virtual channel destination
  * @param dev pointer to structure holding the DSI Host core information
@@ -129,6 +162,7 @@ uint8_t mipi_dsih_hal_dpi_get_video_vc(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_DPI_VCID, 0, 2);
 }
+
 /**
  * Set DPI video color coding
  * @param dev pointer to structure holding the DSI Host core information
@@ -137,15 +171,16 @@ uint8_t mipi_dsih_hal_dpi_get_video_vc(struct mipi_dsi_dev *dev)
  */
 int mipi_dsih_hal_dpi_color_coding(struct mipi_dsi_dev *dev, dsih_color_coding_t color_coding)
 {
-	if (color_coding > COLOR_CODE_MAX){
-		mipi_dbg_print(MIPI_ERROR,"invalid colour configuration");
+	if (color_coding > COLOR_CODE_MAX) {
+		mipi_dbg_print(MIPI_ERROR, "invalid colour configuration");
 		return FALSE;
-	}
-	else
+	} else {
 		mipi_dsih_write_part(dev, R_DSI_HOST_DPI_COLOR_CODE, color_coding, 0, 4);
+	}
 
 	return TRUE;
 }
+
 /**
  * Get DPI video color coding
  * @param dev pointer to structure holding the DSI Host core information
@@ -155,6 +190,7 @@ dsih_color_coding_t mipi_dsih_hal_dpi_get_color_coding(struct mipi_dsi_dev *dev)
 {
 	return (dsih_color_coding_t)(mipi_dsih_read_part(dev, R_DSI_HOST_DPI_COLOR_CODE, 0, 4));
 }
+
 /**
  * Get DPI video color depth
  * @param dev pointer to structure holding the DSI Host core information
@@ -163,8 +199,8 @@ dsih_color_coding_t mipi_dsih_hal_dpi_get_color_coding(struct mipi_dsi_dev *dev)
 uint8_t mipi_dsih_hal_dpi_get_color_depth(struct mipi_dsi_dev *dev)
 {
 	uint8_t color_depth = 0;
-	switch (mipi_dsih_read_part(dev, R_DSI_HOST_DPI_COLOR_CODE, 0, 4))
-	{
+
+	switch (mipi_dsih_read_part(dev, R_DSI_HOST_DPI_COLOR_CODE, 0, 4)) {
 	case 0:
 	case 1:
 	case 2:
@@ -200,6 +236,7 @@ uint8_t mipi_dsih_hal_dpi_get_color_depth(struct mipi_dsi_dev *dev)
 	}
 	return color_depth;
 }
+
 /**
  * Get DPI video pixel configuration
  * @param dev pointer to structure holding the DSI Host core information
@@ -208,8 +245,8 @@ uint8_t mipi_dsih_hal_dpi_get_color_depth(struct mipi_dsi_dev *dev)
 uint8_t mipi_dsih_hal_dpi_get_color_config(struct mipi_dsi_dev *dev)
 {
 	uint8_t color_config = 0;
-	switch (mipi_dsih_read_part(dev, R_DSI_HOST_DPI_COLOR_CODE, 0, 4))
-	{
+
+	switch (mipi_dsih_read_part(dev, R_DSI_HOST_DPI_COLOR_CODE, 0, 4)) {
 	case 0:
 		color_config = 1;
 		break;
@@ -231,6 +268,7 @@ uint8_t mipi_dsih_hal_dpi_get_color_config(struct mipi_dsi_dev *dev)
 	}
 	return color_config;
 }
+
 /**
  * Set DPI loosely packetisation video (used only when color depth = 18
  * @param dev pointer to structure holding the DSI Host core information
@@ -240,6 +278,7 @@ void mipi_dsih_hal_dpi_18_loosely_packet_en(struct mipi_dsi_dev *dev, int enable
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_DPI_COLOR_CODE, enable, 8, 1);
 }
+
 /**
  * Set DPI color mode pin polarity
  * @param dev pointer to structure holding the DSI Host core information
@@ -249,6 +288,7 @@ void mipi_dsih_hal_dpi_color_mode_pol(struct mipi_dsi_dev *dev, int active_low)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_DPI_CFG_POL, active_low, 4, 1);
 }
+
 /**
  * Set DPI shut down pin polarity
  * @param dev pointer to structure holding the DSI Host core information
@@ -258,6 +298,7 @@ void mipi_dsih_hal_dpi_shut_down_pol(struct mipi_dsi_dev *dev, int active_low)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_DPI_CFG_POL, active_low, 3, 1);
 }
+
 /**
  * Set DPI horizontal sync pin polarity
  * @param dev pointer to structure holding the DSI Host core information
@@ -267,6 +308,7 @@ void mipi_dsih_hal_dpi_hsync_pol(struct mipi_dsi_dev *dev, int active_low)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_DPI_CFG_POL, active_low, 2, 1);
 }
+
 /**
  * Set DPI vertical sync pin polarity
  * @param dev pointer to structure holding the DSI Host core information
@@ -276,6 +318,7 @@ void mipi_dsih_hal_dpi_vsync_pol(struct mipi_dsi_dev *dev, int active_low)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_DPI_CFG_POL, active_low, 1, 1);
 }
+
 /**
  * Set DPI data enable pin polarity
  * @param dev pointer to structure holding the DSI Host core information
@@ -285,6 +328,7 @@ void mipi_dsih_hal_dpi_dataen_pol(struct mipi_dsi_dev *dev, int active_low)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_DPI_CFG_POL, active_low, 0, 1);
 }
+
 /**
  * Set the command transmission to be in low-power mode.
  * @param dev pointer to structure holding the DSI Host core information
@@ -294,6 +338,7 @@ void mipi_dsih_hal_dpi_lp_cmd_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 15, 1);
 }
+
 /**
  * Enable FRAME BTA ACK
  * @param dev pointer to structure holding the DSI Host core information
@@ -303,6 +348,7 @@ void mipi_dsih_hal_dpi_frame_ack_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 14, 1);
 }
+
 /**
  * Enable return to low power mode inside horizontal front porch periods when
  *  timing allows
@@ -313,6 +359,7 @@ void mipi_dsih_hal_dpi_lp_during_hfp(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 13, 1);
 }
+
 /**
  * Enable return to low power mode inside horizontal back porch periods when
  *  timing allows
@@ -323,6 +370,7 @@ void mipi_dsih_hal_dpi_lp_during_hbp(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 12, 1);
 }
+
 /**
  * Enable return to low power mode inside vertical active lines periods when
  *  timing allows
@@ -333,6 +381,7 @@ void mipi_dsih_hal_dpi_lp_during_vactive(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 11, 1);
 }
+
 /**
  * Enable return to low power mode inside vertical front porch periods when
  *  timing allows
@@ -343,6 +392,7 @@ void mipi_dsih_hal_dpi_lp_during_vfp(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 10, 1);
 }
+
 /**
  * Enable return to low power mode inside vertical back porch periods when
  * timing allows
@@ -353,6 +403,7 @@ void mipi_dsih_hal_dpi_lp_during_vbp(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 9, 1);
 }
+
 /**
  * Enable return to low power mode inside vertical sync periods when
  *  timing allows
@@ -363,6 +414,7 @@ void mipi_dsih_hal_dpi_lp_during_vsync(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 8, 1);
 }
+
 /**
  * Set DPI video mode type (burst/non-burst - with sync pulses or events)
  * @param dev pointer to structure holding the DSI Host core information
@@ -371,15 +423,16 @@ void mipi_dsih_hal_dpi_lp_during_vsync(struct mipi_dsi_dev *dev, int enable)
  */
 int mipi_dsih_hal_dpi_video_mode_type(struct mipi_dsi_dev *dev, dsih_video_mode_t type)
 {
-	if (type < 3)
+	if (type < 3) {
 		mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, type, 0, 2);
-	else{
-		mipi_dbg_print(MIPI_ERROR,"undefined type");
+	} else {
+		mipi_dbg_print(MIPI_ERROR, "undefined type");
 		return FALSE;
 	}
 
 	return TRUE;
 }
+
 /**
  * Enable/disable DPI video mode
  * @param dev pointer to structure holding the DSI Host core information
@@ -387,8 +440,9 @@ int mipi_dsih_hal_dpi_video_mode_type(struct mipi_dsi_dev *dev, dsih_video_mode_
  */
 void mipi_dsih_hal_dpi_video_mode_en(struct mipi_dsi_dev *dev, int enable)
 {
-	mipi_dsih_write_part(dev, R_DSI_HOST_MODE_CFG, enable? 0: 1, 0, 1);
+	mipi_dsih_write_part(dev, R_DSI_HOST_MODE_CFG, enable ? 0 : 1, 0, 1);
 }
+
 /**
  * Get the status of video mode, whether enabled or not in core
  * @param dev pointer to structure holding the DSI Host core information
@@ -398,6 +452,7 @@ int mipi_dsih_hal_dpi_is_video_mode(struct mipi_dsi_dev *dev)
 {
 	return (mipi_dsih_read_part(dev, R_DSI_HOST_MODE_CFG, 0, 1) == 0);
 }
+
 /**
  * Write the null packet size - will only be taken into account when null
  * packets are enabled.
@@ -412,9 +467,9 @@ int mipi_dsih_hal_dpi_null_packet_size(struct mipi_dsi_dev *dev, uint16_t size)
 	else
 		return FALSE;
 
-
 	return TRUE;
 }
+
 /**
  * Write no of chunks to core - taken into consideration only when multi packet
  * is enabled
@@ -430,6 +485,7 @@ int mipi_dsih_hal_dpi_chunks_no(struct mipi_dsi_dev *dev, uint16_t no)
 
 	return TRUE;
 }
+
 /**
  * Write video packet size. obligatory for sending video
  * @param dev pointer to structure holding the DSI Host core information
@@ -445,8 +501,9 @@ int mipi_dsih_hal_dpi_video_packet_size(struct mipi_dsi_dev *dev, uint16_t size)
 
 	return TRUE;
 }
+
 /**
- * Specifiy the size of the packet memory write start/continue
+ * Specify the size of the packet memory write start/continue
  * @param dev pointer to structure holding the DSI Host core information
  * @ size of the packet
  * @note when different than zero (0) eDPI is enabled
@@ -455,6 +512,7 @@ void mipi_dsih_hal_edpi_max_allowed_size(struct mipi_dsi_dev *dev, uint16_t size
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_EDPI_CMD_SIZE, size, 0, 16);
 }
+
 /**
  * Enable tear effect acknowledge
  * @param dev pointer to structure holding the DSI Host core information
@@ -464,6 +522,7 @@ void mipi_dsih_hal_tear_effect_ack_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, enable, 0, 1);
 }
+
 /**
  * Enable packets acknowledge request after each packet transmission
  * @param dev pointer to structure holding the DSI Host core information
@@ -473,6 +532,7 @@ void mipi_dsih_hal_cmd_ack_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, enable, 1, 1);
 }
+
 /**
  * Set DCS command packet transmission to transmission type
  * @param dev pointer to structure holding the DSI Host core information
@@ -480,28 +540,32 @@ void mipi_dsih_hal_cmd_ack_en(struct mipi_dsi_dev *dev, int enable)
  * @param lp transmit in low power
  * @return error code
  */
-int mipi_dsih_hal_dcs_wr_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param, int lp)
+int mipi_dsih_hal_dcs_wr_tx_type(struct mipi_dsi_dev *dev, unsigned int no_of_param, int lp)
 {
-	switch (no_of_param){
+	switch (no_of_param) {
 	case 0:
 		/* This bit configures the DCS short write packet with zero
-		 * parameter command transmission type */
+		 * parameter command transmission type
+		 */
 		mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, lp, 16, 1);
 		break;
 	case 1:
 		/* This bit configures the DCS short write packet with one
-		 * parameter command transmission type */
+		 * parameter command transmission type
+		 */
 		mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, lp, 17, 1);
 		break;
 	default:
 		/* This bit configures the DCS long write packet command
-		* transmission type */
+		 * transmission type
+		 */
 		mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, lp, 19, 1);
 		break;
 	}
 
 	return TRUE;
 }
+
 /**
  * Set DCS read command packet transmission to transmission type
  * @param dev pointer to structure holding the DSI Host core information
@@ -509,19 +573,20 @@ int mipi_dsih_hal_dcs_wr_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param,
  * @param lp transmit in low power
  * @return error code
  */
-int mipi_dsih_hal_dcs_rd_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param, int lp)
+int mipi_dsih_hal_dcs_rd_tx_type(struct mipi_dsi_dev *dev, unsigned int no_of_param, int lp)
 {
-	switch (no_of_param){
+	switch (no_of_param) {
 	case 0:
 		mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, lp, 18, 1);
 		break;
 	default:
-		mipi_dbg_print(MIPI_ERROR,"undefined DCS Read packet type");
+		mipi_dbg_print(MIPI_ERROR, "undefined DCS Read packet type");
 		return FALSE;
 	}
 
 	return TRUE;
 }
+
 /**
  * Set generic write command packet transmission to transmission type
  * @param dev pointer to structure holding the DSI Host core information
@@ -529,9 +594,9 @@ int mipi_dsih_hal_dcs_rd_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param,
  * @param lp transmit in low power
  * @return error code
  */
-int mipi_dsih_hal_gen_wr_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param, int lp)
+int mipi_dsih_hal_gen_wr_tx_type(struct mipi_dsi_dev *dev, unsigned int no_of_param, int lp)
 {
-	switch (no_of_param){
+	switch (no_of_param) {
 	case 0:
 		mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, lp, 8, 1);
 		break;
@@ -548,6 +613,7 @@ int mipi_dsih_hal_gen_wr_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param,
 
 	return TRUE;
 }
+
 /**
  * Set generic command packet transmission to transmission type
  * @param dev pointer to structure holding the DSI Host core information
@@ -555,9 +621,9 @@ int mipi_dsih_hal_gen_wr_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param,
  * @param lp transmit in low power
  * @return error code
  */
-int mipi_dsih_hal_gen_rd_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param, int lp)
+int mipi_dsih_hal_gen_rd_tx_type(struct mipi_dsi_dev *dev, unsigned int no_of_param, int lp)
 {
-	switch (no_of_param){
+	switch (no_of_param) {
 	case 0:
 		mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, lp, 11, 1);
 		break;
@@ -568,12 +634,13 @@ int mipi_dsih_hal_gen_rd_tx_type(struct mipi_dsi_dev *dev, unsigned no_of_param,
 		mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, lp, 13, 1);
 		break;
 	default:
-		mipi_dbg_print(MIPI_ERROR,"undefined Generic Read packet type");
+		mipi_dbg_print(MIPI_ERROR, "undefined Generic Read packet type");
 		return FALSE;
 	}
 
 	return TRUE;
 }
+
 /**
  * Configure maximum read packet size command transmission type
  * @param dev pointer to structure holding the DSI Host core information
@@ -583,6 +650,7 @@ void mipi_dsih_hal_max_rd_size_tx_type(struct mipi_dsi_dev *dev, int lp)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_CMD_MODE_CFG, lp, 24, 1);
 }
+
 /**
  * Enable command mode (Generic interface)
  * @param dev pointer to structure holding the DSI Host core information
@@ -590,8 +658,9 @@ void mipi_dsih_hal_max_rd_size_tx_type(struct mipi_dsi_dev *dev, int lp)
  */
 void mipi_dsih_hal_gen_cmd_mode_en(struct mipi_dsi_dev *dev, int enable)
 {
-	mipi_dsih_write_part(dev, R_DSI_HOST_MODE_CFG, enable? 1: 0, 0, 1);
+	mipi_dsih_write_part(dev, R_DSI_HOST_MODE_CFG, enable ? 1 : 0, 0, 1);
 }
+
 /**
  * Retrieve the controller's status of whether command mode is ON or not
  * @param dev pointer to structure holding the DSI Host core information
@@ -601,6 +670,7 @@ int mipi_dsih_hal_gen_is_cmd_mode(struct mipi_dsi_dev *dev)
 {
 	return (mipi_dsih_read_part(dev, R_DSI_HOST_MODE_CFG, 0, 1) == 1);
 }
+
 /**
  * Configure the Horizontal Line time
  * @param dev pointer to structure holding the DSI Host core information
@@ -610,6 +680,7 @@ void mipi_dsih_hal_dpi_hline(struct mipi_dsi_dev *dev, uint16_t time)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_HLINE_TIME, time, 0, 15);
 }
+
 /**
  * Configure the Horizontal back porch time
  * @param dev pointer to structure holding the DSI Host core information
@@ -619,6 +690,7 @@ void mipi_dsih_hal_dpi_hbp(struct mipi_dsi_dev *dev, uint16_t time)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_HBP_TIME, time, 0, 12);
 }
+
 /**
  * Configure the Horizontal sync time
  * @param dev pointer to structure holding the DSI Host core information
@@ -628,6 +700,7 @@ void mipi_dsih_hal_dpi_hsa(struct mipi_dsi_dev *dev, uint16_t time)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_HSA_TIME, time, 0, 12);
 }
+
 /**
  * Configure the vertical active lines of the video stream
  * @param dev pointer to structure holding the DSI Host core information
@@ -637,6 +710,7 @@ void mipi_dsih_hal_dpi_vactive(struct mipi_dsi_dev *dev, uint16_t lines)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_VACTIVE_LINES, lines, 0, 14);
 }
+
 /**
  * Configure the vertical front porch lines of the video stream
  * @param dev pointer to structure holding the DSI Host core information
@@ -646,6 +720,7 @@ void mipi_dsih_hal_dpi_vfp(struct mipi_dsi_dev *dev, uint16_t lines)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_VFP_LINES, lines, 0, 10);
 }
+
 /**
  * Configure the vertical back porch lines of the video stream
  * @param dev pointer to structure holding the DSI Host core information
@@ -655,6 +730,7 @@ void mipi_dsih_hal_dpi_vbp(struct mipi_dsi_dev *dev, uint16_t lines)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_VBP_LINES, lines, 0, 10);
 }
+
 /**
  * Configure the vertical sync lines of the video stream
  * @param dev pointer to structure holding the DSI Host core information
@@ -664,16 +740,19 @@ void mipi_dsih_hal_dpi_vsync(struct mipi_dsi_dev *dev, uint16_t lines)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_VSA_LINES, lines, 0, 10);
 }
+
 /**
  * configure timeout divisions (so they would have more clock ticks)
  * @param dev pointer to structure holding the DSI Host core information
  * @param byte_clk_division_factor no of hs cycles before transiting back to LP in
  *  (lane_clk / byte_clk_division_factor)
  */
-void mipi_dsih_hal_timeout_clock_division(struct mipi_dsi_dev *dev, uint8_t byte_clk_division_factor)
+void mipi_dsih_hal_timeout_clock_division(struct mipi_dsi_dev *dev,
+					  uint8_t byte_clk_division_factor)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_CLK_MGR, byte_clk_division_factor, 8, 8);
 }
+
 /**
  * Configure the Low power receive time out
  * @param dev pointer to structure holding the DSI Host core information
@@ -683,6 +762,7 @@ void mipi_dsih_hal_lp_rx_timeout(struct mipi_dsi_dev *dev, uint16_t count)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_TO_CNT_CFG, count, 0, 16);
 }
+
 /**
  * Configure a high speed transmission time out7
  * @param dev pointer to structure holding the DSI Host core information
@@ -692,6 +772,7 @@ void mipi_dsih_hal_hs_tx_timeout(struct mipi_dsi_dev *dev, uint16_t count)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_TO_CNT_CFG, count, 16, 16);
 }
+
 /**
  * Get the error 0 interrupt register status
  * @param dev pointer to structure holding the DSI Host core information
@@ -702,6 +783,7 @@ uint32_t mipi_dsih_hal_int_status_0(struct mipi_dsi_dev *dev, uint32_t mask)
 {
 	return (mipi_dsih_read_word(dev, R_DSI_HOST_INT_ST0) & mask);
 }
+
 /**
  * Get the error 1 interrupt register status
  * @param dev pointer to structure holding the DSI Host core information
@@ -712,6 +794,7 @@ uint32_t mipi_dsih_hal_int_status_1(struct mipi_dsi_dev *dev, uint32_t mask)
 {
 	return (mipi_dsih_read_word(dev, R_DSI_HOST_INT_ST1) & mask);
 }
+
 /**
  * Configure MASK (hiding) of interrupts coming from error 0 source
  * @param dev pointer to structure holding the DSI Host core information
@@ -721,6 +804,7 @@ void mipi_dsih_hal_int_mask_0(struct mipi_dsi_dev *dev, uint32_t mask)
 {
 	mipi_dsih_write_word(dev, R_DSI_HOST_INT_MSK0, mask);
 }
+
 /**
  * Get the ERROR MASK  0 register status
  * @param dev pointer to structure holding the DSI Host core information
@@ -730,6 +814,7 @@ uint32_t mipi_dsih_hal_int_get_mask_0(struct mipi_dsi_dev *dev, uint32_t mask)
 {
 	return (mipi_dsih_read_word(dev, R_DSI_HOST_INT_MSK0) & mask);
 }
+
 /**
  * Configure MASK (hiding) of interrupts coming from error 0 source
  * @param dev pointer to structure holding the DSI Host core information
@@ -739,6 +824,7 @@ void mipi_dsih_hal_int_mask_1(struct mipi_dsi_dev *dev, uint32_t mask)
 {
 	mipi_dsih_write_word(dev, R_DSI_HOST_INT_MSK1, mask);
 }
+
 /**
  * Get the ERROR MASK  1 register status
  * @param dev pointer to structure holding the DSI Host core information
@@ -770,8 +856,10 @@ void mipi_dsih_hal_force_int_1(struct mipi_dsi_dev *dev, uint32_t force)
 }
 
 /* DBI NOT IMPLEMENTED */
-void mipi_dsih_hal_dbi_out_color_coding(struct mipi_dsi_dev *dev, uint8_t color_depth, uint8_t option);
-void mipi_dsih_hal_dbi_in_color_coding(struct mipi_dsi_dev *dev, uint8_t color_depth, uint8_t option);
+void mipi_dsih_hal_dbi_out_color_coding(struct mipi_dsi_dev *dev, uint8_t color_depth,
+					uint8_t option);
+void mipi_dsih_hal_dbi_in_color_coding(struct mipi_dsi_dev *dev, uint8_t color_depth,
+				       uint8_t option);
 void mipi_dsih_hal_dbi_lut_size(struct mipi_dsi_dev *dev, uint8_t size);
 void mipi_dsih_hal_dbi_partitioning_en(struct mipi_dsi_dev *dev, int enable);
 void mipi_dsih_hal_dbi_dcs_vc(struct mipi_dsi_dev *dev, uint8_t vc);
@@ -795,15 +883,19 @@ int mipi_dsih_hal_dbi_cmd_fifo_empty(struct mipi_dsi_dev *dev);
  * @param ms_byte (only parameter of short DCS packet)
  * @return error code
  */
-int mipi_dsih_hal_gen_packet_header(struct mipi_dsi_dev *dev, uint8_t vc, uint8_t packet_type, uint8_t ms_byte, uint8_t ls_byte)
+int mipi_dsih_hal_gen_packet_header(struct mipi_dsi_dev *dev, uint8_t vc, uint8_t packet_type,
+				    uint8_t ms_byte, uint8_t ls_byte)
 {
-	if (vc < 4)
-	{
-		mipi_dsih_write_part(dev, R_DSI_HOST_GEN_HDR, (ms_byte <<  16) | (ls_byte << 8 ) | ((vc << 6) | packet_type), 0, 24);
+	if (vc < 4) {
+		mipi_dsih_write_part(dev,
+				     R_DSI_HOST_GEN_HDR,
+				     (ms_byte <<  16) | (ls_byte << 8) | ((vc << 6) | packet_type),
+				     0, 24);
 		return TRUE;
 	}
 	return  FALSE;
 }
+
 /**
  * Write the payload of the long packet commands
  * @param dev pointer to structure holding the DSI Host core information
@@ -817,15 +909,15 @@ int mipi_dsih_hal_gen_packet_payload(struct mipi_dsi_dev *dev, uint32_t payload)
 
 	mipi_dsih_write_word(dev, R_DSI_HOST_GEN_PLD_DATA, payload);
 	return TRUE;
-
 }
+
 /**
  * Write the payload of the long packet commands
  * @param dev pointer to structure holding the DSI Host core information
  * @param payload pointer to 32-bit array to hold read information
  * @return error code
  */
-int  mipi_dsih_hal_gen_read_payload(struct mipi_dsi_dev *dev, uint32_t* payload)
+int  mipi_dsih_hal_gen_read_payload(struct mipi_dsi_dev *dev, uint32_t *payload)
 {
 	*payload = mipi_dsih_read_word(dev, R_DSI_HOST_GEN_PLD_DATA);
 	return TRUE;
@@ -840,6 +932,7 @@ void mipi_dsih_hal_gen_rd_vc(struct mipi_dsi_dev *dev, uint8_t vc)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_GEN_VCID, vc, 0, 2);
 }
+
 /**
  * Enable EOTp reception
  * @param dev pointer to structure holding the DSI Host core information
@@ -849,6 +942,7 @@ void mipi_dsih_hal_gen_eotp_rx_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_PCKHDL_CFG, enable, 1, 1);
 }
+
 /**
  * Enable EOTp transmission
  * @param dev pointer to structure holding the DSI Host core information
@@ -858,6 +952,7 @@ void mipi_dsih_hal_gen_eotp_tx_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_PCKHDL_CFG, enable, 0, 1);
 }
+
 /**
  * Enable Bus Turn-around request
  * @param dev pointer to structure holding the DSI Host core information
@@ -867,6 +962,7 @@ void mipi_dsih_hal_bta_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_PCKHDL_CFG, enable, 2, 1);
 }
+
 /**
  * Enable ECC reception, error correction and reporting
  * @param dev pointer to structure holding the DSI Host core information
@@ -876,6 +972,7 @@ void mipi_dsih_hal_gen_ecc_rx_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_PCKHDL_CFG, enable, 3, 1);
 }
+
 /**
  * Enable CRC reception, error reporting
  * @param dev pointer to structure holding the DSI Host core information
@@ -885,6 +982,7 @@ void mipi_dsih_hal_gen_crc_rx_en(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_PCKHDL_CFG, enable, 4, 1);
 }
+
 /**
  * Get status of read command
  * @param dev pointer to structure holding the DSI Host core information
@@ -894,6 +992,7 @@ int mipi_dsih_hal_gen_rd_cmd_busy(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_CMD_PKT_STATUS, 6, 1);
 }
+
 /**
  * Get the FULL status of generic read payload fifo
  * @param dev pointer to structure holding the DSI Host core information
@@ -903,6 +1002,7 @@ int mipi_dsih_hal_gen_read_fifo_full(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_CMD_PKT_STATUS, 5, 1);
 }
+
 /**
  * Get the EMPTY status of generic read payload fifo
  * @param dev pointer to structure holding the DSI Host core information
@@ -912,6 +1012,7 @@ int mipi_dsih_hal_gen_read_fifo_empty(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_CMD_PKT_STATUS, 4, 1);
 }
+
 /**
  * Get the FULL status of generic write payload fifo
  * @param dev pointer to structure holding the DSI Host core information
@@ -921,6 +1022,7 @@ int mipi_dsih_hal_gen_write_fifo_full(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_CMD_PKT_STATUS, 3, 1);
 }
+
 /**
  * Get the EMPTY status of generic write payload fifo
  * @param dev pointer to structure holding the DSI Host core information
@@ -930,6 +1032,7 @@ int mipi_dsih_hal_gen_write_fifo_empty(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_CMD_PKT_STATUS, 2, 1);
 }
+
 /**
  * Get the FULL status of generic command fifo
  * @param dev pointer to structure holding the DSI Host core information
@@ -939,6 +1042,7 @@ int mipi_dsih_hal_gen_cmd_fifo_full(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_CMD_PKT_STATUS, 1, 1);
 }
+
 /**
  * Get the EMPTY status of generic command fifo
  * @param dev pointer to structure holding the DSI Host core information
@@ -948,6 +1052,7 @@ int mipi_dsih_hal_gen_cmd_fifo_empty(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_CMD_PKT_STATUS, 0, 1);
 }
+
 /* only if DPI */
 /**
  * Configure how many cycles of byte clock would the PHY module take
@@ -961,6 +1066,7 @@ int mipi_dsih_phy_hs2lp_config(struct mipi_dsi_dev *dev, uint16_t no_of_byte_cyc
 	mipi_dsih_write_part(dev, R_DSI_HOST_PHY_TMR_CFG, no_of_byte_cycles, 16, 10);
 	return TRUE;
 }
+
 /**
  * Configure how many cycles of byte clock would the PHY module take
  * to switch the data lane from to low power high speed
@@ -973,6 +1079,7 @@ int mipi_dsih_phy_lp2hs_config(struct mipi_dsi_dev *dev, uint16_t no_of_byte_cyc
 	mipi_dsih_write_part(dev, R_DSI_HOST_PHY_TMR_CFG, no_of_byte_cycles, 0, 10);
 	return TRUE;
 }
+
 /**
  * Configure how many cycles of byte clock would the PHY module take
  * to switch clock lane from high speed to low power
@@ -985,6 +1092,7 @@ int mipi_dsih_phy_clk_hs2lp_config(struct mipi_dsi_dev *dev, uint16_t no_of_byte
 	mipi_dsih_write_part(dev, R_DSI_HOST_PHY_TMR_LPCLK_CFG, no_of_byte_cycles, 16, 10);
 	return TRUE;
 }
+
 /**
  * Configure how many cycles of byte clock would the PHY module take
  * to switch clock lane from to low power high speed
@@ -997,6 +1105,7 @@ int mipi_dsih_phy_clk_lp2hs_config(struct mipi_dsi_dev *dev, uint16_t no_of_byte
 	mipi_dsih_write_part(dev, R_DSI_HOST_PHY_TMR_LPCLK_CFG, no_of_byte_cycles, 0, 10);
 	return TRUE;
 }
+
 /**
  * Configure how many cycles of byte clock would the PHY module take
  * to turn the bus around to start receiving
@@ -1006,17 +1115,20 @@ int mipi_dsih_phy_clk_lp2hs_config(struct mipi_dsi_dev *dev, uint16_t no_of_byte
  */
 int mipi_dsih_phy_bta_time(struct mipi_dsi_dev *dev, uint16_t no_of_byte_cycles)
 {
-	if (no_of_byte_cycles < 0x8000){ /* 15-bit field */
-		if(dev->hw_version == DSI_VERSION_131)
-			mipi_dsih_write_part(dev, PHY_TMR_RD_CFG, no_of_byte_cycles, 0, 15);
+	if (no_of_byte_cycles < 0x8000) { /* 15-bit field */
+		if (dev->hw_version == DSI_VERSION_131)
+			mipi_dsih_write_part(dev, PHY_TMR_RD_CFG,
+					     no_of_byte_cycles, 0, 15);
 		else
-			mipi_dsih_write_part(dev, R_DSI_HOST_PHY_TMR_CFG, no_of_byte_cycles, 0, 15);
-	}
-	else
+			mipi_dsih_write_part(dev, R_DSI_HOST_PHY_TMR_CFG,
+					     no_of_byte_cycles, 0, 15);
+	} else {
 		return FALSE;
+	}
 
 	return TRUE;
 }
+
 /**
  * Enable the automatic mechanism to stop providing clock in the clock
  * lane when time allows
@@ -1028,6 +1140,7 @@ void mipi_dsih_non_continuous_clock(struct mipi_dsi_dev *dev, int enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_LPCLK_CTRL, enable, 1, 1);
 }
+
 /**
  * Get the status of the automatic mechanism to stop providing clock in the
  * clock lane when time allows
@@ -1038,6 +1151,7 @@ int mipi_dsih_non_continuous_clock_status(struct mipi_dsi_dev *dev)
 {
 	return mipi_dsih_read_part(dev, R_DSI_HOST_LPCLK_CTRL, 1, 1);
 }
+
 /* PRESP Time outs */
 /**
  * Timeout for peripheral (for controller to stay still) after LP data
@@ -1047,10 +1161,12 @@ int mipi_dsih_non_continuous_clock_status(struct mipi_dsi_dev *dev)
  * link still, after sending a low power write operation. This period is
  * measured in cycles of lanebyteclk
  */
-void mipi_dsih_hal_presp_timeout_low_power_write(struct mipi_dsi_dev *dev, uint16_t no_of_byte_cycles)
+void mipi_dsih_hal_presp_timeout_low_power_write(struct mipi_dsi_dev *dev,
+						 uint16_t no_of_byte_cycles)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_LP_WR_TO_CNT, no_of_byte_cycles, 0, 16);
 }
+
 /**
  * Timeout for peripheral (for controller to stay still) after LP data
  * transmission read requests
@@ -1059,10 +1175,12 @@ void mipi_dsih_hal_presp_timeout_low_power_write(struct mipi_dsi_dev *dev, uint1
  * link still, after sending a low power read operation. This period is
  * measured in cycles of lanebyteclk
  */
-void mipi_dsih_hal_presp_timeout_low_power_read(struct mipi_dsi_dev *dev, uint16_t no_of_byte_cycles)
+void mipi_dsih_hal_presp_timeout_low_power_read(struct mipi_dsi_dev *dev,
+						uint16_t no_of_byte_cycles)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_LP_RD_TO_CNT, no_of_byte_cycles, 0, 16);
 }
+
 /**
  * Timeout for peripheral (for controller to stay still) after HS data
  * transmission write requests
@@ -1071,10 +1189,12 @@ void mipi_dsih_hal_presp_timeout_low_power_read(struct mipi_dsi_dev *dev, uint16
  * link still, after sending a high-speed write operation. This period is
  * measured in cycles of lanebyteclk
  */
-void mipi_dsih_hal_presp_timeout_high_speed_write(struct mipi_dsi_dev *dev, uint16_t no_of_byte_cycles)
+void mipi_dsih_hal_presp_timeout_high_speed_write(struct mipi_dsi_dev *dev,
+						  uint16_t no_of_byte_cycles)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_HS_WR_TO_CNT, no_of_byte_cycles, 0, 16);
 }
+
 /**
  * Timeout for peripheral between HS data transmission read requests
  * @param dev pointer to structure holding the DSI Host core information
@@ -1082,10 +1202,12 @@ void mipi_dsih_hal_presp_timeout_high_speed_write(struct mipi_dsi_dev *dev, uint
  * link still, after sending a high-speed read operation. This period is
  * measured in cycles of lanebyteclk
  */
-void mipi_dsih_hal_presp_timeout_high_speed_read(struct mipi_dsi_dev *dev, uint16_t no_of_byte_cycles)
+void mipi_dsih_hal_presp_timeout_high_speed_read(struct mipi_dsi_dev *dev,
+						 uint16_t no_of_byte_cycles)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_HS_RD_TO_CNT, no_of_byte_cycles, 0, 16);
 }
+
 /**
  * Timeout for peripheral (for controller to stay still) after bus turn around
  * @param dev pointer to structure holding the DSI Host core information
@@ -1103,7 +1225,7 @@ void mipi_dsih_hal_presp_timeout_bta(struct mipi_dsi_dev *dev, uint16_t no_of_by
  * @param dev pointer to structure holding the DSI Host core information
  * @param orientation choose between horizontal or vertical pattern
  */
-void mipi_dsih_hal_vpg_orientation_act(struct mipi_dsi_dev *dev,uint8_t orientation)
+void mipi_dsih_hal_vpg_orientation_act(struct mipi_dsi_dev *dev, uint8_t orientation)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, orientation, 24, 1);
 }
@@ -1113,7 +1235,7 @@ void mipi_dsih_hal_vpg_orientation_act(struct mipi_dsi_dev *dev,uint8_t orientat
  * @param dev pointer to structure holding the DSI Host core information
  * @param mode choose between normal or BER pattern
  */
-void mipi_dsih_hal_vpg_mode_act(struct mipi_dsi_dev *dev,uint8_t mode)
+void mipi_dsih_hal_vpg_mode_act(struct mipi_dsi_dev *dev, uint8_t mode)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, mode, 20, 1);
 }
@@ -1121,9 +1243,9 @@ void mipi_dsih_hal_vpg_mode_act(struct mipi_dsi_dev *dev,uint8_t mode)
 /**
  * Change Video Pattern Generator
  * @param dev pointer to structure holding the DSI Host core information
- * @param enable enable video pattern generator
+ * @param enable video pattern generator
  */
-void mipi_dsih_hal_enable_vpg_act(struct mipi_dsi_dev *dev,uint8_t enable)
+void mipi_dsih_hal_enable_vpg_act(struct mipi_dsi_dev *dev, uint8_t enable)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_MODE_CFG, enable, 16, 1);
 }
@@ -1131,9 +1253,9 @@ void mipi_dsih_hal_enable_vpg_act(struct mipi_dsi_dev *dev,uint8_t enable)
 /**
  * Function to activate shadow registers functionality
  * @param dev pointer to structure holding the DSI Host core information
- * @param activate activate or deactivate shadow registers
+ * @param activate or deactivate shadow registers
  */
-void mipi_dsih_hal_activate_shadow_registers(struct mipi_dsi_dev *dev,uint8_t activate)
+void mipi_dsih_hal_activate_shadow_registers(struct mipi_dsi_dev *dev, uint8_t activate)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_SHADOW_CTRL, activate, 0, 1);
 }
@@ -1161,7 +1283,7 @@ void mipi_dsih_hal_request_registers_change(struct mipi_dsi_dev *dev)
  * @param dev pointer to structure holding the DSI Host core information
  * @param external choose between external or internal control
  */
-void mipi_dsih_hal_external_pin_registers_change(struct mipi_dsi_dev *dev,uint8_t external)
+void mipi_dsih_hal_external_pin_registers_change(struct mipi_dsi_dev *dev, uint8_t external)
 {
 	mipi_dsih_write_part(dev, R_DSI_HOST_VID_SHADOW_CTRL, external, 16, 1);
 }
@@ -1193,7 +1315,8 @@ uint8_t mipi_dsih_hal_get_loosely18_en_act(struct mipi_dsi_dev *dev)
  */
 dsih_color_coding_t mipi_dsih_hal_get_dpi_color_coding_act(struct mipi_dsi_dev *dev)
 {
-	return (dsih_color_coding_t)(mipi_dsih_read_part(dev, R_DSI_HOST_DPI_COLOR_CODING_ACT, 0, 4));
+	return (dsih_color_coding_t)(mipi_dsih_read_part(dev,
+							 R_DSI_HOST_DPI_COLOR_CODING_ACT, 0, 4));
 }
 
 /**
@@ -1300,7 +1423,7 @@ uint8_t mipi_dsih_hal_get_vid_mode_type_act(struct mipi_dsi_dev *dev)
  */
 uint16_t mipi_dsih_hal_get_vid_pkt_size_act(struct mipi_dsi_dev *dev)
 {
-	return mipi_dsih_read_part(dev, R_DSI_HOST_VID_PKT_SIZE_ACT,0, 14);
+	return mipi_dsih_read_part(dev, R_DSI_HOST_VID_PKT_SIZE_ACT, 0, 14);
 }
 
 /**
@@ -1311,7 +1434,7 @@ uint16_t mipi_dsih_hal_get_vid_pkt_size_act(struct mipi_dsi_dev *dev)
  */
 uint16_t mipi_dsih_hal_get_vid_num_chunks_act(struct mipi_dsi_dev *dev)
 {
-	return mipi_dsih_read_part(dev, R_DSI_HOST_VID_NUM_CHUNKS_ACT,0, 13);
+	return mipi_dsih_read_part(dev, R_DSI_HOST_VID_NUM_CHUNKS_ACT, 0, 13);
 }
 
 /**
@@ -1321,7 +1444,7 @@ uint16_t mipi_dsih_hal_get_vid_num_chunks_act(struct mipi_dsi_dev *dev)
  */
 uint16_t mipi_dsih_hal_get_vid_null_size_act(struct mipi_dsi_dev *dev)
 {
-	return mipi_dsih_read_part(dev, R_DSI_HOST_VID_NULL_SIZE_ACT,0, 13);
+	return mipi_dsih_read_part(dev, R_DSI_HOST_VID_NULL_SIZE_ACT, 0, 13);
 }
 
 /**
@@ -1412,7 +1535,7 @@ uint8_t mipi_dsih_hal_get_send_3d_cfg_act(struct mipi_dsi_dev *dev)
  */
 uint8_t mipi_dsih_hal_get_right_left_act(struct mipi_dsi_dev *dev)
 {
-	return mipi_dsih_read_part(dev, R_DSI_HOST_SDF_3D_ACT,5, 1);
+	return mipi_dsih_read_part(dev, R_DSI_HOST_SDF_3D_ACT, 5, 1);
 }
 
 /**
@@ -1433,7 +1556,7 @@ uint8_t mipi_dsih_hal_get_second_vsync_act(struct mipi_dsi_dev *dev)
  */
 uint8_t mipi_dsih_hal_get_format_3d_act(struct mipi_dsi_dev *dev)
 {
-	return mipi_dsih_read_part(dev, R_DSI_HOST_SDF_3D_ACT,2, 2);
+	return mipi_dsih_read_part(dev, R_DSI_HOST_SDF_3D_ACT, 2, 2);
 }
 
 /**
@@ -1448,29 +1571,25 @@ uint8_t mipi_dsih_hal_get_mode_3d_act(struct mipi_dsi_dev *dev)
 
 void mipi_dsih_hal_auto_ulps_entry(struct mipi_dsi_dev *dev, int delay)
 {
-	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_ENTRY_DELAY, delay, 0 ,31);
+	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_ENTRY_DELAY, delay, 0, 31);
 }
 
 void mipi_dsih_hal_auto_ulps_wakeup(struct mipi_dsi_dev *dev,
-		int twakeup_clk_div, int twakeup_cnt)
+				    int twakeup_clk_div, int twakeup_cnt)
 {
-	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_WAKEUP_TIME,
-			twakeup_clk_div, 0 ,15);
-	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_WAKEUP_TIME,
-			twakeup_cnt, 16 ,31);
+	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_WAKEUP_TIME, twakeup_clk_div, 0, 15);
+	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_WAKEUP_TIME, twakeup_cnt, 16, 31);
 }
 
 void mipi_dsih_hal_auto_ulps_mode(struct mipi_dsi_dev *dev, int mode)
 {
-	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_MODE, mode, 0 ,1);
+	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_MODE, mode, 0, 1);
 }
 
 void mipi_dsih_hal_pll_off_in_ulps(struct mipi_dsi_dev *dev,
-		int pll_off_ulps, int pre_pll_off_req)
+				   int pll_off_ulps, int pre_pll_off_req)
 {
-	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_MODE,
-			pll_off_ulps, 16 ,1);
-	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_MODE,
-			pre_pll_off_req, 17 ,1);
+	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_MODE, pll_off_ulps, 16, 1);
+	mipi_dsih_write_part(dev, R_DSI_AUTO_ULPS_MODE, pre_pll_off_req, 17, 1);
 }
 

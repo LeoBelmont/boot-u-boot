@@ -74,10 +74,10 @@ rb_handle ring_buffer_attach(uint32_t base_address, uint32_t size)
 int32_t ring_buffer_push(rb_handle handle, uint8_t *buffer, uint32_t size)
 {
 	ring_buffer_t *instance = (ring_buffer_t *)handle;
-	ring_buffer_head_t *header = &(instance->header);
+	ring_buffer_head_t *header = &instance->header;
 	uint32_t remaining = 0;
 
-	assert(header != NULL);
+	assert(header);
 	assert(header->magic == _RING_BUFFER_MAGIC);
 	assert(header->buffer_end > size);
 
@@ -111,7 +111,7 @@ int32_t ring_buffer_pop(rb_handle handle, uint8_t *buffer, uint32_t max_size)
 	uint32_t cur_rd = header->cur_rd;
 	uint32_t cur_wr = header->cur_wr;
 
-	assert(header != NULL);
+	assert(header);
 	assert(header->magic == _RING_BUFFER_MAGIC);
 
 	if (cur_rd == cur_wr) {
@@ -158,7 +158,7 @@ int32_t ring_buffer_not_empty(rb_handle handle)
 	uint32_t cur_rd = header->cur_rd;
 	uint32_t cur_wr = header->cur_wr;
 
-	assert(header != NULL);
+	assert(header);
 	assert(header->magic == _RING_BUFFER_MAGIC);
 
 	if (cur_rd == cur_wr)

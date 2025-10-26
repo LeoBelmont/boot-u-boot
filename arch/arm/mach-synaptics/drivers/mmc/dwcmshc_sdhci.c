@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <dm.h>
 #include <dm/device_compat.h>
@@ -264,7 +264,9 @@ static int dwcmshc_setup_phy(struct sdhci_host *host)
 	struct dwcmshc_sdhci_plat *plat = dev_get_plat(host->mmc->dev);
 
 	dwcmshc_setup_phy_datapath(host);
-	dwcmshc_setup_phy_delayline(host, plat->mmc_type == SD_VERSION_SD ? phy_delay[SD_LEGACY] : phy_delay[MMC_LEGACY]);
+	dwcmshc_setup_phy_delayline(host,
+				    plat->mmc_type == SD_VERSION_SD ?
+				    phy_delay[SD_LEGACY] : phy_delay[MMC_LEGACY]);
 	dwcmshc_setup_phy_tuning(host);
 	dwcmshc_setup_phy_configure(host);
 
@@ -319,7 +321,9 @@ static int dwcmshc_sdhci_set_ios_post(struct sdhci_host *host)
 	}
 
 	if (host->mmc->selected_mode == MMC_LEGACY) {
-		dwcmshc_setup_phy_delayline(host, plat->mmc_type == SD_VERSION_SD ? phy_delay[SD_LEGACY] : phy_delay[MMC_LEGACY]);
+		dwcmshc_setup_phy_delayline(host,
+					    plat->mmc_type == SD_VERSION_SD ?
+					    phy_delay[SD_LEGACY] : phy_delay[MMC_LEGACY]);
 		return 0;
 	}
 

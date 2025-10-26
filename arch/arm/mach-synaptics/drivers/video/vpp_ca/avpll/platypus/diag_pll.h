@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2024 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef DIAG_PLL_H
 #define DIAG_PLL_H
@@ -34,8 +34,8 @@
 #include "avioGbl.h"
 #include "avio_memmap.h"
 
-#define SYNA_CLK_READ32(addr, ptr_val) do {*ptr_val = readl((long)(addr));} while(0)
-#define SYNA_CLK_WRITE32(addr, val) do {writel((val), (long)(addr));} while(0)
+#define SYNA_CLK_READ32(addr, ptr_val) do {*ptr_val = readl((long)(addr)); } while (0)
+#define SYNA_CLK_WRITE32(addr, val) do {writel((val), (long)(addr)); } while (0)
 
 #define DOWN            1
 #define UP              0
@@ -67,28 +67,34 @@
 #define M6		6
 #define FREF            25
 
-#define VPLLWRAP0BASE_ADDR    	(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_VPLL_WRAP0)
-//#define VPLLWRAP1BASE_ADDR    	(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_VPLL_WRAP1)
-#define APLLWRAP0BASE_ADDR    	(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_APLL_WRAP0)
-#define APLLWRAP1BASE_ADDR    	(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_APLL_WRAP1)
+#define VPLLWRAP0BASE_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_VPLL_WRAP0)
+//#define VPLLWRAP1BASE_ADDR
+//(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_VPLL_WRAP1)
+#define APLLWRAP0BASE_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_APLL_WRAP0)
+#define APLLWRAP1BASE_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_APLL_WRAP1)
 
-#define APLLWRAP0APLLCTRL     	APLLWRAP0BASE_ADDR + RA_APLL_WRAP_APLL_CTRL
-#define APLLWRAP1APLLCTRL     	APLLWRAP1BASE_ADDR + RA_APLL_WRAP_APLL_CTRL
-#define APLLWRAP0APLL     	APLLWRAP0BASE_ADDR + RA_APLL_WRAP_APLL
-#define APLLWRAP1APLL     	APLLWRAP1BASE_ADDR + RA_APLL_WRAP_APLL
+#define APLLWRAP0APLLCTRL	APLLWRAP0BASE_ADDR + RA_APLL_WRAP_APLL_CTRL
+#define APLLWRAP1APLLCTRL	APLLWRAP1BASE_ADDR + RA_APLL_WRAP_APLL_CTRL
+#define APLLWRAP0APLL	APLLWRAP0BASE_ADDR + RA_APLL_WRAP_APLL
+#define APLLWRAP1APLL	APLLWRAP1BASE_ADDR + RA_APLL_WRAP_APLL
 
-#define VPLLWRAP0VPLLCTRL     	VPLLWRAP0BASE_ADDR + RA_VPLL_WRAP_VPLL_CTRL
-//#define VPLLWRAP1VPLLCTRL     	VPLLWRAP1BASE_ADDR + RA_VPLL_WRAP_VPLL_CTRL
-#define VPLLWRAP0VPLL     	VPLLWRAP0BASE_ADDR + RA_VPLL_WRAP_VPLL
-//#define VPLLWRAP1VPLL     	VPLLWRAP1BASE_ADDR + RA_VPLL_WRAP_VPLL
+#define VPLLWRAP0VPLLCTRL	VPLLWRAP0BASE_ADDR + RA_VPLL_WRAP_VPLL_CTRL
+//#define VPLLWRAP1VPLLCTRL	VPLLWRAP1BASE_ADDR + RA_VPLL_WRAP_VPLL_CTRL
+#define VPLLWRAP0VPLL	VPLLWRAP0BASE_ADDR + RA_VPLL_WRAP_VPLL
+//#define VPLLWRAP1VPLL	VPLLWRAP1BASE_ADDR + RA_VPLL_WRAP_VPLL
 
-
-//#define APLL_CLKEN_ADDR   (MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_AVPLLA_CLK_EN)
-//#define APLL_SWRST_ADDR   (MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_SWRST_CTRL)
-#define AVPLL_SWPD_ADDR    (MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_AVPLL_CTRL0)
+//#define APLL_CLKEN_ADDR
+//(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_AVPLLA_CLK_EN)
+//#define APLL_SWRST_ADDR
+//(MEMMAP_AVIO_REG_BASE+AVIO_MEMMAP_AVIO_GBL_BASE+RA_avioGbl_SWRST_CTRL)
+#define AVPLL_SWPD_ADDR \
+	(MEMMAP_AVIO_REG_BASE + AVIO_MEMMAP_AVIO_GBL_BASE + RA_avioGbl_AVPLL_CTRL0)
 
 enum PLLMODE {
-	INT_MODE=0,
+	INT_MODE = 0,
 	FRAC_MODE,
 	SSC_MODE,
 	RSVD
@@ -97,28 +103,28 @@ enum PLLMODE {
 #define PLL_REG_SET(tmpstr, field123, val123)     tmpstr.uctrl##field123 = val123
 #define PLL_REG_GET(tmpstr, field123, val123)     val123 = tmpstr.uctrl##field123
 
-#define PLL_REG_READ(baseaddr, offset, val123)                                          \
-	do{ 															\
-		val123 = readl((long)(baseaddr+offset*4));			\
-	}while(0)
+#define PLL_REG_READ(baseaddr, offset, val123)				\
+	do {								\
+		val123 = readl((long)((baseaddr) + (offset) * 4));	\
+	} while (0)
 
-#define PLL_REG_WRITE(baseaddr, offset, val123)                                         \
-	do{ 															\
-		writel(val123, (long)(baseaddr+offset*4));			\
-	}while(0)
+#define PLL_REG_WRITE(baseaddr, offset, val123)				\
+	do {								\
+		writel(val123, (long)((baseaddr) + (offset) * 4));	\
+	} while (0)
 
-#define PLL_REG_PRINT(baseaddr, offset)                                                 \
-	do{ 															\
-		volatile unsigned int val123;								\
-		val123 = readl((long)(baseaddr+offset*4));		  \
-		debug("0x%08x: 0x%08x\n",							  \
-				(baseaddr+offset*4),								\
-				val123);											\
-	}while(0)
+#define PLL_REG_PRINT(baseaddr, offset)					\
+	do {								\
+		volatile unsigned int val123;				\
+		val123 = readl((long)((baseaddr) + (offset) * 4));	\
+		debug("0x%08x: 0x%08x\n",				\
+				((baseaddr) + (offset) * 4),		\
+				val123);				\
+	} while (0)
 #define SSC_DIV_MAX		15
 
 typedef enum {
-	DIAG_SYSPLL0=0,
+	DIAG_SYSPLL0 = 0,
 	DIAG_SYSPLL1,
 	DIAG_SYSPLL2,
 	DIAG_MEMPLL,
@@ -131,8 +137,7 @@ typedef enum {
 	DIAG_SYSPLL
 } E_PLL_SRC;
 
-enum divider_index
-{
+enum divider_index {
 	DIVIDED_BY_2 = 1,
 	DIVIDED_BY_4,
 	DIVIDED_BY_6,

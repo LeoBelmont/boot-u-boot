@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #include <vsprintf.h>
 #include <command.h>
@@ -43,7 +43,7 @@
 #define GPT_LBA_NUM				34
 #define MAX_GPT_PT_NUM			128
 #define GZIP_MAGIC_NUMBER		0x8B1F
-#define GUNZIP_BUFFER_SIZE		(4<<20)
+#define GUNZIP_BUFFER_SIZE		(4 << 20)
 
 struct gpt_ent_part {
 	int part;
@@ -114,7 +114,8 @@ static const char *find_str_in_list(const char *list, const char *str, int split
 	return NULL;
 }
 
-static int emmcburn_switch_part(int dev, int part) {
+static int emmcburn_switch_part(int dev, int part)
+{
 	char cmd[256];
 	int ret = -1;
 
@@ -279,7 +280,8 @@ static int emmc_write(int part, unsigned int start_lba, unsigned int cnt, void *
 
 			if (memcmp(rbuff, wbuff, r_lba * get_blksize())) {
 				free(rbuff);
-				printf("%s: verify failed at %08x\n", __func__, rstart * get_blksize());
+				printf("%s: verify failed at %08x\n", __func__,
+				       rstart * get_blksize());
 				return -1;
 			}
 
@@ -312,7 +314,8 @@ static int parse_gpt_table(int part, gpt_header *hdr, gpt_entry *entry)
 	u32 num;
 	struct uuid	unused;
 
-	num = (MAX_GPT_PT_NUM - g_gpt_num) > hdr->num_partition_entries ? hdr->num_partition_entries : (MAX_GPT_PT_NUM - g_gpt_num);
+	num = (MAX_GPT_PT_NUM - g_gpt_num) > hdr->num_partition_entries ?
+	       hdr->num_partition_entries : (MAX_GPT_PT_NUM - g_gpt_num);
 
 	memset(&unused, 0, sizeof(unused));
 	for (i = 0; i < num; i++) {
@@ -362,7 +365,8 @@ static int read_part_gpt_partition_info(int part)
 	}
 
 	header = tmp + get_blksize();
-	parse_gpt_table(part, tmp + get_blksize(), tmp + le64_to_cpu(header->partition_entry_lba) * get_blksize());
+	parse_gpt_table(part, tmp + get_blksize(),
+			tmp + le64_to_cpu(header->partition_entry_lba) * get_blksize());
 
 	return 0;
 }
@@ -463,7 +467,9 @@ static int get_partition_info(char *pt_name, struct pt_info *pi)
 		}
 		pi->start_lba = g_gpt_e[num].gpt.starting_lba;
 		pi->cnt = g_gpt_e[num].gpt.ending_lba - g_gpt_e[num].gpt.starting_lba + 1;
-		gpt_convert_efi_name_to_char(pi->partition_name, g_gpt_e[num].gpt.partition_name, PARTNAME_SZ + 1);
+		gpt_convert_efi_name_to_char(pi->partition_name,
+					     g_gpt_e[num].gpt.partition_name,
+					     PARTNAME_SZ + 1);
 	}
 
 	return 0;
@@ -523,6 +529,7 @@ static int burn_images(struct pt_info pi, void *buff, unsigned int size)
 #if defined(CONFIG_IMAGE_SPARSE)
 	if (is_sparse_image(buff)) {
 		struct sparse_storage sparse;
+
 		printf("Image format: sparse\n");
 
 		setup_sparse_op(&sparse, &pi);
@@ -637,7 +644,9 @@ static int set_bootbus(void)
 	int ret = -1;
 	u8 ack = 1;
 	/* always set default boot part to boot partition 1 with ack enabled */
-#if defined(CONFIG_TARGET_DOLPHIN) || defined(CONFIG_TARGET_PLATYPUS) || defined(CONFIG_TARGET_MYNA2)
+#if defined(CONFIG_TARGET_DOLPHIN) || \
+	defined(CONFIG_TARGET_PLATYPUS) || \
+	defined(CONFIG_TARGET_MYNA2)
 	// FIXME: on dolphin and platypus, we have to set the ack bit to 0
 	ack = 0;
 #endif
@@ -738,7 +747,8 @@ static int parse_arg(char *input, int len, int *argc, char *argv[])
 	return i;
 }
 
-static void create_gpt_partition(struct disk_partition *part, char *part_name, loff_t start_bytes, loff_t size_bytes)
+static void create_gpt_partition(struct disk_partition *part, char *part_name,
+				 loff_t start_bytes, loff_t size_bytes)
 {
 	char guid_str[UUID_STR_LEN + 1];
 
@@ -783,13 +793,13 @@ static int parse_part_and_gen_gpt(void *buff, unsigned int size)
 	for (i = 0; i < 5; i++) {
 		p_buff += len + 1;
 		if (get_line(p_buff, 1, &line, &len))
-			goto out;;
+			goto out;
 
 		if (strncmp(line, "#GP", 3) == 0) {
 			index = line[3] - '0';
 			if (index < 1 || index > 4) {
 				printf("parititon name error%s", line);
-				goto out;;
+				goto out;
 			}
 			part = 3 + index;
 			p_buff += len + 1;
@@ -802,7 +812,7 @@ static int parse_part_and_gen_gpt(void *buff, unsigned int size)
 
 		ret = clean_mbr_gpt_table(part);
 		if (ret)
-			goto out;;
+			goto out;
 
 		memset(partitions, 0, (MAX_GPT_PT_NUM * sizeof(struct disk_partition)));
 		partition_num = 0;
@@ -820,8 +830,10 @@ static int parse_part_and_gen_gpt(void *buff, unsigned int size)
 			else
 				pt_start += pt_size; //the end of last partition
 			pt_size = simple_strtoull(import_argv[2], NULL, 10);
-			printf("start to create partition %s %lld %lld...\n", import_argv[0], pt_start, pt_size);
-			create_gpt_partition(&partitions[partition_num], import_argv[0], pt_start, pt_size);
+			printf("start to create partition %s %lld %lld...\n",
+			       import_argv[0], pt_start, pt_size);
+			create_gpt_partition(&partitions[partition_num], import_argv[0],
+					     pt_start, pt_size);
 			partition_num++;
 			p_buff += len + 1;
 		}
@@ -831,7 +843,7 @@ static int parse_part_and_gen_gpt(void *buff, unsigned int size)
 		ret = gpt_restore(mmc_get_blk_desc(mmc), guid_str, partitions, partition_num);
 		if (ret) {
 			printf("gpt_restore failed.\n");
-			goto out;;
+			goto out;
 		}
 
 		is_gpt_ready = 0;
@@ -1015,7 +1027,8 @@ static void print_img2sd_msg(struct pt_operation ptop, char *path, char *src)
 		printf("FORMAT: start to format partition: %s\n", ptop.pt_name);
 		break;
 	case BURN_IMAGE:
-		printf("WRITE: start to write %s/%s to partition %s\n", path, ptop.imgname, ptop.pt_name);
+		printf("WRITE: start to write %s/%s to partition %s\n",
+		       path, ptop.imgname, ptop.pt_name);
 		printf("SOURCE: %s\n", src);
 		break;
 	default:
@@ -1025,7 +1038,8 @@ static void print_img2sd_msg(struct pt_operation ptop, char *path, char *src)
 	printf("###################################################################\n");
 	printf("Partition %s info:\n", ptop.pt_name);
 	printf("    Name: %s\n", pi.partition_name);
-	printf("    Start address: 0x%llx LBA, 0x%llx Bytes\n", pi.start_lba, pi.start_lba * get_blksize());
+	printf("    Start address: 0x%llx LBA, 0x%llx Bytes\n",
+	       pi.start_lba, pi.start_lba * get_blksize());
 	printf("    Size: 0x%llx LBA, 0x%llx Bytes\n", pi.cnt, pi.cnt * get_blksize());
 }
 
@@ -1303,7 +1317,8 @@ static int do_list2emmc(struct cmd_tbl *cmdtp, int flag, int argc, char * const 
 
 	//parse image list and burn image
 	if (develop_mode)
-		sprintf(cmd, "img2sd import %s %s %s", srcstr[src], img_list, ignore_partition_list);
+		sprintf(cmd, "img2sd import %s %s %s",
+			srcstr[src], img_list, ignore_partition_list);
 	else
 		sprintf(cmd, "img2sd import %s %s", srcstr[src], img_list);
 	ret = run_command(cmd, 0);
@@ -1333,35 +1348,33 @@ ERROR:
 	return CMD_RET_USAGE;
 }
 
-U_BOOT_CMD(
-	emmcpart,	4,	0,	do_emmc_part,
-	"u-boot partition tool",
-	"emmcpart clean  - clean partition mbr and partition header\n"
-	"emmcpart print  - print partition list\n"
-	"emmcpart import [src] [part_list_file]\n"
-	"                - partition according to assigned part_list_file\n"
-	"example:\n"
-	"    emmcpart import tftp eMMCimg/emmc_part_list\n"
+U_BOOT_CMD(emmcpart,	4,	0,	do_emmc_part,
+	   "u-boot partition tool",
+	   "emmcpart clean  - clean partition mbr and partition header\n"
+	   "emmcpart print  - print partition list\n"
+	   "emmcpart import [src] [part_list_file]\n"
+	   "                - partition according to assigned part_list_file\n"
+	   "example:\n"
+	   "    emmcpart import tftp eMMCimg/emmc_part_list\n"
 );
 
-U_BOOT_CMD(
-	img2sd, 5, 0, do_img2sd,
-	"u-boot partition tool",
-	"img2sd erase [partition]\n"
-	"img2sd format [partition]\n"
-	"img2sd [src] [image] [partition]\n"
-	"img2sd import [src] [image list file] [skip partition list]\n"
-	"    Note: 1. src:usbh-load image from usb drive\n"
-	"                 usbs-load image from host(usbtool only)\n"
-	"                 tftp-load image from tftp server\n"
-	"          2. src is tftp by default if not set\n"
-	"example:\n"
-	"    img2sd tftp 10.37.116.100:eMMCimg/bootloader.subimg b1 --- (10.37.116.100 is tftp server IP addr)\n"
-	"    img2sd usbh 0:1:eMMCimg/kernel.subimg sd6\n"
-	"    img2sd usbh eMMCimg/kernel.subimg sd6\n"
-	"    img2sd sd eMMCimg/bootloader.subimg b1\n"
-	"    img2sd usbs eMMCimg/rootfs.subimg sd8 --- (usbtool only)\n"
-	"    img2sd import usbs eMMCimg/emmc_image_list\n"
+U_BOOT_CMD(img2sd, 5, 0, do_img2sd,
+	   "u-boot partition tool",
+	   "img2sd erase [partition]\n"
+	   "img2sd format [partition]\n"
+	   "img2sd [src] [image] [partition]\n"
+	   "img2sd import [src] [image list file] [skip partition list]\n"
+	   "    Note: 1. src:usbh-load image from usb drive\n"
+	   "                 usbs-load image from host(usbtool only)\n"
+	   "                 tftp-load image from tftp server\n"
+	   "          2. src is tftp by default if not set\n"
+	   "example:\n"
+	   "    img2sd tftp 10.37.116.100:eMMCimg/bootloader.subimg b1 --- (10.37.116.100 is tftp server IP addr)\n"
+	   "    img2sd usbh 0:1:eMMCimg/kernel.subimg sd6\n"
+	   "    img2sd usbh eMMCimg/kernel.subimg sd6\n"
+	   "    img2sd sd eMMCimg/bootloader.subimg b1\n"
+	   "    img2sd usbs eMMCimg/rootfs.subimg sd8 --- (usbtool only)\n"
+	   "    img2sd import usbs eMMCimg/emmc_image_list\n"
 );
 
 static char list2emmc_help[] =
@@ -1370,7 +1383,7 @@ static char list2emmc_help[] =
 /*
  * 1. does we still need -g -d option for GPT and DOS? should be no
  * 2. generate gpt image offline and burn it
-*/
+ */
 static char list2emmc_usage[] =
 "\n###############################################################################"
 "\nusb2emmc/l2emmc/tftp2emmc usage manual"
@@ -1393,33 +1406,29 @@ static char list2emmc_usage[] =
 ;
 
 #if defined(CONFIG_NET)
-U_BOOT_CMD(
-	tftp2emmc, 4, 0, do_list2emmc,
-	list2emmc_help,
-	list2emmc_usage
+U_BOOT_CMD(tftp2emmc, 4, 0, do_list2emmc,
+	   list2emmc_help,
+	   list2emmc_usage
 );
 #endif
 
 #if defined(CONFIG_CMD_USB) && defined(CONFIG_CMD_FAT)
-U_BOOT_CMD(
-	usb2emmc, 4, 0, do_list2emmc,
-	list2emmc_help,
-	list2emmc_usage
+U_BOOT_CMD(usb2emmc, 4, 0, do_list2emmc,
+	   list2emmc_help,
+	   list2emmc_usage
 );
 #endif
 
 #if defined(CONFIG_SYNA_USB_UBOOT) || defined(CONFIG_SYNA_SUBOOT)
-U_BOOT_CMD(
-	l2emmc, 4, 0, do_list2emmc,
-	list2emmc_help,
-	list2emmc_usage
+U_BOOT_CMD(l2emmc, 4, 0, do_list2emmc,
+	   list2emmc_help,
+	   list2emmc_usage
 );
 #endif
 
 #ifdef CONFIG_MMC_DWCMSHC
-U_BOOT_CMD(
-	sd2emmc, 4, 0, do_list2emmc,
-	list2emmc_help,
-	list2emmc_usage
+U_BOOT_CMD(sd2emmc, 4, 0, do_list2emmc,
+	   list2emmc_help,
+	   list2emmc_usage
 );
 #endif

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 /* a simple function to implement free/malloc
  * 1. don't support mutilple thread now
@@ -130,9 +130,9 @@ void *mmgr_alloc_by_type(MEM_TYPE type, int size)
 	}
 
 	/*
-	*  the size should be 4KB aligned if allocated from ION
-	*  for bootloader heap, the size should be 64B aligned
-	*/
+	 *  the size should be 4KB aligned if allocated from ION
+	 *  for bootloader heap, the size should be 64B aligned
+	 */
 	if (MEM_ION_CACHEABLE == type || MEM_ION_NONCACHEABLE == type)
 		alloc_size = (size & PAGE_MASK) ? ((size & (~PAGE_MASK)) + PAGE) : size;
 	else

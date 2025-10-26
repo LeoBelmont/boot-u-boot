@@ -122,9 +122,8 @@ static int attiny_regulator_set_enable(struct udevice *dev, bool enable)
 	int ret, i;
 
 	ret = attiny_i2c_write(dev, 0, REG_PORTC);
-	if (ret) {
+	if (ret)
 		return ret;
-	}
 	mdelay(10);
 
 	attiny_i2c_write(dev, PA_LCD_LR, REG_PORTA);
@@ -134,9 +133,8 @@ static int attiny_regulator_set_enable(struct udevice *dev, bool enable)
 	attiny_i2c_write(dev, PC_LED_EN, REG_PORTC);
 	mdelay(80);
 
-	for (i = 0; i < 10; i++) {
+	for (i = 0; i < 10; i++)
 		attiny_i2c_write(dev, DEFAULT_BRIGHTNESS, REG_PWM);
-	}
 
 	return 0;
 }

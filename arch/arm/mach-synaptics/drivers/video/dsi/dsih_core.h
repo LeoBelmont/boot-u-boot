@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0 */
-/**
+/*
  * Copyright (C) 2018 Synopsys, Inc.
  *
  * @file dsih_core.h
@@ -9,7 +9,26 @@
  * @author Luis Oliveira <luis.oliveira@synopsys.com>
  */
 /*
- * Copyright (C) 2024 Synaptics Incorporated
+ * Copyright (C) 2016~2025 Synaptics Incorporated. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 or
+ * later as published by the Free Software Foundation.
+ *
+ * INFORMATION CONTAINED IN THIS DOCUMENT IS PROVIDED "AS-IS," AND
+ * SYNAPTICS EXPRESSLY DISCLAIMS ALL EXPRESS AND IMPLIED WARRANTIES,
+ * INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE, AND ANY WARRANTIES OF NON-INFRINGEMENT OF ANY
+ * INTELLECTUAL PROPERTY RIGHTS. IN NO EVENT SHALL SYNAPTICS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR
+ * CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN CONNECTION WITH THE USE
+ * OF THE INFORMATION CONTAINED IN THIS DOCUMENT, HOWEVER CAUSED AND
+ * BASED ON ANY THEORY OF LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, AND EVEN IF SYNAPTICS WAS
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. IF A TRIBUNAL OF
+ * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
+ * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
+ * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
  */
 
 #ifndef __INCLUDES_DSI_H__
@@ -106,11 +125,10 @@ typedef enum {
 	DSI_MAX_EVENT = 39
 } dsih_event_t;
 
-typedef enum
-{
+typedef enum {
 	VIDEO_MODE = 0,
 	COMMAND_MODE = 1
-}dsih_mode_t;
+} dsih_mode_t;
 
 /**
  * Register configurations
@@ -145,7 +163,7 @@ typedef struct cmd_write_t {
 	uint8_t cmd_buffer[64];
 	/*length of buffer */
 	uint16_t length;
-	/*packet type *///Only for packet
+	/* packet type, Only for packet */
 	uint8_t data_type;
 } cmd_write_t;
 
@@ -165,7 +183,7 @@ typedef struct cmd_read_t {
 	int length;
 	/** read bytes */
 	uint8_t read_bytes;
-	/** param *///Only for packet
+	/* param, Only for packet */
 	uint8_t param[2];
 } cmd_read_t;
 
@@ -212,8 +230,8 @@ typedef struct dphy_t {
 
 typedef struct MIPI_DSI_CMD_PARAMS_T {
 	uint16_t bufsize;
-	uint8_t* pcmd;
-}DSI_CMD_T;
+	uint8_t *pcmd;
+} DSI_CMD_T;
 
 /**
  * Video configurations
@@ -224,22 +242,29 @@ typedef struct {
 	uint8_t no_of_lanes;
 	/** Virtual channel number to send this video stream */
 	uint8_t virtual_channel;
-	/** Video mode, whether burst with sync pulses, or packets with either sync pulses or events */
+	/* Video mode, whether burst with sync pulses, or packets with
+	 * either sync pulses or events
+	 */
 	dsih_video_mode_t video_mode;
-	/** Maximum number of byte clock cycles needed by the PHY to transition
-	 * the data lanes from high speed to low power - REQUIRED */
+	/* Maximum number of byte clock cycles needed by the PHY to transition
+	 * the data lanes from high speed to low power - REQUIRED
+	 */
 	uint16_t max_hs_to_lp_cycles;
-	/** Maximum number of byte clock cycles needed by the PHY to transition
-	 * the data lanes from low power to high speed - REQUIRED */
+	/* Maximum number of byte clock cycles needed by the PHY to transition
+	 * the data lanes from low power to high speed - REQUIRED
+	 */
 	uint16_t max_lp_to_hs_cycles;
-	/** Maximum number of byte clock cycles needed by the PHY to transition
-	 * the clock lane from high speed to low power - REQUIRED */
+	/* Maximum number of byte clock cycles needed by the PHY to transition
+	 * the clock lane from high speed to low power - REQUIRED
+	 */
 	uint16_t max_clk_hs_to_lp_cycles;
-	/** Maximum number of byte clock cycles needed by the PHY to transition
-	 * the clock lane from low power to high speed - REQUIRED */
+	/* Maximum number of byte clock cycles needed by the PHY to transition
+	 * the clock lane from low power to high speed - REQUIRED
+	 */
 	uint16_t max_clk_lp_to_hs_cycles;
-	/** Enable non coninuous clock for energy saving
-	 * - Clock lane will go to LS while not transmitting video */
+	/* Enable non coninuous clock for energy saving
+	 * - Clock lane will go to LS while not transmitting video
+	 */
 	int non_continuous_clock;
 	/** Enable receiving of ack packets */
 	int receive_ack_packets;
@@ -283,7 +308,7 @@ typedef struct {
 	uint16_t null_packet_size;
 	/** */
 	int dpi_lp_cmd_en;
-	/** Diplay type*/
+	/** Display type*/
 	int display_type;
 
 	uint16_t hline;
@@ -314,8 +339,9 @@ typedef struct {
 	int te;
 	/** bta enable*/
 	int bta;
-	/** packet size of write memory command -
-	 * 0 is default (optimum usage of RAM) */
+	/* packet size of write memory command -
+	 * 0 is default (optimum usage of RAM)
+	 */
 	uint16_t packet_size;
 	/** Byte (lane) clock [KHz] */
 	uint32_t byte_clock;
@@ -323,7 +349,7 @@ typedef struct {
 	unsigned long pixel_clock;
 	/** Send setup packets */
 	uint16_t send_setup_packets;
-	/** Diplay type*/
+	/** Display type*/
 	int display_type;
 
 } dsih_cmd_mode_video_t;
