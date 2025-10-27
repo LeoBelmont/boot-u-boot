@@ -26,6 +26,7 @@
 #include "Galois_memmap.h"
 #include "global.h"
 #include "mem_init.h"
+#include "mcu_gbl_cfg.h"
 #include <linux/delay.h>
 
 static void init_clock(void)
@@ -190,10 +191,60 @@ static void init_clock(void)
 	writel(0X00000028, 0XF7E104E8);
 	writel(0X00000014, 0XF7E104EC);
 }
+
+static void set_drive_strength(void)
+{
+	unsigned int addr;
+	unsigned int val;
+	unsigned int offset;
+
+	/* SOC, total 50 pads, all have 4bits DS
+	 *      0x08800 GPIO23Cntl ... 0x088EC GPIO22Cntl
+	 */
+	for (offset = RA_Gbl_GPIO23Cntl; offset <= RA_Gbl_GPIO22Cntl; offset += 4) {
+		val = readl(MEMMAP_CHIP_CTRL_REG_BASE + offset);
+		val &= ~0xfUL;
+		val |= 7;
+		writel(val, MEMMAP_CHIP_CTRL_REG_BASE + offset);
+	}
+
+	/* SM, total 41 pads, all are 4bits.
+	 *      0x00C00 SM_GPIO31Cntl ... 0x00CA0 SM_GPIO0Cntl
+	 */
+	for (offset = RA_mcu_gbl_cfg_SM_GPIO31Cntl;
+	    offset <= RA_mcu_gbl_cfg_SM_GPIO0Cntl; offset += 4) {
+		/* skip xtal */
+		if (offset == RA_mcu_gbl_cfg_SM_XTAL32K_ICntl ||
+		    offset == RA_mcu_gbl_cfg_SM_XTAL_ICntl)
+			continue;
+
+		val = readl(SOC_SM_SYS_CTRL_REG_BASE + offset);
+		val &= ~0xfUL;
+		val |= 7;
+		writel(val, SOC_SM_SYS_CTRL_REG_BASE + offset);
+	}
+
+	return 0;
+}
+
+static void tw_init_mdio(void)
+{
+	u32 val;
+
+	/* set to RGMII1 MDIO */
+	val = readl(MEMMAP_CHIP_CTRL_REG_BASE + RA_Gbl_PERIF + RA_PERIF_TW_PORT_CTRL);
+	val |=  (1 << LSb32PERIF_TW_PORT_CTRL_RGMII_MDIO_MDC_SEL);
+	writel(val, MEMMAP_CHIP_CTRL_REG_BASE + RA_Gbl_PERIF + RA_PERIF_TW_PORT_CTRL);
+	udelay(1);
+}
+
 int board_init(void)
 {
 	/* board related things like clock may be inited here */
 	init_clock();
+
+	set_drive_strength();
+	tw_init_mdio();
 
 	return 0;
 }
