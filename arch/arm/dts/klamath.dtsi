@@ -111,6 +111,12 @@
 		clock-frequency = <200000000>;
 	};
 
+	gmac1clk: gmac1clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clk_freq = <250000000>;
+	};
+
 	pmu {
 		compatible = "arm,cortex-a55-pmu";
 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>,
@@ -168,6 +174,21 @@
 				status = "disabled";
 			};
 
+			sm_gpio3: gpio@e503b000 {
+				compatible = "snps,dw-apb-gpio";
+				dev_name = "gpio_sm_3";
+				reg = <0xe503b000 0x400>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				portf: gpio-port@0 {
+					gpio-controller;
+					#gpio-cells = <2>;
+					ngpios = <8>;
+					reg = <0>;
+				};
+			};
+
 			xspi0: spi@e5050000 {
 				compatible = "cdns,xspi-nor";
 				#address-cells = <1>;
@@ -193,6 +214,19 @@
 			non-removable;
 			no-sd;
 			no-sdio;
+			status = "disabled";
+		};
+
+		gmac1: ethernet@f7a06000 {
+			compatible = "synaptics,klamath-dwmac-eqos";
+			reg = <0xf7a06000 0x2000>;
+			interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "macirq";
+			phy-mode = "rgmii";
+			clocks = <&gmac1clk>;
+			clock-names = "stmmaceth";
+			resets = <&reset 0x350 9 0 1>;
+			reset-names = "eqos";
 			status = "disabled";
 		};
 

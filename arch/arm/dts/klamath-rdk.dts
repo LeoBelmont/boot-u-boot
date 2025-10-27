@@ -47,6 +47,20 @@
 	};
 };
 
+&pinctrl {
+	mdio_pmux: mdio-pmux {
+		groups = "GPIO31", "GPIO32";
+		function = "rgmii";
+	};
+
+	eth1_pmux: eth1-pmux {
+		groups = "GPIO48", "GPIO49", "GPIO50", "GPIO51", "GPIO52",
+				 "GPIO53", "GPIO54", "GPIO55", "GPIO56", "GPIO57",
+				 "GPIO58", "GPIO59";
+		function = "rgmii2";
+	};
+};
+
 &sysmgr_pinctrl {
 	i2c0_pmux: i2c0-pmux {
 		groups = "SM_GPIO12", "SM_GPIO13";
@@ -59,6 +73,11 @@
 				 "SM_GPIO26", "SM_GPIO27", "SM_GPIO28", "SM_GPIO29",
 				 "SM_GPIO30";
 		function = "xspi";
+	};
+
+	eth1_phy1_rst_pmux: eth1_phy1_rst_pmux {
+		groups = "SM_GPIO35";
+		function = "gpio";
 	};
 };
 
@@ -91,6 +110,24 @@
 	mmc-hs200-1_8v;
 	mmc-hs400-1_8v;
 	fixed-voltage;
+};
+
+&gmac1 {
+	status = "okay";
+	phy-mode = "rgmii-id";
+	phy-handle = <&phy1>;
+	phy = <&phy1>;
+	phy-reset-gpios = <&portf 3 GPIO_ACTIVE_HIGH>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&eth1_pmux>, <&mdio_pmux>, <&eth1_phy1_rst_pmux>;
+
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		phy1: ethernet-phy@0 {
+			reg = <0>;
+		};
+	};
 };
 
 &usb_phy1 {
