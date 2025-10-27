@@ -9,3 +9,10 @@ config ETH_ROM_MAC
 	help
 	  Enable this config to retrieve the Ethernet MAC address from non-volatile memory
 	  or chip-specific ROM during initialization.
+
+config DWC_ETH_QOS_SYNA
+	bool "Synopsys DWC Ethernet QOS device support for Synaptics"
+	depends on DWC_ETH_QOS
+	help
+	  The Synopsys Designware Ethernet QOS IP block with the specific
+	  configuration used in Synaptics soc.

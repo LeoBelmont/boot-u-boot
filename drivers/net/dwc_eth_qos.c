@@ -1632,6 +1632,12 @@ static const struct udevice_id eqos_ids[] = {
 		.data = (ulong)&eqos_jh7110_config
 	},
 #endif
+#if IS_ENABLED(CONFIG_DWC_ETH_QOS_SYNA)
+	{
+		.compatible = "synaptics,klamath-dwmac-eqos",
+		.data = (ulong)&eqos_klamath_config
+	},
+#endif
 	{ }
 };
 

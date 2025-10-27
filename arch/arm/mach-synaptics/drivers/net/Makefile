@@ -23,3 +23,5 @@
 #
 
 obj-$(CONFIG_PHY_SUNPLUS) += sunplus.o
+obj-$(CONFIG_DWC_ETH_QOS_SYNA) += dwc_eth_qos_syna.o
+CFLAGS_dwc_eth_qos_syna.o += -Idrivers/net/
