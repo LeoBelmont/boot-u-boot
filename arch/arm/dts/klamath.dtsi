@@ -188,7 +188,7 @@
 			interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&emmcclk>, <&emmcclk>;
 			clock-names = "core", "bus";
-			resets = <&reset 0x350 5 0 0>;
+			resets = <&reset 0x350 5 0 1>;
 			bus-width = <8>;
 			non-removable;
 			no-sd;
@@ -203,7 +203,7 @@
 			phy-names = "usb2-phy0";
 			clocks = <&osc>;
 			clock-names = "core";
-			resets = <&reset 0x350 4 0 0>, <&reset 0x360 1 1 0>, <&reset 0x360 2 1 0>;
+			resets = <&reset 0x350 4 0 1>, <&reset 0x360 1 1 0>, <&reset 0x360 2 1 0>;
 			interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
 			dr_mode = "otg";
 			g-rx-fifo-size = <512>;
@@ -229,7 +229,7 @@
 			phy-names = "usb2-phy1";
 			clocks = <&osc>;
 			clock-names = "core";
-			resets = <&reset 0x350 8 0 0>, <&reset 0x360 4 1 0>, <&reset 0x360 5 1 0>;
+			resets = <&reset 0x350 8 0 1>, <&reset 0x360 4 1 0>, <&reset 0x360 5 1 0>;
 			interrupts = <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
 			dr_mode = "host";
 			g-rx-fifo-size = <512>;
