@@ -689,6 +689,9 @@ static int eqos_start(struct udevice *dev)
 
 	debug("%s(dev=%p):\n", __func__, dev);
 
+	if (IS_ENABLED(CONFIG_ARCH_SYNAPTICS) && eqos->started)
+		return 0;
+
 	eqos->tx_desc_idx = 0;
 	eqos->rx_desc_idx = 0;
 
@@ -1045,6 +1048,10 @@ static void eqos_stop(struct udevice *dev)
 
 	if (!eqos->started)
 		return;
+
+	if (IS_ENABLED(CONFIG_ARCH_SYNAPTICS) && eqos->keep_alive)
+		return;
+
 	eqos->started = false;
 	eqos->reg_access_ok = false;
 

@@ -120,6 +120,8 @@ static int eqos_probe_resources_syna(struct udevice *dev)
 		goto err_free_reset_eqos;
 	}
 
+	eqos->keep_alive = dev_read_u32_default(dev, "keep-alive", 1);
+
 	debug("%s: OK\n", __func__);
 	return 0;
 

@@ -280,6 +280,9 @@ struct eqos_priv {
 	void *tx_dma_buf;
 	void *rx_dma_buf;
 	bool started;
+#if (IS_ENABLED(CONFIG_ARCH_SYNAPTICS))
+	bool keep_alive;
+#endif
 	bool reg_access_ok;
 	bool clk_ck_enabled;
 	unsigned int tx_fifo_sz, rx_fifo_sz;
