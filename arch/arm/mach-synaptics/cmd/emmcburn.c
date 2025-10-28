@@ -44,6 +44,7 @@
 #define MAX_GPT_PT_NUM			128
 #define GZIP_MAGIC_NUMBER		0x8B1F
 #define GUNZIP_BUFFER_SIZE		(4 << 20)
+#define EMMC_PREBOOT_SIZE		(1 << 20)
 
 struct gpt_ent_part {
 	int part;
@@ -441,7 +442,7 @@ static int get_partition_info(char *pt_name, struct pt_info *pi)
 		}
 		pi->part = num;
 		pi->start_lba = 0;
-		pi->cnt = mmc->capacity_boot / get_blksize();
+		pi->cnt = EMMC_PREBOOT_SIZE / get_blksize();
 		sprintf(pi->partition_name, "boot%lld", pi->part);
 	} else {
 		if (pt_name[0] == 's' && pt_name[1] == 'd') {
