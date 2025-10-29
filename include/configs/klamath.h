@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef CONFIG_ENV_SIZE
 #define CONFIG_ENV_SIZE			(64 << 10) /* 64KiB */
@@ -65,7 +65,6 @@
 #define CONFIG_GICV2
 #define GICD_BASE       0xf7e59000
 #define GICC_BASE       0xf7e5a000
-
 
 #define CFG_EXTRA_ENV_SETTINGS \
 	"usb_pgood_delay=3000\0" \

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,7 +20,7 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef avioGbl_h
 #define avioGbl_h () {}
@@ -29,18 +29,22 @@
 
 #pragma pack(1)
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #ifndef _DOCC_H_BITOPS_
 #define _DOCC_H_BITOPS_ () {}
 
-    #define _bSETMASK_(b)                                      ((b) < 32 ? (1 << ((b) & 31)) : 0)
-    #define _NSETMASK_(msb, lsb)                                (_bSETMASK_((msb) + 1) - _bSETMASK_(lsb))
-    #define _bCLRMASK_(b)                                      (~_bSETMASK_(b))
-    #define _NCLRMASK_(msb, lsb)                                (~_NSETMASK_(msb, lsb))
-    #define _BFGET_(r, msb, lsb)                                 (_NSETMASK_((msb) - (lsb), 0) & ((r) >> (lsb)))
-    #define _BFSET_(r, msb, lsb, v)                               do { (r) &= _NCLRMASK_(msb, lsb); (r) |= _NSETMASK_(msb, lsb) & ((v) << (lsb)); } while (0)
+    #define _bSETMASK_(b)          ((b) < 32 ? (1 << ((b) & 31)) : 0)
+    #define _NSETMASK_(msb, lsb)   (_bSETMASK_((msb) + 1) - _bSETMASK_(lsb))
+    #define _bCLRMASK_(b)          (~_bSETMASK_(b))
+    #define _NCLRMASK_(msb, lsb)   (~_NSETMASK_(msb, lsb))
+    #define _BFGET_(r, msb, lsb)   (_NSETMASK_((msb) - (lsb), 0) & ((r) >> (lsb)))
+    #define _BFSET_(r, msb, lsb, v) \
+	do { \
+		(r) &= _NCLRMASK_(msb, lsb); \
+		(r) |= _NSETMASK_(msb, lsb) & ((v) << (lsb)); \
+	} while (0)
 
 #endif
 
@@ -269,7 +273,7 @@
     #define   MSK32abipll_status_DIVACK                           0x00000002
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_abipll {
+	typedef struct SIE_abipll {
     ///////////////////////////////////////////////////////////
     #define   GET32abipll_ctrlA_RESET(r32)                     _BFGET_(r32, 0, 0)
     #define   SET32abipll_ctrlA_RESET(r32, v)                   _BFSET_(r32, 0, 0, v)
@@ -298,7 +302,7 @@
 	    UNSG32 uctrlA_RANGE                                :  3;\
 	    UNSG32 RSVDx0_b6                                   : 26;\
 	}
-    union { UNSG32 u32abipll_ctrlA;
+	union { UNSG32 u32abipll_ctrlA;
 	    struct w32abipll_ctrlA;
 	  };
     ///////////////////////////////////////////////////////////
@@ -335,7 +339,7 @@
 	    UNSG32 uctrlB_SSDS                                 :  1;\
 	    UNSG32 RSVDx4_b10                                  : 22;\
 	}
-    union { UNSG32 u32abipll_ctrlB;
+	union { UNSG32 u32abipll_ctrlB;
 	    struct w32abipll_ctrlB;
 	  };
     ///////////////////////////////////////////////////////////
@@ -348,7 +352,7 @@
 	    UNSG32 uctrlC_DIVR                                 :  6;\
 	    UNSG32 RSVDx8_b6                                   : 26;\
 	}
-    union { UNSG32 u32abipll_ctrlC;
+	union { UNSG32 u32abipll_ctrlC;
 	    struct w32abipll_ctrlC;
 	  };
     ///////////////////////////////////////////////////////////
@@ -361,7 +365,7 @@
 	    UNSG32 uctrlD_DIVFI                                :  9;\
 	    UNSG32 RSVDxC_b9                                   : 23;\
 	}
-    union { UNSG32 u32abipll_ctrlD;
+	union { UNSG32 u32abipll_ctrlD;
 	    struct w32abipll_ctrlD;
 	  };
     ///////////////////////////////////////////////////////////
@@ -372,7 +376,7 @@
 	    UNSG32 uctrlE_DIVFF                                : 24;\
 	    UNSG32 RSVDx10_b24                                 :  8;\
 	}
-    union { UNSG32 u32abipll_ctrlE;
+	union { UNSG32 u32abipll_ctrlE;
 	    struct w32abipll_ctrlE;
 	  };
     ///////////////////////////////////////////////////////////
@@ -385,7 +389,7 @@
 	    UNSG32 uctrlF_DIVQ                                 :  5;\
 	    UNSG32 RSVDx14_b5                                  : 27;\
 	}
-    union { UNSG32 u32abipll_ctrlF;
+	union { UNSG32 u32abipll_ctrlF;
 	    struct w32abipll_ctrlF;
 	  };
     ///////////////////////////////////////////////////////////
@@ -398,7 +402,7 @@
 	    UNSG32 uctrlG_DIVQF                                :  3;\
 	    UNSG32 RSVDx18_b3                                  : 29;\
 	}
-    union { UNSG32 u32abipll_ctrlG;
+	union { UNSG32 u32abipll_ctrlG;
 	    struct w32abipll_ctrlG;
 	  };
     ///////////////////////////////////////////////////////////
@@ -417,89 +421,89 @@
 	    UNSG32 ustatus_DIVACK                              :  1;\
 	    UNSG32 RSVDx1C_b2                                  : 30;\
 	}
-    union { UNSG32 u32abipll_status;
+	union { UNSG32 u32abipll_status;
 	    struct w32abipll_status;
 	  };
     ///////////////////////////////////////////////////////////
-    } SIE_abipll;
+	} SIE_abipll;
 
-    typedef union  T32abipll_ctrlA {
+	typedef union  T32abipll_ctrlA {
 		UNSG32 u32;
 	    struct w32abipll_ctrlA;
 		 } T32abipll_ctrlA;
-    typedef union  T32abipll_ctrlB {
+	typedef union  T32abipll_ctrlB {
 		UNSG32 u32;
 	    struct w32abipll_ctrlB;
 		 } T32abipll_ctrlB;
-    typedef union  T32abipll_ctrlC {
+	typedef union  T32abipll_ctrlC {
 		UNSG32 u32;
 	    struct w32abipll_ctrlC;
 		 } T32abipll_ctrlC;
-    typedef union  T32abipll_ctrlD {
+	typedef union  T32abipll_ctrlD {
 		UNSG32 u32;
 	    struct w32abipll_ctrlD;
 		 } T32abipll_ctrlD;
-    typedef union  T32abipll_ctrlE {
+	typedef union  T32abipll_ctrlE {
 		UNSG32 u32;
 	    struct w32abipll_ctrlE;
 		 } T32abipll_ctrlE;
-    typedef union  T32abipll_ctrlF {
+	typedef union  T32abipll_ctrlF {
 		UNSG32 u32;
 	    struct w32abipll_ctrlF;
 		 } T32abipll_ctrlF;
-    typedef union  T32abipll_ctrlG {
+	typedef union  T32abipll_ctrlG {
 		UNSG32 u32;
 	    struct w32abipll_ctrlG;
 		 } T32abipll_ctrlG;
-    typedef union  T32abipll_status {
+	typedef union  T32abipll_status {
 		UNSG32 u32;
 	    struct w32abipll_status;
 		 } T32abipll_status;
     ///////////////////////////////////////////////////////////
 
-    typedef union  Tabipll_ctrlA {
+	typedef union  Tabipll_ctrlA {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32abipll_ctrlA;
 		   };
 		 } Tabipll_ctrlA;
-    typedef union  Tabipll_ctrlB {
+	typedef union  Tabipll_ctrlB {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32abipll_ctrlB;
 		   };
 		 } Tabipll_ctrlB;
-    typedef union  Tabipll_ctrlC {
+	typedef union  Tabipll_ctrlC {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32abipll_ctrlC;
 		   };
 		 } Tabipll_ctrlC;
-    typedef union  Tabipll_ctrlD {
+	typedef union  Tabipll_ctrlD {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32abipll_ctrlD;
 		   };
 		 } Tabipll_ctrlD;
-    typedef union  Tabipll_ctrlE {
+	typedef union  Tabipll_ctrlE {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32abipll_ctrlE;
 		   };
 		 } Tabipll_ctrlE;
-    typedef union  Tabipll_ctrlF {
+	typedef union  Tabipll_ctrlF {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32abipll_ctrlF;
 		   };
 		 } Tabipll_ctrlF;
-    typedef union  Tabipll_ctrlG {
+	typedef union  Tabipll_ctrlG {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32abipll_ctrlG;
 		   };
 		 } Tabipll_ctrlG;
-    typedef union  Tabipll_status {
+	typedef union  Tabipll_status {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32abipll_status;
@@ -507,10 +511,11 @@
 		 } Tabipll_status;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 abipll_drvrd(SIE_abipll *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 abipll_drvwr(SIE_abipll *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void abipll_reset(SIE_abipll *p);
-     SIGN32 abipll_cmp(SIE_abipll *p, SIE_abipll *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 abipll_drvrd(SIE_abipll *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 abipll_drvwr(SIE_abipll *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
+	void abipll_reset(SIE_abipll *p);
+	SIGN32 abipll_cmp(SIE_abipll *p, SIE_abipll *pie, char *pfx, void *hLOG, SIGN32 mem,
+			  SIGN32 tst);
     #define abipll_check(p, pie, pfx, hLOG) abipll_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define abipll_print(p,    pfx, hLOG) abipll_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -2468,7 +2473,7 @@
     #define   MSK32DPHYTX_DPHY_PLLRB1_lock_pll                    0x00000400
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_DPHYTX {
+	typedef struct SIE_DPHYTX {
     ///////////////////////////////////////////////////////////
     #define   GET32DPHYTX_DPHY_CTL0_BiuCtrlPhyEn(r32)          _BFGET_(r32, 0, 0)
     #define   SET32DPHYTX_DPHY_CTL0_BiuCtrlPhyEn(r32, v)        _BFSET_(r32, 0, 0, v)
@@ -2479,7 +2484,7 @@
 	    UNSG32 uDPHY_CTL0_BiuCtrlPhyEn                     :  1;\
 	    UNSG32 RSVDx0_b1                                   : 31;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL0;
+	union { UNSG32 u32DPHYTX_DPHY_CTL0;
 	    struct w32DPHYTX_DPHY_CTL0;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2606,7 +2611,7 @@
 	    UNSG32 uDPHY_CTL1_biston                           :  1;\
 	    UNSG32 RSVDx4_b31                                  :  1;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL1;
+	union { UNSG32 u32DPHYTX_DPHY_CTL1;
 	    struct w32DPHYTX_DPHY_CTL1;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2631,7 +2636,7 @@
 	    UNSG32 uDPHY_CTL2_turnrequest_0                    :  1;\
 	    UNSG32 RSVDx8_b3                                   : 29;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL2;
+	union { UNSG32 u32DPHYTX_DPHY_CTL2;
 	    struct w32DPHYTX_DPHY_CTL2;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2680,7 +2685,7 @@
 	    UNSG32 uDPHY_CTL3_txvalidesc_0                     :  1;\
 	    UNSG32 RSVDxC_b17                                  : 15;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL3;
+	union { UNSG32 u32DPHYTX_DPHY_CTL3;
 	    struct w32DPHYTX_DPHY_CTL3;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2729,7 +2734,7 @@
 	    UNSG32 uDPHY_CTL4_txvalidesc_1                     :  1;\
 	    UNSG32 RSVDx10_b17                                 : 15;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL4;
+	union { UNSG32 u32DPHYTX_DPHY_CTL4;
 	    struct w32DPHYTX_DPHY_CTL4;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2778,7 +2783,7 @@
 	    UNSG32 uDPHY_CTL5_txvalidesc_2                     :  1;\
 	    UNSG32 RSVDx14_b17                                 : 15;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL5;
+	union { UNSG32 u32DPHYTX_DPHY_CTL5;
 	    struct w32DPHYTX_DPHY_CTL5;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2827,7 +2832,7 @@
 	    UNSG32 uDPHY_CTL6_txvalidesc_3                     :  1;\
 	    UNSG32 RSVDx18_b17                                 : 15;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL6;
+	union { UNSG32 u32DPHYTX_DPHY_CTL6;
 	    struct w32DPHYTX_DPHY_CTL6;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2870,7 +2875,7 @@
 	    UNSG32 uDPHY_CTL7_txrequestdatahs_3                :  1;\
 	    UNSG32 RSVDx1C_b6                                  : 26;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL7;
+	union { UNSG32 u32DPHYTX_DPHY_CTL7;
 	    struct w32DPHYTX_DPHY_CTL7;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2900,7 +2905,7 @@
 	    UNSG32 uDPHY_CTL8_txdatahs_2                       :  8;\
 	    UNSG32 uDPHY_CTL8_txdatahs_3                       :  8;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_CTL8;
+	union { UNSG32 u32DPHYTX_DPHY_CTL8;
 	    struct w32DPHYTX_DPHY_CTL8;
 	  };
     ///////////////////////////////////////////////////////////
@@ -2979,7 +2984,7 @@
 	    UNSG32 uDPHY_RB0_ulpsactivenot_3                   :  1;\
 	    UNSG32 RSVDx24_b22                                 : 10;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_RB0;
+	union { UNSG32 u32DPHYTX_DPHY_RB0;
 	    struct w32DPHYTX_DPHY_RB0;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3010,7 +3015,7 @@
 	    UNSG32 uDPHY_RB1_txreadyhs_3                       :  1;\
 	    UNSG32 RSVDx28_b4                                  : 28;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_RB1;
+	union { UNSG32 u32DPHYTX_DPHY_RB1;
 	    struct w32DPHYTX_DPHY_RB1;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3059,7 +3064,7 @@
 	    UNSG32 uDPHY_RB2_errcontentionlp1_0                :  1;\
 	    UNSG32 RSVDx2C_b7                                  : 25;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_RB2;
+	union { UNSG32 u32DPHYTX_DPHY_RB2;
 	    struct w32DPHYTX_DPHY_RB2;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3114,7 +3119,7 @@
 	    UNSG32 uDPHY_RB3_errsyncesc_0                      :  1;\
 	    UNSG32 RSVDx30_b18                                 : 14;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_RB3;
+	union { UNSG32 u32DPHYTX_DPHY_RB3;
 	    struct w32DPHYTX_DPHY_RB3;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3127,7 +3132,7 @@
 	    UNSG32 uDPHY_PLL0_updatepll                        :  1;\
 	    UNSG32 RSVDx34_b1                                  : 31;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_PLL0;
+	union { UNSG32 u32DPHYTX_DPHY_PLL0;
 	    struct w32DPHYTX_DPHY_PLL0;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3161,7 +3166,7 @@
 	    UNSG32 uDPHY_PLL1_prop_cntrl                       :  6;\
 	    UNSG32 uDPHY_PLL1_int_cntrl                        :  6;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_PLL1;
+	union { UNSG32 u32DPHYTX_DPHY_PLL1;
 	    struct w32DPHYTX_DPHY_PLL1;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3210,7 +3215,7 @@
 	    UNSG32 uDPHY_PLL2_gp_clk_en                        :  1;\
 	    UNSG32 RSVDx3C_b15                                 : 17;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_PLL2;
+	union { UNSG32 u32DPHYTX_DPHY_PLL2;
 	    struct w32DPHYTX_DPHY_PLL2;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3244,7 +3249,7 @@
 	    UNSG32 uDPHY_PLLRB0_prop_cntrl_obs                 :  6;\
 	    UNSG32 uDPHY_PLLRB0_int_cntrl_obs                  :  6;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_PLLRB0;
+	union { UNSG32 u32DPHYTX_DPHY_PLLRB0;
 	    struct w32DPHYTX_DPHY_PLLRB0;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3275,189 +3280,189 @@
 	    UNSG32 uDPHY_PLLRB1_lock_pll                       :  1;\
 	    UNSG32 RSVDx44_b11                                 : 21;\
 	}
-    union { UNSG32 u32DPHYTX_DPHY_PLLRB1;
+	union { UNSG32 u32DPHYTX_DPHY_PLLRB1;
 	    struct w32DPHYTX_DPHY_PLLRB1;
 	  };
     ///////////////////////////////////////////////////////////
-    } SIE_DPHYTX;
+	} SIE_DPHYTX;
 
-    typedef union  T32DPHYTX_DPHY_CTL0 {
+	typedef union  T32DPHYTX_DPHY_CTL0 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL0;
 		 } T32DPHYTX_DPHY_CTL0;
-    typedef union  T32DPHYTX_DPHY_CTL1 {
+	typedef union  T32DPHYTX_DPHY_CTL1 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL1;
 		 } T32DPHYTX_DPHY_CTL1;
-    typedef union  T32DPHYTX_DPHY_CTL2 {
+	typedef union  T32DPHYTX_DPHY_CTL2 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL2;
 		 } T32DPHYTX_DPHY_CTL2;
-    typedef union  T32DPHYTX_DPHY_CTL3 {
+	typedef union  T32DPHYTX_DPHY_CTL3 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL3;
 		 } T32DPHYTX_DPHY_CTL3;
-    typedef union  T32DPHYTX_DPHY_CTL4 {
+	typedef union  T32DPHYTX_DPHY_CTL4 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL4;
 		 } T32DPHYTX_DPHY_CTL4;
-    typedef union  T32DPHYTX_DPHY_CTL5 {
+	typedef union  T32DPHYTX_DPHY_CTL5 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL5;
 		 } T32DPHYTX_DPHY_CTL5;
-    typedef union  T32DPHYTX_DPHY_CTL6 {
+	typedef union  T32DPHYTX_DPHY_CTL6 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL6;
 		 } T32DPHYTX_DPHY_CTL6;
-    typedef union  T32DPHYTX_DPHY_CTL7 {
+	typedef union  T32DPHYTX_DPHY_CTL7 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL7;
 		 } T32DPHYTX_DPHY_CTL7;
-    typedef union  T32DPHYTX_DPHY_CTL8 {
+	typedef union  T32DPHYTX_DPHY_CTL8 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_CTL8;
 		 } T32DPHYTX_DPHY_CTL8;
-    typedef union  T32DPHYTX_DPHY_RB0 {
+	typedef union  T32DPHYTX_DPHY_RB0 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_RB0;
 		 } T32DPHYTX_DPHY_RB0;
-    typedef union  T32DPHYTX_DPHY_RB1 {
+	typedef union  T32DPHYTX_DPHY_RB1 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_RB1;
 		 } T32DPHYTX_DPHY_RB1;
-    typedef union  T32DPHYTX_DPHY_RB2 {
+	typedef union  T32DPHYTX_DPHY_RB2 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_RB2;
 		 } T32DPHYTX_DPHY_RB2;
-    typedef union  T32DPHYTX_DPHY_RB3 {
+	typedef union  T32DPHYTX_DPHY_RB3 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_RB3;
 		 } T32DPHYTX_DPHY_RB3;
-    typedef union  T32DPHYTX_DPHY_PLL0 {
+	typedef union  T32DPHYTX_DPHY_PLL0 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_PLL0;
 		 } T32DPHYTX_DPHY_PLL0;
-    typedef union  T32DPHYTX_DPHY_PLL1 {
+	typedef union  T32DPHYTX_DPHY_PLL1 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_PLL1;
 		 } T32DPHYTX_DPHY_PLL1;
-    typedef union  T32DPHYTX_DPHY_PLL2 {
+	typedef union  T32DPHYTX_DPHY_PLL2 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_PLL2;
 		 } T32DPHYTX_DPHY_PLL2;
-    typedef union  T32DPHYTX_DPHY_PLLRB0 {
+	typedef union  T32DPHYTX_DPHY_PLLRB0 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_PLLRB0;
 		 } T32DPHYTX_DPHY_PLLRB0;
-    typedef union  T32DPHYTX_DPHY_PLLRB1 {
+	typedef union  T32DPHYTX_DPHY_PLLRB1 {
 		UNSG32 u32;
 	    struct w32DPHYTX_DPHY_PLLRB1;
 		 } T32DPHYTX_DPHY_PLLRB1;
     ///////////////////////////////////////////////////////////
 
-    typedef union  TDPHYTX_DPHY_CTL0 {
+	typedef union  TDPHYTX_DPHY_CTL0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL0;
 		   };
 		 } TDPHYTX_DPHY_CTL0;
-    typedef union  TDPHYTX_DPHY_CTL1 {
+	typedef union  TDPHYTX_DPHY_CTL1 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL1;
 		   };
 		 } TDPHYTX_DPHY_CTL1;
-    typedef union  TDPHYTX_DPHY_CTL2 {
+	typedef union  TDPHYTX_DPHY_CTL2 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL2;
 		   };
 		 } TDPHYTX_DPHY_CTL2;
-    typedef union  TDPHYTX_DPHY_CTL3 {
+	typedef union  TDPHYTX_DPHY_CTL3 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL3;
 		   };
 		 } TDPHYTX_DPHY_CTL3;
-    typedef union  TDPHYTX_DPHY_CTL4 {
+	typedef union  TDPHYTX_DPHY_CTL4 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL4;
 		   };
 		 } TDPHYTX_DPHY_CTL4;
-    typedef union  TDPHYTX_DPHY_CTL5 {
+	typedef union  TDPHYTX_DPHY_CTL5 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL5;
 		   };
 		 } TDPHYTX_DPHY_CTL5;
-    typedef union  TDPHYTX_DPHY_CTL6 {
+	typedef union  TDPHYTX_DPHY_CTL6 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL6;
 		   };
 		 } TDPHYTX_DPHY_CTL6;
-    typedef union  TDPHYTX_DPHY_CTL7 {
+	typedef union  TDPHYTX_DPHY_CTL7 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL7;
 		   };
 		 } TDPHYTX_DPHY_CTL7;
-    typedef union  TDPHYTX_DPHY_CTL8 {
+	typedef union  TDPHYTX_DPHY_CTL8 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_CTL8;
 		   };
 		 } TDPHYTX_DPHY_CTL8;
-    typedef union  TDPHYTX_DPHY_RB0 {
+	typedef union  TDPHYTX_DPHY_RB0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_RB0;
 		   };
 		 } TDPHYTX_DPHY_RB0;
-    typedef union  TDPHYTX_DPHY_RB1 {
+	typedef union  TDPHYTX_DPHY_RB1 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_RB1;
 		   };
 		 } TDPHYTX_DPHY_RB1;
-    typedef union  TDPHYTX_DPHY_RB2 {
+	typedef union  TDPHYTX_DPHY_RB2 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_RB2;
 		   };
 		 } TDPHYTX_DPHY_RB2;
-    typedef union  TDPHYTX_DPHY_RB3 {
+	typedef union  TDPHYTX_DPHY_RB3 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_RB3;
 		   };
 		 } TDPHYTX_DPHY_RB3;
-    typedef union  TDPHYTX_DPHY_PLL0 {
+	typedef union  TDPHYTX_DPHY_PLL0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_PLL0;
 		   };
 		 } TDPHYTX_DPHY_PLL0;
-    typedef union  TDPHYTX_DPHY_PLL1 {
+	typedef union  TDPHYTX_DPHY_PLL1 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_PLL1;
 		   };
 		 } TDPHYTX_DPHY_PLL1;
-    typedef union  TDPHYTX_DPHY_PLL2 {
+	typedef union  TDPHYTX_DPHY_PLL2 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_PLL2;
 		   };
 		 } TDPHYTX_DPHY_PLL2;
-    typedef union  TDPHYTX_DPHY_PLLRB0 {
+	typedef union  TDPHYTX_DPHY_PLLRB0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_PLLRB0;
 		   };
 		 } TDPHYTX_DPHY_PLLRB0;
-    typedef union  TDPHYTX_DPHY_PLLRB1 {
+	typedef union  TDPHYTX_DPHY_PLLRB1 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32DPHYTX_DPHY_PLLRB1;
@@ -3465,10 +3470,11 @@
 		 } TDPHYTX_DPHY_PLLRB1;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 DPHYTX_drvrd(SIE_DPHYTX *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 DPHYTX_drvwr(SIE_DPHYTX *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void DPHYTX_reset(SIE_DPHYTX *p);
-     SIGN32 DPHYTX_cmp(SIE_DPHYTX *p, SIE_DPHYTX *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 DPHYTX_drvrd(SIE_DPHYTX *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 DPHYTX_drvwr(SIE_DPHYTX *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
+	void DPHYTX_reset(SIE_DPHYTX *p);
+	SIGN32 DPHYTX_cmp(SIE_DPHYTX *p, SIE_DPHYTX *pie, char *pfx, void *hLOG, SIGN32 mem,
+			  SIGN32 tst);
     #define DPHYTX_check(p, pie, pfx, hLOG) DPHYTX_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define DPHYTX_print(p,    pfx, hLOG) DPHYTX_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -3541,7 +3547,7 @@
     #define        SRAMPWR_ctrl_SLP_SLEEP                                   0x1
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_SRAMPWR {
+	typedef struct SIE_SRAMPWR {
     ///////////////////////////////////////////////////////////
     #define   GET32SRAMPWR_ctrl_SD(r32)                        _BFGET_(r32, 0, 0)
     #define   SET32SRAMPWR_ctrl_SD(r32, v)                      _BFSET_(r32, 0, 0, v)
@@ -3564,19 +3570,19 @@
 	    UNSG32 uctrl_SLP                                   :  1;\
 	    UNSG32 RSVDx0_b3                                   : 29;\
 	}
-    union { UNSG32 u32SRAMPWR_ctrl;
+	union { UNSG32 u32SRAMPWR_ctrl;
 	    struct w32SRAMPWR_ctrl;
 	  };
     ///////////////////////////////////////////////////////////
-    } SIE_SRAMPWR;
+	} SIE_SRAMPWR;
 
-    typedef union  T32SRAMPWR_ctrl {
+	typedef union  T32SRAMPWR_ctrl {
 		UNSG32 u32;
 	    struct w32SRAMPWR_ctrl;
 		 } T32SRAMPWR_ctrl;
     ///////////////////////////////////////////////////////////
 
-    typedef union  TSRAMPWR_ctrl {
+	typedef union  TSRAMPWR_ctrl {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32SRAMPWR_ctrl;
@@ -3584,10 +3590,11 @@
 		 } TSRAMPWR_ctrl;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 SRAMPWR_drvrd(SIE_SRAMPWR *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 SRAMPWR_drvwr(SIE_SRAMPWR *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void SRAMPWR_reset(SIE_SRAMPWR *p);
-     SIGN32 SRAMPWR_cmp(SIE_SRAMPWR *p, SIE_SRAMPWR *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 SRAMPWR_drvrd(SIE_SRAMPWR *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 SRAMPWR_drvwr(SIE_SRAMPWR *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
+	void SRAMPWR_reset(SIE_SRAMPWR *p);
+	SIGN32 SRAMPWR_cmp(SIE_SRAMPWR *p, SIE_SRAMPWR *pie, char *pfx, void *hLOG, SIGN32 mem,
+			   SIGN32 tst);
     #define SRAMPWR_check(p, pie, pfx, hLOG) SRAMPWR_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define SRAMPWR_print(p,    pfx, hLOG) SRAMPWR_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -3827,7 +3834,7 @@
     #define   MSK32SRAMRWTC_ctrl2_ROM                             0x0000FF00
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_SRAMRWTC {
+	typedef struct SIE_SRAMRWTC {
     ///////////////////////////////////////////////////////////
     #define   GET32SRAMRWTC_ctrl0_RF1P(r32)                    _BFGET_(r32, 3, 0)
     #define   SET32SRAMRWTC_ctrl0_RF1P(r32, v)                  _BFSET_(r32, 3, 0, v)
@@ -3861,7 +3868,7 @@
 	    UNSG32 uctrl0_UHDRF2P                              :  8;\
 	    UNSG32 uctrl0_UHDRF2P_ULVT                         :  8;\
 	}
-    union { UNSG32 u32SRAMRWTC_ctrl0;
+	union { UNSG32 u32SRAMRWTC_ctrl0;
 	    struct w32SRAMRWTC_ctrl0;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3915,7 +3922,7 @@
 	    UNSG32 uctrl1_SPSRAM_WT0                           :  4;\
 	    UNSG32 uctrl1_SPSRAM_WT1                           :  4;\
 	}
-    union { UNSG32 u32SRAMRWTC_ctrl1;
+	union { UNSG32 u32SRAMRWTC_ctrl1;
 	    struct w32SRAMRWTC_ctrl1;
 	  };
     ///////////////////////////////////////////////////////////
@@ -3940,39 +3947,39 @@
 	    UNSG32 uctrl2_ROM                                  :  8;\
 	    UNSG32 RSVDx8_b16                                  : 16;\
 	}
-    union { UNSG32 u32SRAMRWTC_ctrl2;
+	union { UNSG32 u32SRAMRWTC_ctrl2;
 	    struct w32SRAMRWTC_ctrl2;
 	  };
     ///////////////////////////////////////////////////////////
-    } SIE_SRAMRWTC;
+	} SIE_SRAMRWTC;
 
-    typedef union  T32SRAMRWTC_ctrl0 {
+	typedef union  T32SRAMRWTC_ctrl0 {
 		UNSG32 u32;
 	    struct w32SRAMRWTC_ctrl0;
 		 } T32SRAMRWTC_ctrl0;
-    typedef union  T32SRAMRWTC_ctrl1 {
+	typedef union  T32SRAMRWTC_ctrl1 {
 		UNSG32 u32;
 	    struct w32SRAMRWTC_ctrl1;
 		 } T32SRAMRWTC_ctrl1;
-    typedef union  T32SRAMRWTC_ctrl2 {
+	typedef union  T32SRAMRWTC_ctrl2 {
 		UNSG32 u32;
 	    struct w32SRAMRWTC_ctrl2;
 		 } T32SRAMRWTC_ctrl2;
     ///////////////////////////////////////////////////////////
 
-    typedef union  TSRAMRWTC_ctrl0 {
+	typedef union  TSRAMRWTC_ctrl0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32SRAMRWTC_ctrl0;
 		   };
 		 } TSRAMRWTC_ctrl0;
-    typedef union  TSRAMRWTC_ctrl1 {
+	typedef union  TSRAMRWTC_ctrl1 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32SRAMRWTC_ctrl1;
 		   };
 		 } TSRAMRWTC_ctrl1;
-    typedef union  TSRAMRWTC_ctrl2 {
+	typedef union  TSRAMRWTC_ctrl2 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32SRAMRWTC_ctrl2;
@@ -3980,10 +3987,11 @@
 		 } TSRAMRWTC_ctrl2;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 SRAMRWTC_drvrd(SIE_SRAMRWTC *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 SRAMRWTC_drvwr(SIE_SRAMRWTC *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void SRAMRWTC_reset(SIE_SRAMRWTC *p);
-     SIGN32 SRAMRWTC_cmp(SIE_SRAMRWTC *p, SIE_SRAMRWTC *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 SRAMRWTC_drvrd(SIE_SRAMRWTC *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 SRAMRWTC_drvwr(SIE_SRAMRWTC *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
+	void SRAMRWTC_reset(SIE_SRAMRWTC *p);
+	SIGN32 SRAMRWTC_cmp(SIE_SRAMRWTC *p, SIE_SRAMRWTC *pie, char *pfx, void *hLOG,
+			    SIGN32 mem, SIGN32 tst);
     #define SRAMRWTC_check(p, pie, pfx, hLOG) SRAMRWTC_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define SRAMRWTC_print(p,    pfx, hLOG) SRAMRWTC_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4018,7 +4026,7 @@
     #define   MSK32AVIO_debug_ctrl_Ctrl0_debug_ctrl0              0x0000001F
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_AVIO_debug_ctrl {
+	typedef struct SIE_AVIO_debug_ctrl {
     ///////////////////////////////////////////////////////////
     #define   GET32AVIO_debug_ctrl_Ctrl0_debug_ctrl0(r32)      _BFGET_(r32, 4, 0)
     #define   SET32AVIO_debug_ctrl_Ctrl0_debug_ctrl0(r32, v)    _BFSET_(r32, 4, 0, v)
@@ -4029,19 +4037,19 @@
 	    UNSG32 uCtrl0_debug_ctrl0                          :  5;\
 	    UNSG32 RSVDx0_b5                                   : 27;\
 	}
-    union { UNSG32 u32AVIO_debug_ctrl_Ctrl0;
+	union { UNSG32 u32AVIO_debug_ctrl_Ctrl0;
 	    struct w32AVIO_debug_ctrl_Ctrl0;
 	  };
     ///////////////////////////////////////////////////////////
-    } SIE_AVIO_debug_ctrl;
+	} SIE_AVIO_debug_ctrl;
 
-    typedef union  T32AVIO_debug_ctrl_Ctrl0 {
+	typedef union  T32AVIO_debug_ctrl_Ctrl0 {
 		UNSG32 u32;
 	    struct w32AVIO_debug_ctrl_Ctrl0;
 		 } T32AVIO_debug_ctrl_Ctrl0;
     ///////////////////////////////////////////////////////////
 
-    typedef union  TAVIO_debug_ctrl_Ctrl0 {
+	typedef union  TAVIO_debug_ctrl_Ctrl0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32AVIO_debug_ctrl_Ctrl0;
@@ -4049,12 +4057,16 @@
 		 } TAVIO_debug_ctrl_Ctrl0;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 AVIO_debug_ctrl_drvrd(SIE_AVIO_debug_ctrl *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 AVIO_debug_ctrl_drvwr(SIE_AVIO_debug_ctrl *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void AVIO_debug_ctrl_reset(SIE_AVIO_debug_ctrl *p);
-     SIGN32 AVIO_debug_ctrl_cmp(SIE_AVIO_debug_ctrl *p, SIE_AVIO_debug_ctrl *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
-    #define AVIO_debug_ctrl_check(p, pie, pfx, hLOG) AVIO_debug_ctrl_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
-    #define AVIO_debug_ctrl_print(p,    pfx, hLOG) AVIO_debug_ctrl_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
+	SIGN32 AVIO_debug_ctrl_drvrd(SIE_AVIO_debug_ctrl *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIO_debug_ctrl_drvwr(SIE_AVIO_debug_ctrl *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+				     UNSG32 *pcmd);
+	void AVIO_debug_ctrl_reset(SIE_AVIO_debug_ctrl *p);
+	SIGN32 AVIO_debug_ctrl_cmp(SIE_AVIO_debug_ctrl *p, SIE_AVIO_debug_ctrl *pie, char *pfx,
+				   void *hLOG, SIGN32 mem, SIGN32 tst);
+	#define AVIO_debug_ctrl_check(p, pie, pfx, hLOG) \
+		AVIO_debug_ctrl_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
+	#define AVIO_debug_ctrl_print(p,    pfx, hLOG) \
+		AVIO_debug_ctrl_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
 #endif
 //////
@@ -4084,20 +4096,22 @@
     #define   MSK32Dummy0Reg_0x0                                  0xFFFFFFFF
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_Dummy0Reg {
+	typedef struct SIE_Dummy0Reg {
     ///////////////////////////////////////////////////////////
     #define   GET32Dummy0Reg_0x0(r32)                          _BFGET_(r32, 31, 0)
     #define   SET32Dummy0Reg_0x0(r32, v)                        _BFSET_(r32, 31, 0, v)
 
 	    UNSG32 u_0x0                                       : 32;
     ///////////////////////////////////////////////////////////
-    } SIE_Dummy0Reg;
+	} SIE_Dummy0Reg;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 Dummy0Reg_drvrd(SIE_Dummy0Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 Dummy0Reg_drvwr(SIE_Dummy0Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void Dummy0Reg_reset(SIE_Dummy0Reg *p);
-     SIGN32 Dummy0Reg_cmp(SIE_Dummy0Reg *p, SIE_Dummy0Reg *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 Dummy0Reg_drvrd(SIE_Dummy0Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 Dummy0Reg_drvwr(SIE_Dummy0Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+			       UNSG32 *pcmd);
+	void Dummy0Reg_reset(SIE_Dummy0Reg *p);
+	SIGN32 Dummy0Reg_cmp(SIE_Dummy0Reg *p, SIE_Dummy0Reg *pie, char *pfx, void *hLOG,
+			     SIGN32 mem, SIGN32 tst);
     #define Dummy0Reg_check(p, pie, pfx, hLOG) Dummy0Reg_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define Dummy0Reg_print(p,    pfx, hLOG) Dummy0Reg_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4129,20 +4143,22 @@
     #define   MSK32Dummy1Reg_0x0                                  0xFFFFFFFF
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_Dummy1Reg {
+	typedef struct SIE_Dummy1Reg {
     ///////////////////////////////////////////////////////////
     #define   GET32Dummy1Reg_0x0(r32)                          _BFGET_(r32, 31, 0)
     #define   SET32Dummy1Reg_0x0(r32, v)                        _BFSET_(r32, 31, 0, v)
 
 	    UNSG32 u_0x0                                       : 32;
     ///////////////////////////////////////////////////////////
-    } SIE_Dummy1Reg;
+	} SIE_Dummy1Reg;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 Dummy1Reg_drvrd(SIE_Dummy1Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 Dummy1Reg_drvwr(SIE_Dummy1Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void Dummy1Reg_reset(SIE_Dummy1Reg *p);
-     SIGN32 Dummy1Reg_cmp(SIE_Dummy1Reg *p, SIE_Dummy1Reg *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 Dummy1Reg_drvrd(SIE_Dummy1Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 Dummy1Reg_drvwr(SIE_Dummy1Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+			       UNSG32 *pcmd);
+	void Dummy1Reg_reset(SIE_Dummy1Reg *p);
+	SIGN32 Dummy1Reg_cmp(SIE_Dummy1Reg *p, SIE_Dummy1Reg *pie, char *pfx, void *hLOG,
+			     SIGN32 mem, SIGN32 tst);
     #define Dummy1Reg_check(p, pie, pfx, hLOG) Dummy1Reg_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define Dummy1Reg_print(p,    pfx, hLOG) Dummy1Reg_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4174,20 +4190,22 @@
     #define   MSK32Dummy2Reg_0x0                                  0xFFFFFFFF
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_Dummy2Reg {
+	typedef struct SIE_Dummy2Reg {
     ///////////////////////////////////////////////////////////
     #define   GET32Dummy2Reg_0x0(r32)                          _BFGET_(r32, 31, 0)
     #define   SET32Dummy2Reg_0x0(r32, v)                        _BFSET_(r32, 31, 0, v)
 
 	    UNSG32 u_0x0                                       : 32;
     ///////////////////////////////////////////////////////////
-    } SIE_Dummy2Reg;
+	} SIE_Dummy2Reg;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 Dummy2Reg_drvrd(SIE_Dummy2Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 Dummy2Reg_drvwr(SIE_Dummy2Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void Dummy2Reg_reset(SIE_Dummy2Reg *p);
-     SIGN32 Dummy2Reg_cmp(SIE_Dummy2Reg *p, SIE_Dummy2Reg *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 Dummy2Reg_drvrd(SIE_Dummy2Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 Dummy2Reg_drvwr(SIE_Dummy2Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+			       UNSG32 *pcmd);
+	void Dummy2Reg_reset(SIE_Dummy2Reg *p);
+	SIGN32 Dummy2Reg_cmp(SIE_Dummy2Reg *p, SIE_Dummy2Reg *pie, char *pfx, void *hLOG,
+			     SIGN32 mem, SIGN32 tst);
     #define Dummy2Reg_check(p, pie, pfx, hLOG) Dummy2Reg_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define Dummy2Reg_print(p,    pfx, hLOG) Dummy2Reg_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4219,20 +4237,22 @@
     #define   MSK32Dummy3Reg_0x0                                  0xFFFFFFFF
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_Dummy3Reg {
+	typedef struct SIE_Dummy3Reg {
     ///////////////////////////////////////////////////////////
     #define   GET32Dummy3Reg_0x0(r32)                          _BFGET_(r32, 31, 0)
     #define   SET32Dummy3Reg_0x0(r32, v)                        _BFSET_(r32, 31, 0, v)
 
 	    UNSG32 u_0x0                                       : 32;
     ///////////////////////////////////////////////////////////
-    } SIE_Dummy3Reg;
+	} SIE_Dummy3Reg;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 Dummy3Reg_drvrd(SIE_Dummy3Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 Dummy3Reg_drvwr(SIE_Dummy3Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void Dummy3Reg_reset(SIE_Dummy3Reg *p);
-     SIGN32 Dummy3Reg_cmp(SIE_Dummy3Reg *p, SIE_Dummy3Reg *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 Dummy3Reg_drvrd(SIE_Dummy3Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 Dummy3Reg_drvwr(SIE_Dummy3Reg *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+			       UNSG32 *pcmd);
+	void Dummy3Reg_reset(SIE_Dummy3Reg *p);
+	SIGN32 Dummy3Reg_cmp(SIE_Dummy3Reg *p, SIE_Dummy3Reg *pie, char *pfx, void *hLOG,
+			     SIGN32 mem, SIGN32 tst);
     #define Dummy3Reg_check(p, pie, pfx, hLOG) Dummy3Reg_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define Dummy3Reg_print(p,    pfx, hLOG) Dummy3Reg_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4260,17 +4280,19 @@
     #define     RA_AVIOGBLREG0_Dummy0                          0x0000
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_AVIOGBLREG0 {
+	typedef struct SIE_AVIOGBLREG0 {
     ///////////////////////////////////////////////////////////
 	      SIE_Dummy0Reg                                    ie_Dummy0[6144];
     ///////////////////////////////////////////////////////////
-    } SIE_AVIOGBLREG0;
+	} SIE_AVIOGBLREG0;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 AVIOGBLREG0_drvrd(SIE_AVIOGBLREG0 *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 AVIOGBLREG0_drvwr(SIE_AVIOGBLREG0 *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void AVIOGBLREG0_reset(SIE_AVIOGBLREG0 *p);
-     SIGN32 AVIOGBLREG0_cmp(SIE_AVIOGBLREG0 *p, SIE_AVIOGBLREG0 *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIOGBLREG0_drvrd(SIE_AVIOGBLREG0 *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIOGBLREG0_drvwr(SIE_AVIOGBLREG0 *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+				 UNSG32 *pcmd);
+	void AVIOGBLREG0_reset(SIE_AVIOGBLREG0 *p);
+	SIGN32 AVIOGBLREG0_cmp(SIE_AVIOGBLREG0 *p, SIE_AVIOGBLREG0 *pie, char *pfx, void *hLOG,
+			       SIGN32 mem, SIGN32 tst);
     #define AVIOGBLREG0_check(p, pie, pfx, hLOG) AVIOGBLREG0_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define AVIOGBLREG0_print(p,    pfx, hLOG) AVIOGBLREG0_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4298,17 +4320,19 @@
     #define     RA_AVIOGBLREG1_Dummy1                          0x0000
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_AVIOGBLREG1 {
+	typedef struct SIE_AVIOGBLREG1 {
     ///////////////////////////////////////////////////////////
 	      SIE_Dummy1Reg                                    ie_Dummy1[512];
     ///////////////////////////////////////////////////////////
-    } SIE_AVIOGBLREG1;
+	} SIE_AVIOGBLREG1;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 AVIOGBLREG1_drvrd(SIE_AVIOGBLREG1 *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 AVIOGBLREG1_drvwr(SIE_AVIOGBLREG1 *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void AVIOGBLREG1_reset(SIE_AVIOGBLREG1 *p);
-     SIGN32 AVIOGBLREG1_cmp(SIE_AVIOGBLREG1 *p, SIE_AVIOGBLREG1 *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIOGBLREG1_drvrd(SIE_AVIOGBLREG1 *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIOGBLREG1_drvwr(SIE_AVIOGBLREG1 *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+				 UNSG32 *pcmd);
+	void AVIOGBLREG1_reset(SIE_AVIOGBLREG1 *p);
+	SIGN32 AVIOGBLREG1_cmp(SIE_AVIOGBLREG1 *p, SIE_AVIOGBLREG1 *pie, char *pfx, void *hLOG,
+			       SIGN32 mem, SIGN32 tst);
     #define AVIOGBLREG1_check(p, pie, pfx, hLOG) AVIOGBLREG1_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define AVIOGBLREG1_print(p,    pfx, hLOG) AVIOGBLREG1_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4336,17 +4360,19 @@
     #define     RA_AVIOGBLREG2_Dummy2                          0x0000
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_AVIOGBLREG2 {
+	typedef struct SIE_AVIOGBLREG2 {
     ///////////////////////////////////////////////////////////
 	      SIE_Dummy2Reg                                    ie_Dummy2[512];
     ///////////////////////////////////////////////////////////
-    } SIE_AVIOGBLREG2;
+	} SIE_AVIOGBLREG2;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 AVIOGBLREG2_drvrd(SIE_AVIOGBLREG2 *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 AVIOGBLREG2_drvwr(SIE_AVIOGBLREG2 *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void AVIOGBLREG2_reset(SIE_AVIOGBLREG2 *p);
-     SIGN32 AVIOGBLREG2_cmp(SIE_AVIOGBLREG2 *p, SIE_AVIOGBLREG2 *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIOGBLREG2_drvrd(SIE_AVIOGBLREG2 *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIOGBLREG2_drvwr(SIE_AVIOGBLREG2 *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+				 UNSG32 *pcmd);
+	void AVIOGBLREG2_reset(SIE_AVIOGBLREG2 *p);
+	SIGN32 AVIOGBLREG2_cmp(SIE_AVIOGBLREG2 *p, SIE_AVIOGBLREG2 *pie, char *pfx, void *hLOG,
+			       SIGN32 mem, SIGN32 tst);
     #define AVIOGBLREG2_check(p, pie, pfx, hLOG) AVIOGBLREG2_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define AVIOGBLREG2_print(p,    pfx, hLOG) AVIOGBLREG2_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4374,17 +4400,19 @@
     #define     RA_AVIOGBLREG3_Dummy3                          0x0000
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_AVIOGBLREG3 {
+	typedef struct SIE_AVIOGBLREG3 {
     ///////////////////////////////////////////////////////////
 	      SIE_Dummy3Reg                                    ie_Dummy3[2048];
     ///////////////////////////////////////////////////////////
-    } SIE_AVIOGBLREG3;
+	} SIE_AVIOGBLREG3;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 AVIOGBLREG3_drvrd(SIE_AVIOGBLREG3 *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 AVIOGBLREG3_drvwr(SIE_AVIOGBLREG3 *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void AVIOGBLREG3_reset(SIE_AVIOGBLREG3 *p);
-     SIGN32 AVIOGBLREG3_cmp(SIE_AVIOGBLREG3 *p, SIE_AVIOGBLREG3 *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIOGBLREG3_drvrd(SIE_AVIOGBLREG3 *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 AVIOGBLREG3_drvwr(SIE_AVIOGBLREG3 *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+				 UNSG32 *pcmd);
+	void AVIOGBLREG3_reset(SIE_AVIOGBLREG3 *p);
+	SIGN32 AVIOGBLREG3_cmp(SIE_AVIOGBLREG3 *p, SIE_AVIOGBLREG3 *pie, char *pfx, void *hLOG,
+			       SIGN32 mem, SIGN32 tst);
     #define AVIOGBLREG3_check(p, pie, pfx, hLOG) AVIOGBLREG3_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define AVIOGBLREG3_print(p,    pfx, hLOG) AVIOGBLREG3_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4530,7 +4558,7 @@
     #define     RA_APLL_WRAP_APLL                              0x0004
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_APLL_WRAP {
+	typedef struct SIE_APLL_WRAP {
     ///////////////////////////////////////////////////////////
     #define   GET32APLL_WRAP_APLL_CTRL_clkSwitch(r32)          _BFGET_(r32, 0, 0)
     #define   SET32APLL_WRAP_APLL_CTRL_clkSwitch(r32, v)        _BFSET_(r32, 0, 0, v)
@@ -4583,21 +4611,21 @@
 	    UNSG32 uAPLL_CTRL_clkOut_sel                       :  1;\
 	    UNSG32 RSVDx0_b12                                  : 20;\
 	}
-    union { UNSG32 u32APLL_WRAP_APLL_CTRL;
+	union { UNSG32 u32APLL_WRAP_APLL_CTRL;
 	    struct w32APLL_WRAP_APLL_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
 	SIE_abipll                                       ie_APLL;
     ///////////////////////////////////////////////////////////
-    } SIE_APLL_WRAP;
+	} SIE_APLL_WRAP;
 
-    typedef union  T32APLL_WRAP_APLL_CTRL {
+	typedef union  T32APLL_WRAP_APLL_CTRL {
 		UNSG32 u32;
 	    struct w32APLL_WRAP_APLL_CTRL;
 		 } T32APLL_WRAP_APLL_CTRL;
     ///////////////////////////////////////////////////////////
 
-    typedef union  TAPLL_WRAP_APLL_CTRL {
+	typedef union  TAPLL_WRAP_APLL_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32APLL_WRAP_APLL_CTRL;
@@ -4605,10 +4633,12 @@
 		 } TAPLL_WRAP_APLL_CTRL;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 APLL_WRAP_drvrd(SIE_APLL_WRAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 APLL_WRAP_drvwr(SIE_APLL_WRAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void APLL_WRAP_reset(SIE_APLL_WRAP *p);
-     SIGN32 APLL_WRAP_cmp(SIE_APLL_WRAP *p, SIE_APLL_WRAP *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 APLL_WRAP_drvrd(SIE_APLL_WRAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 APLL_WRAP_drvwr(SIE_APLL_WRAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+			       UNSG32 *pcmd);
+	void APLL_WRAP_reset(SIE_APLL_WRAP *p);
+	SIGN32 APLL_WRAP_cmp(SIE_APLL_WRAP *p, SIE_APLL_WRAP *pie, char *pfx, void *hLOG,
+			     SIGN32 mem, SIGN32 tst);
     #define APLL_WRAP_check(p, pie, pfx, hLOG) APLL_WRAP_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define APLL_WRAP_print(p,    pfx, hLOG) APLL_WRAP_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -4774,7 +4804,7 @@
     #define     RA_VPLL_WRAP_VPLL                              0x0004
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_VPLL_WRAP {
+	typedef struct SIE_VPLL_WRAP {
     ///////////////////////////////////////////////////////////
     #define   GET32VPLL_WRAP_VPLL_CTRL_clkOSwitch(r32)         _BFGET_(r32, 0, 0)
     #define   SET32VPLL_WRAP_VPLL_CTRL_clkOSwitch(r32, v)       _BFSET_(r32, 0, 0, v)
@@ -4833,21 +4863,21 @@
 	    UNSG32 uVPLL_CTRL_HDMIPHYPCLK_DIV2                 :  1;\
 	    UNSG32 RSVDx0_b13                                  : 19;\
 	}
-    union { UNSG32 u32VPLL_WRAP_VPLL_CTRL;
+	union { UNSG32 u32VPLL_WRAP_VPLL_CTRL;
 	    struct w32VPLL_WRAP_VPLL_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
 	SIE_abipll                                       ie_VPLL;
     ///////////////////////////////////////////////////////////
-    } SIE_VPLL_WRAP;
+	} SIE_VPLL_WRAP;
 
-    typedef union  T32VPLL_WRAP_VPLL_CTRL {
+	typedef union  T32VPLL_WRAP_VPLL_CTRL {
 		UNSG32 u32;
 	    struct w32VPLL_WRAP_VPLL_CTRL;
 		 } T32VPLL_WRAP_VPLL_CTRL;
     ///////////////////////////////////////////////////////////
 
-    typedef union  TVPLL_WRAP_VPLL_CTRL {
+	typedef union  TVPLL_WRAP_VPLL_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32VPLL_WRAP_VPLL_CTRL;
@@ -4855,10 +4885,12 @@
 		 } TVPLL_WRAP_VPLL_CTRL;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 VPLL_WRAP_drvrd(SIE_VPLL_WRAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 VPLL_WRAP_drvwr(SIE_VPLL_WRAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void VPLL_WRAP_reset(SIE_VPLL_WRAP *p);
-     SIGN32 VPLL_WRAP_cmp(SIE_VPLL_WRAP *p, SIE_VPLL_WRAP *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 VPLL_WRAP_drvrd(SIE_VPLL_WRAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 VPLL_WRAP_drvwr(SIE_VPLL_WRAP *p, UNSG32 base, SIGN32 mem, SIGN32 tst,
+			       UNSG32 *pcmd);
+	void VPLL_WRAP_reset(SIE_VPLL_WRAP *p);
+	SIGN32 VPLL_WRAP_cmp(SIE_VPLL_WRAP *p, SIE_VPLL_WRAP *pie, char *pfx, void *hLOG,
+			     SIGN32 mem, SIGN32 tst);
     #define VPLL_WRAP_check(p, pie, pfx, hLOG) VPLL_WRAP_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define VPLL_WRAP_print(p,    pfx, hLOG) VPLL_WRAP_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -7187,13 +7219,13 @@
     #define   MSK32avioGbl_DUMMY0_ECO                             0xFFFFFFFF
     ///////////////////////////////////////////////////////////
 
-    typedef struct SIE_avioGbl {
+	typedef struct SIE_avioGbl {
     ///////////////////////////////////////////////////////////
 	SIE_AVIOGBLREG1                                  ie_MEMMAP_MTR;
     ///////////////////////////////////////////////////////////
 	SIE_AVIOGBLREG2                                  ie_MEMMAP_VPPDHUB_ALM;
     ///////////////////////////////////////////////////////////
-	     UNSG8 RSVDx1000[4096];
+	UNSG8 RSVDx1000[4096];
     ///////////////////////////////////////////////////////////
 	SIE_AVIOGBLREG3                                  ie_MEMMAP_MIPI;
     ///////////////////////////////////////////////////////////
@@ -7226,7 +7258,7 @@
 	    UNSG32 uAVPLLA_CLK_EN_dbg_mux_sel                  :  1;\
 	    UNSG32 RSVDx40C8_b9                                : 23;\
 	}
-    union { UNSG32 u32avioGbl_AVPLLA_CLK_EN;
+	union { UNSG32 u32avioGbl_AVPLLA_CLK_EN;
 	    struct w32avioGbl_AVPLLA_CLK_EN;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7239,7 +7271,7 @@
 	    UNSG32 uVCLK0_CTRL_extClkSel                       :  1;\
 	    UNSG32 RSVDx40CC_b1                                : 31;\
 	}
-    union { UNSG32 u32avioGbl_VCLK0_CTRL;
+	union { UNSG32 u32avioGbl_VCLK0_CTRL;
 	    struct w32avioGbl_VCLK0_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7258,7 +7290,7 @@
 	    UNSG32 uVCLK1_CTRL_pllSel                          :  1;\
 	    UNSG32 RSVDx40D0_b2                                : 30;\
 	}
-    union { UNSG32 u32avioGbl_VCLK1_CTRL;
+	union { UNSG32 u32avioGbl_VCLK1_CTRL;
 	    struct w32avioGbl_VCLK1_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7277,7 +7309,7 @@
 	    UNSG32 uVCLK2_CTRL_pllSel                          :  1;\
 	    UNSG32 RSVDx40D4_b2                                : 30;\
 	}
-    union { UNSG32 u32avioGbl_VCLK2_CTRL;
+	union { UNSG32 u32avioGbl_VCLK2_CTRL;
 	    struct w32avioGbl_VCLK2_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7308,7 +7340,7 @@
 	    UNSG32 uDRM_VCLK_CTRL_clkEn                        :  1;\
 	    UNSG32 RSVDx40D8_b6                                : 26;\
 	}
-    union { UNSG32 u32avioGbl_DRM_VCLK_CTRL;
+	union { UNSG32 u32avioGbl_DRM_VCLK_CTRL;
 	    struct w32avioGbl_DRM_VCLK_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7339,7 +7371,7 @@
 	    UNSG32 uHDMIRX_VCLK_CTRL_clkEn                     :  1;\
 	    UNSG32 RSVDx40DC_b6                                : 26;\
 	}
-    union { UNSG32 u32avioGbl_HDMIRX_VCLK_CTRL;
+	union { UNSG32 u32avioGbl_HDMIRX_VCLK_CTRL;
 	    struct w32avioGbl_HDMIRX_VCLK_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7466,7 +7498,7 @@
 	    UNSG32 uSWRST_CTRL_rot_biuSyncRstn                 :  1;\
 	    UNSG32 RSVDx40E0_b20                               : 12;\
 	}
-    union { UNSG32 u32avioGbl_SWRST_CTRL;
+	union { UNSG32 u32avioGbl_SWRST_CTRL;
 	    struct w32avioGbl_SWRST_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7491,7 +7523,7 @@
 	    UNSG32 uHDMI_CLK_EN_HdmiRx                         :  1;\
 	    UNSG32 RSVDx40E4_b3                                : 29;\
 	}
-    union { UNSG32 u32avioGbl_HDMI_CLK_EN;
+	union { UNSG32 u32avioGbl_HDMI_CLK_EN;
 	    struct w32avioGbl_HDMI_CLK_EN;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7504,7 +7536,7 @@
 	    UNSG32 uVx1_CLK_EN_Vx1                             :  1;\
 	    UNSG32 RSVDx40E8_b1                                : 31;\
 	}
-    union { UNSG32 u32avioGbl_Vx1_CLK_EN;
+	union { UNSG32 u32avioGbl_Vx1_CLK_EN;
 	    struct w32avioGbl_Vx1_CLK_EN;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7517,7 +7549,7 @@
 	    UNSG32 uVIPPIPECLK_CTRL_vipClkSel                  :  1;\
 	    UNSG32 RSVDx40EC_b1                                : 31;\
 	}
-    union { UNSG32 u32avioGbl_VIPPIPECLK_CTRL;
+	union { UNSG32 u32avioGbl_VIPPIPECLK_CTRL;
 	    struct w32avioGbl_VIPPIPECLK_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7536,7 +7568,7 @@
 	    UNSG32 uDHUB64_CTRL_aWCache_aio64bDhub             :  3;\
 	    UNSG32 RSVDx40F0_b7                                : 25;\
 	}
-    union { UNSG32 u32avioGbl_DHUB64_CTRL;
+	union { UNSG32 u32avioGbl_DHUB64_CTRL;
 	    struct w32avioGbl_DHUB64_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7549,7 +7581,7 @@
 	    UNSG32 uAIO_CTRL_I2S_MIC_sel                       :  1;\
 	    UNSG32 RSVDx40F4_b1                                : 31;\
 	}
-    union { UNSG32 u32avioGbl_AIO_CTRL;
+	union { UNSG32 u32avioGbl_AIO_CTRL;
 	    struct w32avioGbl_AIO_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7646,7 +7678,7 @@
 	    UNSG32 uCTRL_dummy                                 :  2;\
 	    UNSG32 RSVDx40F8_b16                               : 16;\
 	}
-    union { UNSG32 u32avioGbl_CTRL;
+	union { UNSG32 u32avioGbl_CTRL;
 	    struct w32avioGbl_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7809,7 +7841,7 @@
 	    UNSG32 uCTRL0_rot_intr_en                          :  1;\
 	    UNSG32 RSVDx40FC_b26                               :  6;\
 	}
-    union { UNSG32 u32avioGbl_CTRL0;
+	union { UNSG32 u32avioGbl_CTRL0;
 	    struct w32avioGbl_CTRL0;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7864,7 +7896,7 @@
 	    UNSG32 uCTRL1_PDM_CLK_OEN                          :  1;\
 	    UNSG32 RSVDx4100_b14                               : 18;\
 	}
-    union { UNSG32 u32avioGbl_CTRL1;
+	union { UNSG32 u32avioGbl_CTRL1;
 	    struct w32avioGbl_CTRL1;
 	  };
     ///////////////////////////////////////////////////////////
@@ -7925,7 +7957,7 @@
 	    UNSG32 uBLANK_CG_cnt_th                            :  8;\
 	    UNSG32 RSVDx4104_b26                               :  6;\
 	}
-    union { UNSG32 u32avioGbl_BLANK_CG;
+	union { UNSG32 u32avioGbl_BLANK_CG;
 	    struct w32avioGbl_BLANK_CG;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8046,7 +8078,7 @@
 	    UNSG32 uMIPI_CTRL_tear_sftrst                      :  1;\
 	    UNSG32 RSVDx4108_b19                               : 13;\
 	}
-    union { UNSG32 u32avioGbl_MIPI_CTRL;
+	union { UNSG32 u32avioGbl_MIPI_CTRL;
 	    struct w32avioGbl_MIPI_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8071,7 +8103,7 @@
 	    UNSG32 uCSIRX_CTRL_csirx_regCfgIsoClr              :  1;\
 	    UNSG32 RSVDx410C_b8                                : 24;\
 	}
-    union { UNSG32 u32avioGbl_CSIRX_CTRL;
+	union { UNSG32 u32avioGbl_CSIRX_CTRL;
 	    struct w32avioGbl_CSIRX_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8084,7 +8116,7 @@
 	    UNSG32 uCSIRX_RB_csirx_regCfgIsoSt                 :  1;\
 	    UNSG32 RSVDx4110_b1                                : 31;\
 	}
-    union { UNSG32 u32avioGbl_CSIRX_RB;
+	union { UNSG32 u32avioGbl_CSIRX_RB;
 	    struct w32avioGbl_CSIRX_RB;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8109,7 +8141,7 @@
 	    UNSG32 uAVPLL_CTRL0_APLL1_PD                       :  1;\
 	    UNSG32 RSVDx4114_b3                                : 29;\
 	}
-    union { UNSG32 u32avioGbl_AVPLL_CTRL0;
+	union { UNSG32 u32avioGbl_AVPLL_CTRL0;
 	    struct w32avioGbl_AVPLL_CTRL0;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8140,7 +8172,7 @@
 	    UNSG32 uAXBAR_CTRL_arcache_hdcp                    :  4;\
 	    UNSG32 RSVDx4118_b16                               : 16;\
 	}
-    union { UNSG32 u32avioGbl_AXBAR_CTRL;
+	union { UNSG32 u32avioGbl_AXBAR_CTRL;
 	    struct w32avioGbl_AXBAR_CTRL;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8266,7 +8298,7 @@
 	    UNSG32 uAVPLL_CTRL1_clkSel_40                      :  3;\
 	    UNSG32 uAVPLL_CTRL1_clkEn_40                       :  1;\
 	}
-    union { UNSG32 u32avioGbl_AVPLL_CTRL1;
+	union { UNSG32 u32avioGbl_AVPLL_CTRL1;
 	    struct w32avioGbl_AVPLL_CTRL1;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8303,7 +8335,7 @@
 	    UNSG32 uAVPLL_CTRL2_clkEn0_300                     :  1;\
 	    UNSG32 RSVDx4120_b8                                : 24;\
 	}
-    union { UNSG32 u32avioGbl_AVPLL_CTRL2;
+	union { UNSG32 u32avioGbl_AVPLL_CTRL2;
 	    struct w32avioGbl_AVPLL_CTRL2;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8340,7 +8372,7 @@
 	    UNSG32 uAVPLL_CTRL6_clkEn                          :  1;\
 	    UNSG32 RSVDx4124_b8                                : 24;\
 	}
-    union { UNSG32 u32avioGbl_AVPLL_CTRL6;
+	union { UNSG32 u32avioGbl_AVPLL_CTRL6;
 	    struct w32avioGbl_AVPLL_CTRL6;
 	  };
     ///////////////////////////////////////////////////////////
@@ -8364,261 +8396,261 @@
     #define     w32avioGbl_DUMMY0                              {\
 	    UNSG32 uDUMMY0_ECO                                 : 32;\
 	}
-    union { UNSG32 u32avioGbl_DUMMY0;
+	union { UNSG32 u32avioGbl_DUMMY0;
 	    struct w32avioGbl_DUMMY0;
 	  };
     ///////////////////////////////////////////////////////////
 	     UNSG8 RSVDx4148[7864];
     ///////////////////////////////////////////////////////////
-    } SIE_avioGbl;
+	} SIE_avioGbl;
 
-    typedef union  T32avioGbl_AVPLLA_CLK_EN {
+	typedef union  T32avioGbl_AVPLLA_CLK_EN {
 		UNSG32 u32;
 	    struct w32avioGbl_AVPLLA_CLK_EN;
 		 } T32avioGbl_AVPLLA_CLK_EN;
-    typedef union  T32avioGbl_VCLK0_CTRL {
+	typedef union  T32avioGbl_VCLK0_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_VCLK0_CTRL;
 		 } T32avioGbl_VCLK0_CTRL;
-    typedef union  T32avioGbl_VCLK1_CTRL {
+	typedef union  T32avioGbl_VCLK1_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_VCLK1_CTRL;
 		 } T32avioGbl_VCLK1_CTRL;
-    typedef union  T32avioGbl_VCLK2_CTRL {
+	typedef union  T32avioGbl_VCLK2_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_VCLK2_CTRL;
 		 } T32avioGbl_VCLK2_CTRL;
-    typedef union  T32avioGbl_DRM_VCLK_CTRL {
+	typedef union  T32avioGbl_DRM_VCLK_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_DRM_VCLK_CTRL;
 		 } T32avioGbl_DRM_VCLK_CTRL;
-    typedef union  T32avioGbl_HDMIRX_VCLK_CTRL {
+	typedef union  T32avioGbl_HDMIRX_VCLK_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_HDMIRX_VCLK_CTRL;
 		 } T32avioGbl_HDMIRX_VCLK_CTRL;
-    typedef union  T32avioGbl_SWRST_CTRL {
+	typedef union  T32avioGbl_SWRST_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_SWRST_CTRL;
 		 } T32avioGbl_SWRST_CTRL;
-    typedef union  T32avioGbl_HDMI_CLK_EN {
+	typedef union  T32avioGbl_HDMI_CLK_EN {
 		UNSG32 u32;
 	    struct w32avioGbl_HDMI_CLK_EN;
 		 } T32avioGbl_HDMI_CLK_EN;
-    typedef union  T32avioGbl_Vx1_CLK_EN {
+	typedef union  T32avioGbl_Vx1_CLK_EN {
 		UNSG32 u32;
 	    struct w32avioGbl_Vx1_CLK_EN;
 		 } T32avioGbl_Vx1_CLK_EN;
-    typedef union  T32avioGbl_VIPPIPECLK_CTRL {
+	typedef union  T32avioGbl_VIPPIPECLK_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_VIPPIPECLK_CTRL;
 		 } T32avioGbl_VIPPIPECLK_CTRL;
-    typedef union  T32avioGbl_DHUB64_CTRL {
+	typedef union  T32avioGbl_DHUB64_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_DHUB64_CTRL;
 		 } T32avioGbl_DHUB64_CTRL;
-    typedef union  T32avioGbl_AIO_CTRL {
+	typedef union  T32avioGbl_AIO_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_AIO_CTRL;
 		 } T32avioGbl_AIO_CTRL;
-    typedef union  T32avioGbl_CTRL {
+	typedef union  T32avioGbl_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_CTRL;
 		 } T32avioGbl_CTRL;
-    typedef union  T32avioGbl_CTRL0 {
+	typedef union  T32avioGbl_CTRL0 {
 		UNSG32 u32;
 	    struct w32avioGbl_CTRL0;
 		 } T32avioGbl_CTRL0;
-    typedef union  T32avioGbl_CTRL1 {
+	typedef union  T32avioGbl_CTRL1 {
 		UNSG32 u32;
 	    struct w32avioGbl_CTRL1;
 		 } T32avioGbl_CTRL1;
-    typedef union  T32avioGbl_BLANK_CG {
+	typedef union  T32avioGbl_BLANK_CG {
 		UNSG32 u32;
 	    struct w32avioGbl_BLANK_CG;
 		 } T32avioGbl_BLANK_CG;
-    typedef union  T32avioGbl_MIPI_CTRL {
+	typedef union  T32avioGbl_MIPI_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_MIPI_CTRL;
 		 } T32avioGbl_MIPI_CTRL;
-    typedef union  T32avioGbl_CSIRX_CTRL {
+	typedef union  T32avioGbl_CSIRX_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_CSIRX_CTRL;
 		 } T32avioGbl_CSIRX_CTRL;
-    typedef union  T32avioGbl_CSIRX_RB {
+	typedef union  T32avioGbl_CSIRX_RB {
 		UNSG32 u32;
 	    struct w32avioGbl_CSIRX_RB;
 		 } T32avioGbl_CSIRX_RB;
-    typedef union  T32avioGbl_AVPLL_CTRL0 {
+	typedef union  T32avioGbl_AVPLL_CTRL0 {
 		UNSG32 u32;
 	    struct w32avioGbl_AVPLL_CTRL0;
 		 } T32avioGbl_AVPLL_CTRL0;
-    typedef union  T32avioGbl_AXBAR_CTRL {
+	typedef union  T32avioGbl_AXBAR_CTRL {
 		UNSG32 u32;
 	    struct w32avioGbl_AXBAR_CTRL;
 		 } T32avioGbl_AXBAR_CTRL;
-    typedef union  T32avioGbl_AVPLL_CTRL1 {
+	typedef union  T32avioGbl_AVPLL_CTRL1 {
 		UNSG32 u32;
 	    struct w32avioGbl_AVPLL_CTRL1;
 		 } T32avioGbl_AVPLL_CTRL1;
-    typedef union  T32avioGbl_AVPLL_CTRL2 {
+	typedef union  T32avioGbl_AVPLL_CTRL2 {
 		UNSG32 u32;
 	    struct w32avioGbl_AVPLL_CTRL2;
 		 } T32avioGbl_AVPLL_CTRL2;
-    typedef union  T32avioGbl_AVPLL_CTRL6 {
+	typedef union  T32avioGbl_AVPLL_CTRL6 {
 		UNSG32 u32;
 	    struct w32avioGbl_AVPLL_CTRL6;
 		 } T32avioGbl_AVPLL_CTRL6;
-    typedef union  T32avioGbl_DUMMY0 {
+	typedef union  T32avioGbl_DUMMY0 {
 		UNSG32 u32;
 	    struct w32avioGbl_DUMMY0;
 		 } T32avioGbl_DUMMY0;
     ///////////////////////////////////////////////////////////
 
-    typedef union  TavioGbl_AVPLLA_CLK_EN {
+	typedef union  TavioGbl_AVPLLA_CLK_EN {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_AVPLLA_CLK_EN;
 		   };
 		 } TavioGbl_AVPLLA_CLK_EN;
-    typedef union  TavioGbl_VCLK0_CTRL {
+	typedef union  TavioGbl_VCLK0_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_VCLK0_CTRL;
 		   };
 		 } TavioGbl_VCLK0_CTRL;
-    typedef union  TavioGbl_VCLK1_CTRL {
+	typedef union  TavioGbl_VCLK1_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_VCLK1_CTRL;
 		   };
 		 } TavioGbl_VCLK1_CTRL;
-    typedef union  TavioGbl_VCLK2_CTRL {
+	typedef union  TavioGbl_VCLK2_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_VCLK2_CTRL;
 		   };
 		 } TavioGbl_VCLK2_CTRL;
-    typedef union  TavioGbl_DRM_VCLK_CTRL {
+	typedef union  TavioGbl_DRM_VCLK_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_DRM_VCLK_CTRL;
 		   };
 		 } TavioGbl_DRM_VCLK_CTRL;
-    typedef union  TavioGbl_HDMIRX_VCLK_CTRL {
+	typedef union  TavioGbl_HDMIRX_VCLK_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_HDMIRX_VCLK_CTRL;
 		   };
 		 } TavioGbl_HDMIRX_VCLK_CTRL;
-    typedef union  TavioGbl_SWRST_CTRL {
+	typedef union  TavioGbl_SWRST_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_SWRST_CTRL;
 		   };
 		 } TavioGbl_SWRST_CTRL;
-    typedef union  TavioGbl_HDMI_CLK_EN {
+	typedef union  TavioGbl_HDMI_CLK_EN {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_HDMI_CLK_EN;
 		   };
 		 } TavioGbl_HDMI_CLK_EN;
-    typedef union  TavioGbl_Vx1_CLK_EN {
+	typedef union  TavioGbl_Vx1_CLK_EN {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_Vx1_CLK_EN;
 		   };
 		 } TavioGbl_Vx1_CLK_EN;
-    typedef union  TavioGbl_VIPPIPECLK_CTRL {
+	typedef union  TavioGbl_VIPPIPECLK_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_VIPPIPECLK_CTRL;
 		   };
 		 } TavioGbl_VIPPIPECLK_CTRL;
-    typedef union  TavioGbl_DHUB64_CTRL {
+	typedef union  TavioGbl_DHUB64_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_DHUB64_CTRL;
 		   };
 		 } TavioGbl_DHUB64_CTRL;
-    typedef union  TavioGbl_AIO_CTRL {
+	typedef union  TavioGbl_AIO_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_AIO_CTRL;
 		   };
 		 } TavioGbl_AIO_CTRL;
-    typedef union  TavioGbl_CTRL {
+	typedef union  TavioGbl_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_CTRL;
 		   };
 		 } TavioGbl_CTRL;
-    typedef union  TavioGbl_CTRL0 {
+	typedef union  TavioGbl_CTRL0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_CTRL0;
 		   };
 		 } TavioGbl_CTRL0;
-    typedef union  TavioGbl_CTRL1 {
+	typedef union  TavioGbl_CTRL1 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_CTRL1;
 		   };
 		 } TavioGbl_CTRL1;
-    typedef union  TavioGbl_BLANK_CG {
+	typedef union  TavioGbl_BLANK_CG {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_BLANK_CG;
 		   };
 		 } TavioGbl_BLANK_CG;
-    typedef union  TavioGbl_MIPI_CTRL {
+	typedef union  TavioGbl_MIPI_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_MIPI_CTRL;
 		   };
 		 } TavioGbl_MIPI_CTRL;
-    typedef union  TavioGbl_CSIRX_CTRL {
+	typedef union  TavioGbl_CSIRX_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_CSIRX_CTRL;
 		   };
 		 } TavioGbl_CSIRX_CTRL;
-    typedef union  TavioGbl_CSIRX_RB {
+	typedef union  TavioGbl_CSIRX_RB {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_CSIRX_RB;
 		   };
 		 } TavioGbl_CSIRX_RB;
-    typedef union  TavioGbl_AVPLL_CTRL0 {
+	typedef union  TavioGbl_AVPLL_CTRL0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_AVPLL_CTRL0;
 		   };
 		 } TavioGbl_AVPLL_CTRL0;
-    typedef union  TavioGbl_AXBAR_CTRL {
+	typedef union  TavioGbl_AXBAR_CTRL {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_AXBAR_CTRL;
 		   };
 		 } TavioGbl_AXBAR_CTRL;
-    typedef union  TavioGbl_AVPLL_CTRL1 {
+	typedef union  TavioGbl_AVPLL_CTRL1 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_AVPLL_CTRL1;
 		   };
 		 } TavioGbl_AVPLL_CTRL1;
-    typedef union  TavioGbl_AVPLL_CTRL2 {
+	typedef union  TavioGbl_AVPLL_CTRL2 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_AVPLL_CTRL2;
 		   };
 		 } TavioGbl_AVPLL_CTRL2;
-    typedef union  TavioGbl_AVPLL_CTRL6 {
+	typedef union  TavioGbl_AVPLL_CTRL6 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_AVPLL_CTRL6;
 		   };
 		 } TavioGbl_AVPLL_CTRL6;
-    typedef union  TavioGbl_DUMMY0 {
+	typedef union  TavioGbl_DUMMY0 {
 		UNSG32 u32[1];
 	    struct {
 	    struct w32avioGbl_DUMMY0;
@@ -8626,10 +8658,11 @@
 		 } TavioGbl_DUMMY0;
 
     ///////////////////////////////////////////////////////////
-     SIGN32 avioGbl_drvrd(SIE_avioGbl *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
-     SIGN32 avioGbl_drvwr(SIE_avioGbl *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
-       void avioGbl_reset(SIE_avioGbl *p);
-     SIGN32 avioGbl_cmp(SIE_avioGbl *p, SIE_avioGbl *pie, char *pfx, void *hLOG, SIGN32 mem, SIGN32 tst);
+	SIGN32 avioGbl_drvrd(SIE_avioGbl *p, UNSG32 base, SIGN32 mem, SIGN32 tst);
+	SIGN32 avioGbl_drvwr(SIE_avioGbl *p, UNSG32 base, SIGN32 mem, SIGN32 tst, UNSG32 *pcmd);
+	void avioGbl_reset(SIE_avioGbl *p);
+	SIGN32 avioGbl_cmp(SIE_avioGbl *p, SIE_avioGbl *pie, char *pfx, void *hLOG, SIGN32 mem,
+			   SIGN32 tst);
     #define avioGbl_check(p, pie, pfx, hLOG) avioGbl_cmp(p, pie, pfx, (void *)(hLOG), 0, 0)
     #define avioGbl_print(p,    pfx, hLOG) avioGbl_cmp(p, 0,  pfx, (void *)(hLOG), 0, 0)
 
@@ -8639,7 +8672,7 @@
 ////////////////////////////////////////////////////////////
 
 #ifdef __cplusplus
-  }
+}
 #endif
 #pragma  pack()
 

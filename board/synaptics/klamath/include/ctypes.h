@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -20,86 +20,90 @@
  * COMPETENT JURISDICTION DOES NOT PERMIT THE DISCLAIMER OF DIRECT
  * DAMAGES OR ANY OTHER DAMAGES, SYNAPTICS' TOTAL CUMULATIVE LIABILITY
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
- */
+ */
 
 #ifndef CTYPES_H_
 #define CTYPES_H_
 
 /*---------------------------------------------------------------------------
-    Microsoft Visual C++
-  ---------------------------------------------------------------------------*/
+ *   Microsoft Visual C++
+ *---------------------------------------------------------------------------
+ */
 #if defined(_MSC_VER)
 
-    typedef	unsigned char       UNSG8;
-    typedef	signed char         SIGN8;
-    typedef	unsigned short      UNSG16;
-    typedef	signed short        SIGN16;
-    typedef	unsigned int        UNSG32;
-    typedef	signed int          SIGN32;
-    typedef	unsigned __int64    UNSG64;
-    typedef	signed __int64      SIGN64;
-    typedef	float               REAL32;
-    typedef	double              REAL64;
+	typedef	unsigned char       UNSG8;
+	typedef	signed char         SIGN8;
+	typedef	unsigned short      UNSG16;
+	typedef	signed short        SIGN16;
+	typedef	unsigned int        UNSG32;
+	typedef	signed int          SIGN32;
+	typedef	unsigned __int64    UNSG64;
+	typedef	signed __int64      SIGN64;
+	typedef	float               REAL32;
+	typedef	double              REAL64;
 
     #ifndef INLINE
 	#define	INLINE          static __forceinline
     #endif
 
 /*---------------------------------------------------------------------------
-    ARMCC (RVCT)
-  ---------------------------------------------------------------------------*/
+ *   ARMCC (RVCT)
+ *---------------------------------------------------------------------------
+ */
 #elif defined(__ARMCC_VERSION)
 
-    typedef	unsigned char       UNSG8;
-    typedef	signed char         SIGN8;
-    typedef	unsigned short      UNSG16;
-    typedef	signed short        SIGN16;
-    typedef	unsigned int        UNSG32;
-    typedef	signed int          SIGN32;
-    typedef	unsigned long long  UNSG64;
-    typedef	signed long long    SIGN64;
-    typedef	float               REAL32;
-    typedef	double              REAL64;
+	typedef	unsigned char       UNSG8;
+	typedef	signed char         SIGN8;
+	typedef	unsigned short      UNSG16;
+	typedef	signed short        SIGN16;
+	typedef	unsigned int        UNSG32;
+	typedef	signed int          SIGN32;
+	typedef	unsigned long long  UNSG64;
+	typedef	signed long long    SIGN64;
+	typedef	float               REAL32;
+	typedef	double              REAL64;
 
     #ifndef INLINE
 	#define INLINE          static inline
     #endif
 
 /*---------------------------------------------------------------------------
-    ZSP uses this define
-  ---------------------------------------------------------------------------*/
+ *   ZSP uses this define
+ *---------------------------------------------------------------------------
+ */
 #elif defined(ZSP)
 
-    typedef	unsigned char       UNSG8;
-    typedef	signed char         SIGN8;
-    typedef	unsigned short      UNSG16;
-    typedef	signed short        SIGN16;
-    typedef	unsigned long       UNSG32;
-    typedef	signed long         SIGN32;
-    typedef	unsigned long long  UNSG64;
-    typedef	signed long long    SIGN64;
-    typedef	float               REAL32;
-    typedef	double              REAL64;
+	typedef	unsigned char       UNSG8;
+	typedef	signed char         SIGN8;
+	typedef	unsigned short      UNSG16;
+	typedef	signed short        SIGN16;
+	typedef	unsigned long       UNSG32;
+	typedef	signed long         SIGN32;
+	typedef	unsigned long long  UNSG64;
+	typedef	signed long long    SIGN64;
+	typedef	float               REAL32;
+	typedef	double              REAL64;
 
     #ifndef INLINE
 	#define INLINE          static inline
     #endif
 
 /*---------------------------------------------------------------------------
-    GNU C/C++
-  ---------------------------------------------------------------------------*/
+ *   GNU C/C++
+ *---------------------------------------------------------------------------
+ */
 #elif defined(__GNUC__)
 
-    typedef	unsigned char       UNSG8;
-    typedef	signed char         SIGN8;
-    typedef	unsigned short      UNSG16;
-    typedef	signed short        SIGN16;
-    typedef	unsigned int        UNSG32;
-    typedef	signed int          SIGN32;
-    typedef	unsigned long long  UNSG64;
-    typedef	signed long long    SIGN64;
-    typedef	float               REAL32;
-    typedef	double              REAL64;
+	typedef	unsigned char       UNSG8;
+	typedef	signed char         SIGN8;
+	typedef	unsigned short      UNSG16;
+	typedef	signed short        SIGN16;
+	typedef	unsigned int        UNSG32;
+	typedef	signed int          SIGN32;
+	typedef	unsigned long long  UNSG64;
+	typedef	signed long long    SIGN64;
+	typedef	float               REAL32;
+	typedef	double              REAL64;
 
     #ifndef INLINE
 	#define INLINE          static inline
@@ -108,8 +112,9 @@
 #endif
 
 /*---------------------------------------------------------------------------
-    NULL
-  ---------------------------------------------------------------------------*/
+ *   NULL
+ *---------------------------------------------------------------------------
+ */
 
 #ifndef NULL
     #ifdef __cplusplus
@@ -120,8 +125,9 @@
 #endif
 
 /*---------------------------------------------------------------------------
-    Multiple-word types
-  ---------------------------------------------------------------------------*/
+ *   Multiple-word types
+ *---------------------------------------------------------------------------
+ */
 #ifndef	Txxb
 	#define	Txxb
 	typedef	UNSG8				T8b;
