@@ -63,6 +63,20 @@ enum {
 	FDT_UPDATE_OVERLAY = BIT(4),
 };
 
+static int setup_kernel_logo_param(char *bootargs)
+{
+	char __maybe_unused tmp_buf[128];
+
+	if (IS_ENABLED(CONFIG_SYNA_DISABLE_BOOTLOGO)) {
+		memset(tmp_buf, 0x0, sizeof(tmp_buf));
+		snprintf(tmp_buf, (sizeof(tmp_buf) - 1), "avio.kernel_logo_disable=1");
+		strcat(bootargs, tmp_buf);
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 static void setup_cma_param(char *bootargs)
 {
 	char tmp_buf[128];
@@ -332,6 +346,9 @@ int setup_bootargs(void *fdt)
 	setup_fastlogo_param(newbootargs);
 	strcat(newbootargs, " ");
 #endif
+
+	if (setup_kernel_logo_param(newbootargs))
+		strcat(newbootargs, " ");
 
 #ifndef CONFIG_TARGET_KLAMATH
 	setup_cma_param(newbootargs);

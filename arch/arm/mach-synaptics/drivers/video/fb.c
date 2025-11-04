@@ -848,6 +848,9 @@ static int do_show_logo(struct cmd_tbl *cmdtp, int flag, int argc,
 	struct udevice *dev;
 	int ret;
 
+	if (IS_ENABLED(CONFIG_SYNA_DISABLE_BOOTLOGO))
+		return 0;
+
 	/* Invoke the DTB overlay before video device probed */
 	setup_uboot_fdt_overlay();
 
