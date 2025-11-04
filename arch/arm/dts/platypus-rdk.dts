@@ -67,6 +67,15 @@
 			states = <1800000 0x0 3300000 0x1>;
 			gpios = <&porta 17 GPIO_ACTIVE_HIGH>;
 		};
+
+		hdmi_5v: regulator-hdmi-5v {
+			status = "okay";
+			compatible = "regulator-fixed";
+			pinctrl-0 = <&hdmi_pwr_pmux>;
+			pinctrl-names = "default";
+			regulator-name = "hdmi-5v";
+			regulator-boot-on;
+		};
 	};
 
 	firmware {
@@ -225,8 +234,6 @@
 	disp-mode = <0>;
 	disp1-res-id = <13>;
 
-	pinctrl-0 = <&hdmi_pwr_pmux>;
-	pinctrl-names = "default";
 	hdtx5v-gpio = <&portb 3 GPIO_ACTIVE_HIGH>; /* SOC GPIO 35 */
 
 	dsi_panel {
