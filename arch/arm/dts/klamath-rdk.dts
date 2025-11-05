@@ -130,11 +130,21 @@
 	};
 };
 
+&usb_phy0 {
+	status = "okay";
+};
+
+&usb0 {
+	compatible = "snps,dwc2-udc";
+	status = "okay";
+};
+
 &usb_phy1 {
 	status = "okay";
 };
 
 &usb1 {
+	compatible = "snps,dwc2-host";
 	status = "okay";
 };
 
