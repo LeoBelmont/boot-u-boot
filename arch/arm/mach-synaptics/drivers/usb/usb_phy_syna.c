@@ -32,8 +32,17 @@
 
 #define USB_PHY_CTRL0		0x0
 #define USB_PHY_CTRL1		0x4
+#define USB_PHY_CTRL1_DPPULLDOWN	BIT(27)
+#define USB_PHY_CTRL1_DMPULLDOWN	BIT(28)
+#define USB_PHY_CTRL1_IDDIG		BIT(29)
+
 #define USB_PHY_CTRL0_DEF		0x533DADF0
+
+#ifndef CONFIG_TARGET_KLAMATH
 #define USB_PHY_CTRL1_DEF		0x01B10000
+#else
+#define USB_PHY_CTRL1_DEF		0xD9B10018
+#endif
 
 struct syna_usb_phy_priv {
 	struct udevice *dev;
@@ -80,9 +89,37 @@ static int usb2_phy_power_on(struct phy *phy)
 	return 0;
 }
 
+static int usb2_phy_set_mode(struct phy *phy, enum phy_mode mode, int submode)
+{
+	struct syna_usb_phy_priv *priv = dev_get_priv(phy->dev);
+	u32 val;
+
+	if (mode != PHY_MODE_USB_HOST && mode != PHY_MODE_USB_DEVICE)
+		return -EINVAL;
+
+	if (IS_ENABLED(CONFIG_TARGET_KLAMATH)) {
+		if (mode == PHY_MODE_USB_HOST) {
+			val = readl(priv->base + USB_PHY_CTRL1);
+			val |= (USB_PHY_CTRL1_DPPULLDOWN | USB_PHY_CTRL1_DMPULLDOWN);
+			val &= ~USB_PHY_CTRL1_IDDIG;
+			writel(val, priv->base + USB_PHY_CTRL1);
+		}
+
+		if (mode == PHY_MODE_USB_DEVICE) {
+			val = readl(priv->base + USB_PHY_CTRL1);
+			val &= ~(USB_PHY_CTRL1_DPPULLDOWN | USB_PHY_CTRL1_DMPULLDOWN);
+			val |= USB_PHY_CTRL1_IDDIG;
+			writel(val, priv->base + USB_PHY_CTRL1);
+		}
+	}
+
+	return 0;
+}
+
 static const struct phy_ops usb2_phy_ops = {
 	.init		= usb2_phy_init,
 	.power_on	= usb2_phy_power_on,
+	.set_mode	= usb2_phy_set_mode,
 };
 
 #define USB3_PHY_CLK_CTRL		0x001C
@@ -143,9 +180,20 @@ static int syna_usb_phy_power_on(struct phy *phy)
 	return priv->ops->power_on(phy);
 }
 
+static int syna_usb_phy_set_mode(struct phy *phy, enum phy_mode mode, int submode)
+{
+	struct syna_usb_phy_priv *priv = dev_get_priv(phy->dev);
+
+	if (priv->ops->set_mode)
+		return priv->ops->set_mode(phy, mode, submode);
+
+	return 0;
+}
+
 const struct phy_ops syna_usb_phy_ops = {
 	.init		= syna_usb_phy_init,
 	.power_on	= syna_usb_phy_power_on,
+	.set_mode	= syna_usb_phy_set_mode,
 };
 
 static int syna_usb_phy_probe(struct udevice *dev)
