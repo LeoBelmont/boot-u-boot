@@ -961,7 +961,7 @@ struct dwc2_priv_data {
 
 static int dwc2_phy_setup(struct udevice *dev, struct phy_bulk *phys)
 {
-	int ret;
+	int i, ret;
 
 	ret = generic_phy_get_bulk(dev, phys);
 	if (ret)
@@ -974,6 +974,14 @@ static int dwc2_phy_setup(struct udevice *dev, struct phy_bulk *phys)
 	ret = generic_phy_power_on_bulk(phys);
 	if (ret)
 		generic_phy_exit_bulk(phys);
+
+	for (i = 0; i < phys->count; i++) {
+		ret = generic_phy_set_mode(&phys->phys[i], PHY_MODE_USB_DEVICE, 0);
+		if (ret) {
+			generic_phy_exit_bulk(phys);
+			break;
+		}
+	}
 
 	return ret;
 }
