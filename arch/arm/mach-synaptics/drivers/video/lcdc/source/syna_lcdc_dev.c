@@ -387,8 +387,8 @@ void syna_lcdc_irq(int intrMask)
 			stat = syna_lcdc_readl(dev, LCDC_REG_INTSR);
 			GA_REG_WORD32_WRITE(dev->core_addr + LCDC_REG_INTSR, stat);
 
+			dev->interrupts++;
 			if (stat & INT_FRAME_DONE) {
-				dev->interrupts++;
 				if (dev->en_intr_handler) {
 					syna_bcmbuf_flip(dev);
 					syna_lcdc_writel(dev, LCDC_REG_INTSR, 0x2);
