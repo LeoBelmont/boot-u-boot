@@ -1197,6 +1197,7 @@ static const struct usb_gadget_generic_ops dwc2_gadget_ops = {
 
 static const struct udevice_id dwc2_udc_otg_ids[] = {
 	{ .compatible = "snps,dwc2" },
+	{ .compatible = "snps,dwc2-udc" },
 	{ .compatible = "brcm,bcm2835-usb" },
 	{ .compatible = "st,stm32mp15-hsotg",
 	  .data = (ulong)dwc2_set_stm32mp1_hsotg_params },

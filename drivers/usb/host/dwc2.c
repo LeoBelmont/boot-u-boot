@@ -1468,6 +1468,7 @@ static const struct udevice_id dwc2_usb_ids[] = {
 	{ .compatible = "brcm,bcm2835-usb" },
 	{ .compatible = "brcm,bcm2708-usb" },
 	{ .compatible = "snps,dwc2" },
+	{ .compatible = "snps,dwc2-host" },
 	{ }
 };
 
