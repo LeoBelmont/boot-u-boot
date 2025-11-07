@@ -2346,6 +2346,7 @@ typedef struct vpp_config_params {
 	VPP_MIPI_LOAD_CONFIG *mipi_config_params;
 	VPP_MIPI_CONFIG_PARAMS *mipi_resinfo_params;
 	UINT32 hdmitx_enable;
+	UINT32 mipidsi_enable;
 } vpp_config_params;
 
 struct berlin_fb_priv {

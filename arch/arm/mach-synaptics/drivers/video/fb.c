@@ -475,7 +475,7 @@ int syna_read_config(struct udevice *dev)
 	int offset, len;
 	const fdt32_t *prop;
 	ofnode node;
-	int hdmi_offset;
+	int hdmi_offset, mipidsi_offset;
 	const char *status;
 
 	if ((offset = fdt_path_offset(blob, "/soc/drm")) < 0) {
@@ -491,6 +491,7 @@ int syna_read_config(struct udevice *dev)
 	priv->vpp_config_param.disp2_bpp = 24;
 	priv->vpp_config_param.disp2_outformat = 0;
 	priv->vpp_config_param.hdmitx_enable = 0;
+	priv->vpp_config_param.mipidsi_enable = 0;
 
 	READ_OF_NODE(priv->vpp_config_param.display_mode, disp-mode);
 	READ_OF_NODE(priv->vpp_config_param.disp1_res_id, disp1-res-id);
@@ -512,6 +513,15 @@ int syna_read_config(struct udevice *dev)
 		status = fdt_getprop(blob, hdmi_offset, "status", NULL);
 		if (strcmp(status, "okay") == 0)
 			priv->vpp_config_param.hdmitx_enable = 1;
+	}
+
+	mipidsi_offset = fdt_subnode_offset(blob, offset, "dsi_panel");
+	if (mipidsi_offset < 0) {
+		printf("dsi_panel node not found, assume disconnected: %d\n", mipidsi_offset);
+	} else {
+		status = fdt_getprop(blob, mipidsi_offset, "status", NULL);
+		if (strcmp(status, "okay") == 0)
+			priv->vpp_config_param.mipidsi_enable = 1;
 	}
 
 	/* Fetch the ofnode for drm entry to fetch hdtx gpio */

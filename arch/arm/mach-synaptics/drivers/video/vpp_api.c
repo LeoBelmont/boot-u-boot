@@ -28,6 +28,7 @@
 
 #define MAX_NUM_FEATURE_CFG 1
 #define VPP_FEATURE_HDMITX (1 << 0)
+#define VPP_FEATURE_MIPI_DSI	BIT(1)
 
 const INT32 gVinPortConfig[] = {
     /* PLANE_MAIN   */ CHAN_MAIN,
@@ -93,6 +94,10 @@ int MV_VPP_Init(struct berlin_fb_priv *priv)
 
 	if (priv->vpp_config_param.hdmitx_enable)
 		feature_cfg |= (VPP_FEATURE_HDMITX);
+
+	if (priv->vpp_config_param.mipidsi_enable)
+		feature_cfg |= (VPP_FEATURE_MIPI_DSI);
+
 	gFeatureConfig[0] = feature_cfg;
 
 	ret = wrap_MV_VPP_Config(gVinPortConfig, gDVConfig, gZorderConfig,
