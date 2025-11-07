@@ -68,7 +68,7 @@ void syna_lcdc_Disable_IRQ(int intrno)
 	irq_free_handler(MP_BERLIN_INTR_ID(intrno));
 }
 
-int lcdc_push_frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,
+int lcdc_push_frame(struct berlin_fb_priv *priv, VBUF_INFO *p_vpp_buf,
 		    int display, int width, int height)
 {
 	SYNA_LCDC_PANEL lcdcConfig = {0};
@@ -96,7 +96,9 @@ int lcdc_push_frame(struct berlin_fb_priv *priv, VBUF_INFO *pVppBuf,
 				  PIXEL_CLOCK_RATE(lcdcConfig.pixclock));
 
 	syna_lcdc_hw_config(display, &lcdcConfig);
-	ret = syna_lcdc_pushframe(display, pVppBuf);
+	flush_dcache_range((uintptr_t)p_vpp_buf->m_pbuf_start,
+			   (uintptr_t)(((char *)p_vpp_buf->m_pbuf_start) + p_vpp_buf->m_buf_size));
+	ret = syna_lcdc_pushframe(display, p_vpp_buf);
 	if (ret) {
 		printf("LCDC frame push failed\n");
 		return ret;
