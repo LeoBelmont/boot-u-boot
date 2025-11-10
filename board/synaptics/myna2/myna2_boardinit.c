@@ -22,6 +22,7 @@
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
  */
 
+#include <linux/delay.h>
 #include <asm/io.h>
 #include "Galois_memmap.h"
 #include "global.h"

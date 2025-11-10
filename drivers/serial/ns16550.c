@@ -19,6 +19,9 @@
 #include <linux/err.h>
 #include <linux/types.h>
 #include <asm/io.h>
+#ifdef CONFIG_TARGET_KLAMATH
+#include <linux/delay.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 

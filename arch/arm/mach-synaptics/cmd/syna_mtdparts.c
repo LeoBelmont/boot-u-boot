@@ -24,6 +24,7 @@
 
 #include <command.h>
 #include <linux/mtd/mtd.h>
+#include <u-boot/zlib.h>
 #include <version_table.h>
 #include "fastboot_syna.h"
 

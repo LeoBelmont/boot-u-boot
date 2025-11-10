@@ -226,10 +226,11 @@ int get_mem_from_fdt(void)
 
 int dram_init(void)
 {
-	if (IS_ENABLED(CONFIG_SYNA_FASTBOOT) || IS_ENABLED(CONFIG_SYNA_SUBOOT))
-		get_mem_from_tzk();
-	else
-		get_mem_from_fdt();
+#if defined(CONFIG_SYNA_FASTBOOT) || defined(CONFIG_SYNA_SUBOOT)
+	get_mem_from_tzk();
+#else
+	get_mem_from_fdt();
+#endif
 
 	debug("%s: Initial DRAM size %llx\n", __func__, (u64)gd->ram_size);
 

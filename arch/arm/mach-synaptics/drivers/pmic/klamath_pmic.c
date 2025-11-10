@@ -24,12 +24,6 @@
 
 #include "pmic.h"
 
-static struct leakage_table table_vcore_h[] = {
-};
-
-static struct leakage_table table_vcore_l[] = {
-};
-
 static struct freq_leakage_table l_table_vcore[] = {
 	{0, NULL},
 };

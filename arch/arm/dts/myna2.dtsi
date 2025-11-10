@@ -335,7 +335,7 @@
 
 		keypad: keypad@ea0a44 {
 			compatible = "syna,keypad";
-			reg = <0xea0a44>;
+			reg = <0xea0a44 0x10>;
 		};
 
 		pwm0: pwm {

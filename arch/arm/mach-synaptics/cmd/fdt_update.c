@@ -77,6 +77,7 @@ static int setup_kernel_logo_param(char *bootargs)
 	}
 }
 
+#ifndef CONFIG_TARGET_KLAMATH
 static void setup_cma_param(char *bootargs)
 {
 	char tmp_buf[128];
@@ -89,6 +90,7 @@ static void setup_cma_param(char *bootargs)
 		strcat(bootargs, tmp_buf);
 	}
 }
+#endif
 
 #ifdef CONFIG_VIDEO_SYNA
 extern u32 get_fastlogo_status(void);

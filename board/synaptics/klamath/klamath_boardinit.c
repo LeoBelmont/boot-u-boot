@@ -194,7 +194,6 @@ static void init_clock(void)
 
 static void set_drive_strength(void)
 {
-	unsigned int addr;
 	unsigned int val;
 	unsigned int offset;
 
@@ -223,8 +222,6 @@ static void set_drive_strength(void)
 		val |= 7;
 		writel(val, SOC_SM_SYS_CTRL_REG_BASE + offset);
 	}
-
-	return 0;
 }
 
 static void tw_init_mdio(void)

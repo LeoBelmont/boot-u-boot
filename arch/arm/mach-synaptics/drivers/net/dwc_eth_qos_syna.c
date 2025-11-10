@@ -125,8 +125,6 @@ static int eqos_probe_resources_syna(struct udevice *dev)
 	debug("%s: OK\n", __func__);
 	return 0;
 
-err_free_gpio_phy_reset:
-	dm_gpio_free(dev, &eqos->phy_reset_gpio);
 err_free_reset_eqos:
 	reset_free(&eqos->reset_ctl);
 
@@ -149,8 +147,6 @@ static int eqos_remove_resources_syna(struct udevice *dev)
 
 static int eqos_get_enetaddr_syna(struct udevice *dev)
 {
-	struct eqos_priv *eqos = dev_get_priv(dev);
-
 	debug("%s(dev=%p):\n", __func__, dev);
 
 	/* reserved */

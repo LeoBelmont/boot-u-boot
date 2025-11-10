@@ -22,6 +22,7 @@
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
  */
 
+#include <linux/delay.h>
 #include "hal_vpp_wrap.h"
 #include "includes.h"
 #include "vpp_api.h"

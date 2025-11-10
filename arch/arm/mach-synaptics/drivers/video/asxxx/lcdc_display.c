@@ -22,6 +22,7 @@
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
  */
 
+#include <cpu_func.h>
 #include <linux/types.h>
 #include <malloc.h>
 #include "includes.h"

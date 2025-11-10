@@ -91,7 +91,6 @@ static int cdns_xspi_configure_clock(struct cdns_xspi_priv *priv)
 static int cdns_xspi_set_data_mode(struct cdns_xspi_priv *priv)
 {
 	int ret = 0;
-	int mode = CDNS_XSPI_WORK_MODE_STIG;
 
 	ret = cdns_xspi_wait_for_controller_idle(priv);
 	if (ret < 0)
@@ -99,6 +98,8 @@ static int cdns_xspi_set_data_mode(struct cdns_xspi_priv *priv)
 
 	writel(FIELD_PREP(CDNS_XSPI_CTRL_WORK_MODE, CDNS_XSPI_WORK_MODE_STIG),
 	       priv->regbase + CDNS_XSPI_CTRL_CONFIG_REG);
+
+	return 0;
 }
 
 static bool cdns_xspi_is_dll_locked(struct cdns_xspi_priv *priv)
@@ -147,6 +148,8 @@ int cdns_xspi_init(struct cdns_xspi_priv *priv)
 	cdns_xspi_wait_for_controller_init_completed(priv);
 	cdns_xspi_configure_phy(priv);
 	cdns_xspi_set_data_mode(priv);
+
+	return 0;
 }
 
 static void cdns_xspi_trigger_command(struct cdns_xspi_priv *priv,
@@ -176,12 +179,9 @@ static int cdns_xspi_probe(struct udevice *bus)
 
 static int cdns_xspi_remove(struct udevice *dev)
 {
-	struct cdns_xspi_priv *priv = dev_get_priv(dev);
-	int ret = 0;
-
 	debug("%s,%d\n", __func__, __LINE__);
 
-	return ret;
+	return 0;
 }
 
 static int cdns_xspi_set_speed(struct udevice *bus, uint hz)
@@ -193,14 +193,12 @@ static int cdns_xspi_set_speed(struct udevice *bus, uint hz)
 
 static int cdns_xspi_set_mode(struct udevice *bus, uint mode)
 {
-	struct cdns_xspi_priv *priv = dev_get_priv(bus);
-
 	debug("%s,%d mode %d\n", __func__, __LINE__, mode);
 
 	return 0;
 }
 
-static void cdns_xspi_wait_stig_completion(struct cdns_xspi_priv *priv)
+static int cdns_xspi_wait_stig_completion(struct cdns_xspi_priv *priv)
 {
 	u32 irq_status;
 	u32 cmd_status;
@@ -259,7 +257,7 @@ static void cdns_xspi_wait_sdma_completion(struct cdns_xspi_priv *priv)
 	writel(CDNS_XSPI_SDMA_TRIGGER, priv->regbase + CDNS_XSPI_INTR_STATUS_REG);
 }
 
-static cdns_xspi_ioread8_rep(void         *addr, void *buffer, uint32_t count)
+static void cdns_xspi_ioread8_rep(void         *addr, void *buffer, uint32_t count)
 {
 	u32 *buf32 = (uint32_t *)buffer;
 	u32 aligned_count = count / sizeof(uint32_t);
@@ -273,7 +271,7 @@ static cdns_xspi_ioread8_rep(void         *addr, void *buffer, uint32_t count)
 		*buf8++ = readb(addr);
 }
 
-void cdns_xspi_iowrite8_rep(void *addr, const void *buffer, uint32_t count)
+static void cdns_xspi_iowrite8_rep(void *addr, const void *buffer, uint32_t count)
 {
 	const u32 *buf32 = (const uint32_t *)buffer;
 	u32 aligned_count = count / sizeof(uint32_t);
@@ -312,11 +310,6 @@ static int cdns_xspi_mem_exec_op(struct spi_slave *spi,
 {
 	struct udevice *bus = spi->dev->parent;
 	struct cdns_xspi_priv *priv = dev_get_priv(bus);
-
-	u32 rdata = 0;
-
-	unsigned long stick_count = 1;
-	double perf = 0;
 	u32 cmd_regs[5];
 	u32 data_phase = op->data.dir != SPI_MEM_NO_DATA;
 	int ret = 0;
@@ -360,7 +353,6 @@ static int cdns_xspi_mem_exec_op(struct spi_slave *spi,
 static int cdns_xspi_of_to_plat(struct udevice *bus)
 {
 	struct cdns_xspi_plat *plat = dev_get_plat(bus);
-	struct cdns_xspi_priv *priv = dev_get_priv(bus);
 	int ret;
 
 	/* Get the controller base address */
