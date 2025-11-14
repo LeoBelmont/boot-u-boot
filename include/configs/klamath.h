@@ -37,13 +37,6 @@
 #endif
 #endif
 
-#ifdef CONFIG_ENV_IS_IN_MMC
-/* Environment in eMMC, at the end of "bl_x" */
-#define ENV_MMC_PART_NAME		"bl_a"
-#define CONFIG_ENV_OFFSET_REDUND	1 /* only a flag */
-#define ENV_MMC_PART_NAME_REDUND	"bl_b"
-#endif
-
 #define COUNTER_FREQUENCY			25000000 /* 25MHz */
 
 #define CONFIG_SYS_MAX_NAND_DEVICE     1
