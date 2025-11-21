@@ -314,6 +314,33 @@ int MV_VPP_push_nullframe(int width, int height, int stride, INT plane_id)
 	return ret;
 }
 
+static int MV_VPPOBJ_Open_Plane(int plane_id, RESOLUTION_INFO *resinfo,
+				VPP_WIN *win, VPP_WIN_ATTR *attr)
+{
+	int ret;
+
+	ret = MV_VPPOBJ_OpenDispWindow(0, plane_id, win, attr);
+	if (ret != MV_VPP_OK)
+		return ret;
+	MV_VPPOBJ_SetRefWindow(0, plane_id, win);
+
+	MV_VPPOBJ_SetDisplayMode(0, plane_id, DISP_FRAME);
+
+	ret = create_global_desc_array(SRCFMT_XRGB32, INPUT_BIT_DEPTH_8BIT,
+				       resinfo->active_width,
+				       resinfo->active_height);
+	if (ret != MV_VPP_OK)
+		return ret;
+
+	ret = MV_VPP_push_nullframe(resinfo->active_width, 0, 0, plane_id);
+	if (ret != MV_VPP_OK) {
+		printf("NULL frame failed - Plane_id = %d\n", plane_id);
+		return ret;
+	}
+
+	return ret;
+}
+
 int MV_VPPOBJ_Config_Display(struct vpp_config_params *vpp_config_param)
 {
 	RESOLUTION_INFO resinfo;
@@ -327,26 +354,18 @@ int MV_VPPOBJ_Config_Display(struct vpp_config_params *vpp_config_param)
 	showlogo_win.width  = resinfo.active_width;
 	showlogo_win.height = resinfo.active_height;
 
-	ret = MV_VPPOBJ_OpenDispWindow(0, PLANE_GFX1, &showlogo_win,
-				       &showlogo_attr);
-	if (ret != MV_VPP_OK)
-		return ret;
-
-	MV_VPPOBJ_SetRefWindow(0, PLANE_GFX1, &showlogo_win);
-
-	MV_VPPOBJ_SetDisplayMode(0, PLANE_GFX1, DISP_FRAME);
-
-	ret = create_global_desc_array(SRCFMT_XRGB32, INPUT_BIT_DEPTH_8BIT,
-				       resinfo.active_width,
-				       resinfo.active_height);
-	if (ret != MV_VPP_OK)
-		return ret;
-
-	ret = MV_VPP_push_nullframe(resinfo.active_width, 0, 0, PLANE_GFX1);
-	if (ret != MV_VPP_OK) {
-		printf("NULL frame failed - %d\n", ret);
-		return ret;
+	if (IS_ENABLED(CONFIG_TARGET_DOLPHIN)) {
+		if (!IS_MODE_DUAL(vpp_config_param->display_mode)) {
+			ret = MV_VPPOBJ_Open_Plane(PLANE_PIP, &resinfo, &showlogo_win0,
+						   &showlogo_attr);
+			if (ret != MV_VPP_OK)
+				return ret;
+		}
 	}
+
+	ret = MV_VPPOBJ_Open_Plane(PLANE_GFX1, &resinfo, &showlogo_win, &showlogo_attr);
+	if (ret != MV_VPP_OK)
+		return ret;
 
 	return ret;
 }
