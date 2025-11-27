@@ -4325,7 +4325,7 @@ static int spi_nor_init(struct spi_nor *nor)
  *
  * Return: 0 for success, -errno for failure.
  */
-static int spi_nor_soft_reset(struct spi_nor *nor)
+static int spi_nor_soft_reset(struct spi_nor *nor, enum spi_nor_protocol proto)
 {
 	struct spi_mem_op op;
 	int ret;
@@ -4343,7 +4343,7 @@ static int spi_nor_soft_reset(struct spi_nor *nor)
 			SPI_MEM_OP_NO_DUMMY,
 			SPI_MEM_OP_NO_ADDR,
 			SPI_MEM_OP_NO_DATA);
-	spi_nor_setup_op(nor, &op, SNOR_PROTO_8_8_8_DTR);
+	spi_nor_setup_op(nor, &op, proto);
 	ret = spi_mem_exec_op(nor->spi, &op);
 	if (ret) {
 		dev_warn(nor->dev, "Software reset enable failed: %d\n", ret);
@@ -4354,7 +4354,7 @@ static int spi_nor_soft_reset(struct spi_nor *nor)
 			SPI_MEM_OP_NO_DUMMY,
 			SPI_MEM_OP_NO_ADDR,
 			SPI_MEM_OP_NO_DATA);
-	spi_nor_setup_op(nor, &op, SNOR_PROTO_8_8_8_DTR);
+	spi_nor_setup_op(nor, &op, proto);
 	ret = spi_mem_exec_op(nor->spi, &op);
 	if (ret) {
 		dev_warn(nor->dev, "Software reset failed: %d\n", ret);
@@ -4379,7 +4379,10 @@ int spi_nor_remove(struct spi_nor *nor)
 #ifdef CONFIG_SPI_FLASH_SOFT_RESET
 	if (nor->info->flags & SPI_NOR_OCTAL_DTR_READ &&
 	    nor->flags & SNOR_F_SOFT_RESET)
-		return spi_nor_soft_reset(nor);
+		return spi_nor_soft_reset(nor, SNOR_PROTO_8_8_8_DTR);
+
+	if (IS_ENABLED(CONFIG_ARCH_SYNAPTICS) && (nor->size > 16 * 1024 * 1024))
+		return spi_nor_soft_reset(nor, SNOR_PROTO_1_1_1);
 #endif
 
 	return 0;
@@ -4477,7 +4480,7 @@ int spi_nor_scan(struct spi_nor *nor)
 	 * and only one of them needs a soft reset, failure to reset is not
 	 * made fatal, and we still try to read ID if possible.
 	 */
-	spi_nor_soft_reset(nor);
+	spi_nor_soft_reset(nor, SNOR_PROTO_8_8_8_DTR);
 #endif /* CONFIG_SPI_FLASH_SOFT_RESET_ON_BOOT */
 
 	info = spi_nor_read_id(nor);
