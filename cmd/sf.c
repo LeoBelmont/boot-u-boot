@@ -163,6 +163,46 @@ static int do_spi_flash_probe(int argc, char *const argv[])
 	return 0;
 }
 
+static int do_spi_flash_remove(int argc, char *const argv[])
+{
+	unsigned int bus = CONFIG_SF_DEFAULT_BUS;
+	unsigned int cs = CONFIG_SF_DEFAULT_CS;
+	char *endp;
+#if CONFIG_IS_ENABLED(DM_SPI_FLASH)
+	struct udevice *new, *bus_dev;
+	int ret;
+#else
+	struct spi_flash *new;
+#endif
+
+	if (argc >= 2) {
+		cs = simple_strtoul(argv[1], &endp, 0);
+		if (*argv[1] == 0 || (*endp != 0 && *endp != ':'))
+			return -1;
+		if (*endp == ':') {
+			if (endp[1] == 0)
+				return -1;
+
+			bus = cs;
+			cs = simple_strtoul(endp + 1, &endp, 0);
+			if (*endp != 0)
+				return -1;
+		}
+	}
+
+#if CONFIG_IS_ENABLED(DM_SPI_FLASH)
+	/* Remove the old device, otherwise probe will just be a nop */
+	ret = spi_find_bus_and_cs(bus, cs, &bus_dev, &new);
+	if (!ret)
+		device_remove(new, DM_REMOVE_NORMAL);
+#else
+	if (flash)
+		spi_flash_free(flash);
+#endif
+
+	return 0;
+}
+
 /**
  * Write a block of data to SPI flash, first checking if it is different from
  * what is already there.
@@ -602,6 +642,9 @@ static int do_spi_flash(struct cmd_tbl *cmdtp, int flag, int argc,
 	if (strcmp(cmd, "probe") == 0)
 		return do_spi_flash_probe(argc, argv);
 
+	if (strcmp(cmd, "remove") == 0)
+		return do_spi_flash_remove(argc, argv);
+
 	/* The remaining commands require a selected device */
 	if (!flash) {
 		puts("No SPI flash selected. Please run `sf probe'\n");
@@ -638,6 +681,8 @@ U_BOOT_LONGHELP(sf,
 	"sf update addr offset|partition len	- erase and write `len' bytes from memory\n"
 	"					  at `addr' to flash at `offset'\n"
 	"					  or to start of mtd `partition'\n"
+	"sf remove [[bus:]cs]			- remove flash device on given SPI bus\n"
+	"					  and chip select\n"
 #ifdef CONFIG_SPI_FLASH_LOCK
 	"sf protect lock/unlock sector len	- protect/unprotect 'len' bytes starting\n"
 	"					  at address 'sector'"
