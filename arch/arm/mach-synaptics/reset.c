@@ -32,6 +32,7 @@
 #endif
 #include <cpu_func.h>
 #include <linux/delay.h>
+#include <command.h>
 
 #if !defined(CONFIG_TARGET_DOLPHIN) && !defined(CONFIG_TARGET_PLATYPUS)
 #ifdef CONFIG_TARGET_MYNA2
@@ -235,4 +236,10 @@ void reset_cpu(void)
 #endif
 	while (1)
 		;
+}
+
+void reset_misc(void)
+{
+	if (IS_ENABLED(CONFIG_CMD_SF))
+		run_command("sf remove", 0);
 }
