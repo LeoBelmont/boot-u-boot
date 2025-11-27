@@ -34,6 +34,10 @@
 #include <linux/delay.h>
 #include <command.h>
 
+#if defined(CONFIG_SYNA_SUBOOT)
+#include <asm/system.h>
+#endif
+
 #if !defined(CONFIG_TARGET_DOLPHIN) && !defined(CONFIG_TARGET_PLATYPUS)
 #ifdef CONFIG_TARGET_MYNA2
 #define RA_Gbl_WDTSysRstMask			0x0610
@@ -97,7 +101,7 @@ static int berlin_dw_wdt_settimeout(unsigned int timeout)
 	return 0;
 }
 
-static void berlin_dw_wdt_init(void)
+__maybe_unused static void berlin_dw_wdt_init(void)
 {
 	unsigned int wdt_mask;
 #if defined(CONFIG_TARGET_MYNA2)
@@ -121,7 +125,7 @@ static void berlin_dw_wdt_init(void)
 	berlin_dw_wdt_settimeout(0); // 2-3ms
 }
 
-static void berlin_dw_wdt_enable(void)
+__maybe_unused static void berlin_dw_wdt_enable(void)
 {
 	unsigned int reg = readl(CONFIG_DW_WDT_BASE + DW_WDT_CR);
 
@@ -137,7 +141,7 @@ static unsigned int berlin_dw_wdt_is_enabled(void)
 	return val & 0x1;
 }
 
-void berlin_dw_wdt_reset(void)
+__maybe_unused static void berlin_dw_wdt_reset(void)
 {
 	if (berlin_dw_wdt_is_enabled())
 		/* restart the watchdog counter */
@@ -190,7 +194,7 @@ static unsigned int designware_wdt_is_enabled(void)
 	return val & 0x1;
 }
 
-void hw_watchdog_reset(void)
+static void hw_watchdog_reset(void)
 {
 	if (designware_wdt_is_enabled())
 		/* restart the watchdog counter */
@@ -210,7 +214,7 @@ void hw_watchdog_init(void)
 	hw_watchdog_reset();
 }
 
-void syna_dw_wdt_init(void)
+__maybe_unused static void syna_dw_wdt_init(void)
 {
 	unsigned int wdt_mask;
 
@@ -224,7 +228,9 @@ void syna_dw_wdt_init(void)
 
 void reset_cpu(void)
 {
-#if !defined(CONFIG_TARGET_DOLPHIN) && !defined(CONFIG_TARGET_PLATYPUS)
+#if defined(CONFIG_SYNA_SUBOOT)
+	psci_system_reset();
+#elif !defined(CONFIG_TARGET_DOLPHIN) && !defined(CONFIG_TARGET_PLATYPUS)
 	berlin_dw_wdt_init();
 	berlin_dw_wdt_enable();
 	berlin_dw_wdt_reset();
