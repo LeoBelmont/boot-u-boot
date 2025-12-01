@@ -48,7 +48,7 @@
 /* Helper function to check if a DTBO filename is valid */
 static bool is_valid_panel_dtbo(const char *filename)
 {
-	const char *valid_names[] = {"panel", "bridge"};
+	static const char * const valid_names[] = {"panel", "bridge", "hdmi"};
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(valid_names); i++) {
