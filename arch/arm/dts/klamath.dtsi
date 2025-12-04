@@ -153,7 +153,7 @@
 
 			sysmgr_pinctrl: sysmgr_pinctrl@e5025b00 {
 				compatible = "syna,klamath-sysmgr-pinctrl";
-				reg = <0xe5025b00 0x8>;
+				reg = <0xe5025b00 0x10>;
 			};
 
 			sm_uart0: uart@e5030000 {
@@ -290,7 +290,7 @@
 
 		pinctrl: pinctrl@f7e18000 {
 			compatible = "syna,klamath-soc-pinctrl";
-			reg = <0xf7e18000 0x18>, <0xf7e18800 0xf0>;
+			reg = <0xf7e18000 0x18>;
 		};
 
 		gic: interrupt-controller@f7e59000 {
