@@ -356,7 +356,7 @@ int MV_VPPOBJ_Config_Display(struct vpp_config_params *vpp_config_param)
 
 	if (IS_ENABLED(CONFIG_TARGET_DOLPHIN)) {
 		if (!IS_MODE_DUAL(vpp_config_param->display_mode)) {
-			ret = MV_VPPOBJ_Open_Plane(PLANE_PIP, &resinfo, &showlogo_win0,
+			ret = MV_VPPOBJ_Open_Plane(PLANE_PIP, &resinfo, &showlogo_win,
 						   &showlogo_attr);
 			if (ret != MV_VPP_OK)
 				return ret;
