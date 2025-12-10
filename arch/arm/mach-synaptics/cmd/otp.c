@@ -95,6 +95,8 @@ enum OTP_FIELD_ID {
 	OTP_SPI_BOOT_DISABLE,		/* 1 bit  (1 x uint32_t) */
 	OTP_DOLBY_AUDIO_DISABLE,	/* 1 bit  (1 x uint32_t) */
 	OTP_OEM_AUDIO_CUSTOMER_ID,	/* 32 bits (1 x uint32_t) */
+	OTP_PRODUCTION_CHIP_FLAG,	/* 3 bits  (1 x uint32_t) */
+	OTP_USB_BOOT_DISABLE,		/* 1 bit  (1 x uint32_t) */
 
 	OTP_FIELD_MAX
 };
@@ -126,7 +128,7 @@ static const struct otp_field_entry  otp_field_table[] = {
 
 	/* Synaptics Ownership */
 	X(OTP_EMMC_BOOT_DISABLE), X(OTP_SPI_BOOT_DISABLE), X(OTP_DOLBY_AUDIO_DISABLE),
-	X(OTP_OEM_AUDIO_CUSTOMER_ID),
+	X(OTP_OEM_AUDIO_CUSTOMER_ID), X(OTP_PRODUCTION_CHIP_FLAG), X(OTP_USB_BOOT_DISABLE),
 
 	X(OTP_FIELD_MAX)
 #undef X
