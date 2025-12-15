@@ -173,7 +173,7 @@ static void dwc_otg_core_reset(struct udevice *dev,
 
 	if ((snpsid & DWC2_SNPSID_DEVID_MASK) == DWC2_SNPSID_DEVID_VER_5xx) {
 		ret = wait_for_bit_le32(&regs->grstctl, DWC2_GRSTCTL_CSFTRST_DONE,
-				false, 1000, false);
+				true, 1000, false);
 		if (ret)
 			dev_info(dev, "%s: Timeout!\n", __func__);
 		writel(0, &regs->grstctl);

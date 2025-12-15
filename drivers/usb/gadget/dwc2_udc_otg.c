@@ -23,6 +23,7 @@
 #include <log.h>
 #include <malloc.h>
 #include <reset.h>
+#include <wait_bit.h>
 #include <dm/device_compat.h>
 #include <dm/devres.h>
 #include <linux/bug.h>
@@ -462,7 +463,8 @@ static void stop_activity(struct dwc2_udc *dev,
 static void reconfig_usbd(struct dwc2_udc *dev)
 {
 	/* 2. Soft-reset OTG Core and then unreset again. */
-	int i;
+	int i, ret;
+	u32 snpsid = readl(&reg->gsnpsid);
 	unsigned int uTemp = writel(CORE_SOFT_RESET, &reg->grstctl);
 	uint32_t dflt_gusbcfg;
 	uint32_t rx_fifo_sz, tx_fifo_sz, np_tx_fifo_sz;
@@ -470,6 +472,14 @@ static void reconfig_usbd(struct dwc2_udc *dev)
 	int pdata_hw_ep;
 
 	debug("Resetting OTG controller\n");
+
+	if ((snpsid & SNPSID_DEVID_MASK) == SNPSID_DEVID_VER_5xx) {
+		ret = wait_for_bit_le32(&reg->grstctl, CORE_SOFT_RESET_DONE,
+					true, 1000, false);
+		if (ret)
+			printf("%s: Reset Timeout!\n", __func__);
+		writel(0, &reg->grstctl);
+	}
 
 	dflt_gusbcfg =
 		0<<15		/* PHY Low Power Clock sel*/
