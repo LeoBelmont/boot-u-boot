@@ -170,10 +170,6 @@ static int setdma_tx(struct dwc2_ep *ep, struct dwc2_request *req)
 
 	ctrl = readl(&reg->in_endp[ep_num].diepctl);
 
-	/* Write the FIFO number to be used for this endpoint */
-	ctrl &= DIEPCTL_TX_FIFO_NUM_MASK;
-	ctrl |= DIEPCTL_TX_FIFO_NUM(ep->fifo_num);
-
 	/* Clear reserved (Next EP) bits */
 	ctrl = (ctrl&~(EP_MASK<<DEPCTL_NEXT_EP_BIT));
 
@@ -1130,6 +1126,10 @@ static void dwc2_udc_ep_activate(struct dwc2_ep *ep)
 		ep_ctrl |= (DEPCTL_SETD0PID | DEPCTL_USBACTEP | DEPCTL_SNAK);
 
 		if (ep_is_in(ep)) {
+			/* Write the FIFO number to be used for this endpoint */
+			ep_ctrl &= DIEPCTL_TX_FIFO_NUM_MASK;
+			ep_ctrl |= DIEPCTL_TX_FIFO_NUM(ep->fifo_num);
+
 			writel(ep_ctrl, &reg->in_endp[ep_num].diepctl);
 			debug("%s: USB Ative EP%d, DIEPCTRL%d = 0x%x\n",
 			      __func__, ep_num, ep_num,
