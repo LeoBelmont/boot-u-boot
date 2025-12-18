@@ -77,6 +77,20 @@ static int setup_kernel_logo_param(char *bootargs)
 	}
 }
 
+static int setup_fbcon_param(char *bootargs)
+{
+	char __maybe_unused tmp_buf[128];
+
+	if (IS_ENABLED(CONFIG_SYNA_DISABLE_FBCON)) {
+		memset(tmp_buf, 0x0, sizeof(tmp_buf));
+		snprintf(tmp_buf, (sizeof(tmp_buf) - 1), "fbcon=map:off");
+		strcat(bootargs, tmp_buf);
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 #ifndef CONFIG_TARGET_KLAMATH
 static void setup_cma_param(char *bootargs)
 {
@@ -367,6 +381,9 @@ int setup_bootargs(void *fdt)
 #endif
 
 	if (setup_kernel_logo_param(newbootargs))
+		strcat(newbootargs, " ");
+
+	if (setup_fbcon_param(newbootargs))
 		strcat(newbootargs, " ");
 
 #ifndef CONFIG_TARGET_KLAMATH

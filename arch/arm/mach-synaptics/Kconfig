@@ -94,12 +94,6 @@ config SYNA_GENX_V3
 	help
 	  Use Genx V3 image format
 
-config SYNA_DISABLE_BOOTLOGO
-	bool "Disable logo display from uboot and kernel"
-	default n
-	help
-	  Disable logo display in both uboot and kernel
-
 config USE_IRQ_SYNA
 	bool "Support IRQ function of Synaptics' chip"
 
