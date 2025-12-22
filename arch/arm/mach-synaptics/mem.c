@@ -53,7 +53,7 @@ __section(".data") static int bank_nr;
 #define REG_MEM_MAP_SIZE 0x10000000UL
 #endif
 
-#define MAX_MM_REGION	4
+#define MAX_MM_REGION	5
 __section(".data") static struct mm_region berlin_mem_map[MAX_MM_REGION];
 struct mm_region *mem_map = berlin_mem_map;
 
@@ -78,45 +78,53 @@ void get_mem_from_tzk(void)
 {
 	u64 sys_base = 0, sys_size = 0;
 	u64 ns_nc_base = 0, ns_nc_size = 0;
-	u64 map_size = 0;
 	u64 bl_base = 0, bl_size = 0;
+	u32 bank = 0;
 
 	get_mem_region_by_name(&bl_base, &bl_size, "bootloader");
 	get_mem_region_by_name(&sys_base, &sys_size, "system");
 	get_mem_region_by_name(&ns_nc_base, &ns_nc_size, "NonSecure-NC");
-	if (ns_nc_base == sys_base + sys_size) {
-		map_size = sys_size + ns_nc_size;
-	} else {
-		map_size = sys_size;
-		printf("NonSecure-NC memory pool doesn't next to system memory pool\n");
-	}
 
 	if (sys_size) {
 		gd->ram_top = sys_base;
 		gd->ram_base = sys_base;
 		gd->ram_size = sys_size;
-		bank_nr = 2;
 
-		mem_map[0].virt = bl_base;
-		mem_map[0].phys = bl_base;
-		mem_map[0].size = bl_size;
-		mem_map[0].attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
+		if (bl_size) {
+			mem_map[bank].virt = bl_base;
+			mem_map[bank].phys = bl_base;
+			mem_map[bank].size = bl_size;
+			mem_map[bank].attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
+					   PTE_BLOCK_INNER_SHARE;
+			bank++;
+		}
+
+		if (ns_nc_size) {
+			mem_map[bank].virt = ns_nc_base;
+			mem_map[bank].phys = ns_nc_base;
+			mem_map[bank].size = ns_nc_size;
+			mem_map[bank].attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
+					   PTE_BLOCK_INNER_SHARE;
+			bank++;
+		}
+
+		mem_map[bank].virt = sys_base;
+		mem_map[bank].phys = sys_base;
+		mem_map[bank].size = sys_size;
+		mem_map[bank].attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
 				   PTE_BLOCK_INNER_SHARE;
+		bank++;
+		bank_nr = bank;
 
-		mem_map[1].virt = sys_base;
-		mem_map[1].phys = sys_base;
-		mem_map[1].size = map_size;
-		mem_map[1].attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
-				   PTE_BLOCK_INNER_SHARE;
-
-		mem_map[bank_nr].virt = REG_MEM_MAP_BASE;
-		mem_map[bank_nr].phys = REG_MEM_MAP_BASE;
-		mem_map[bank_nr].size = REG_MEM_MAP_SIZE;
-		mem_map[bank_nr].attrs = PTE_BLOCK_MEMTYPE(MT_DEVICE_NGNRNE) |
+		mem_map[bank].virt = REG_MEM_MAP_BASE;
+		mem_map[bank].phys = REG_MEM_MAP_BASE;
+		mem_map[bank].size = REG_MEM_MAP_SIZE;
+		mem_map[bank].attrs = PTE_BLOCK_MEMTYPE(MT_DEVICE_NGNRNE) |
 					 PTE_BLOCK_NON_SHARE |
 					 PTE_BLOCK_PXN | PTE_BLOCK_UXN;
+		bank++;
 
-		memset(&mem_map[bank_nr + 1], 0, sizeof(struct mm_region));
+		memset(&mem_map[bank], 0, sizeof(struct mm_region));
 	} else {
 		printf("Error: Doesn't get memory region from TZK!!\n");
 	}
