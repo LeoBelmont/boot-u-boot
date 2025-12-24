@@ -86,9 +86,14 @@ void get_mem_from_tzk(void)
 	get_mem_region_by_name(&ns_nc_base, &ns_nc_size, "NonSecure-NC");
 
 	if (sys_size) {
-		gd->ram_top = sys_base;
 		gd->ram_base = sys_base;
 		gd->ram_size = sys_size;
+		gd->ram_top = sys_base + sys_size;
+
+		if (gd->ram_top > 0xE0000000) {
+			gd->ram_top = 0xE0000000;
+			gd->ram_size = gd->ram_top - gd->ram_base;
+		}
 
 		if (bl_size) {
 			mem_map[bank].virt = bl_base;
@@ -108,9 +113,9 @@ void get_mem_from_tzk(void)
 			bank++;
 		}
 
-		mem_map[bank].virt = sys_base;
-		mem_map[bank].phys = sys_base;
-		mem_map[bank].size = sys_size;
+		mem_map[bank].virt = gd->ram_base;
+		mem_map[bank].phys = gd->ram_base;
+		mem_map[bank].size = gd->ram_size;
 		mem_map[bank].attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
 				   PTE_BLOCK_INNER_SHARE;
 		bank++;
