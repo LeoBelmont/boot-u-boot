@@ -166,18 +166,18 @@ int VppReset(void)
 	return param.u.value.a;
 }
 
-int VppInvokePassShm_Helper(void *pBuffer, VPP_SHM_ID shmCmdId, UINT32 sBufferSize)
+int vpp_invoke_pass_shm_helper(void *buffer, VPP_SHM_ID shm_cmd_id, UINT32 buffer_size)
 {
 	struct tee_invoke_arg arg;
 	struct tee_param param[4];
-	struct tee_shm *VbufShm;
+	struct tee_shm *vbuf_shm;
 	int ret;
 
 	memset(&arg, 0, sizeof(arg));
 	arg.func = VPP_PASSSHM;
 	arg.session = session;
 
-	ret = tee_shm_register(tee_dev, (void*)pBuffer, sBufferSize, 0, &VbufShm);
+	ret = tee_shm_register(tee_dev, (void *)buffer, buffer_size, 0, &vbuf_shm);
 	if (ret) {
 		printf("Shm register failed\n");
 		return ret;
@@ -185,11 +185,11 @@ int VppInvokePassShm_Helper(void *pBuffer, VPP_SHM_ID shmCmdId, UINT32 sBufferSi
 
 	memset(param, 0, sizeof(param));
 	param[0].attr = TEE_PARAM_ATTR_TYPE_VALUE_INPUT;
-	param[0].u.value.a = shmCmdId;
+	param[0].u.value.a = shm_cmd_id;
 
 	param[1].attr = TEE_PARAM_ATTR_TYPE_MEMREF_INPUT;
-	param[1].u.memref.shm = VbufShm;
-	param[1].u.memref.size = sBufferSize;
+	param[1].u.memref.shm = vbuf_shm;
+	param[1].u.memref.size = buffer_size;
 
 	param[2].attr = TEE_PARAM_ATTR_TYPE_VALUE_OUTPUT;
 	param[2].u.value.a = 0xdeadbeef;
@@ -223,7 +223,7 @@ int VppConfig(INT handle,
 	memcpy(&cfg_mem[(plane_size * 3)], pvoutport_cfg, vout_size);
 	memcpy(&cfg_mem[(plane_size * 3) + vout_size], pfeature_cfg, feature_size);
 
-	return VppInvokePassShm_Helper(&cfg_mem[0], VPP_OBJCONFIG, sizeof(cfg_mem));
+	return vpp_invoke_pass_shm_helper(&cfg_mem[0], VPP_OBJCONFIG, sizeof(cfg_mem));
 }
 
 int VppIsrHandler(unsigned int MsgId, unsigned int IntSts)

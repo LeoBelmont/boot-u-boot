@@ -28,6 +28,7 @@
 #include "hal_vpp_wrap.h"
 #include "vpp_api.h"
 #include "vpp_priv.h"
+#include "vpp.h"
 
 int TZ_MV_VPP_InitVPPS(struct berlin_fb_priv *priv)
 {
@@ -42,9 +43,47 @@ int TZ_MV_VPP_Config(const int *pvinport_cfg, const int *pdv_cfg,
 	return MV_VPPOBJ_Config(0, pvinport_cfg, pdv_cfg, pzorder_cfg, pvoutport_cfg, pfeature_cfg);
 }
 
+static void TZ_MV_GetHDMIPreferredRes(struct vpp_config_params *vpp_config_param)
+{
+	u32 sinkCaps;
+	int retVal;
+
+	retVal = MV_VPPOBJ_GetHDMISinkFeatureMap(0, &sinkCaps);
+	if (!retVal) {
+		/*
+		 * Fixed mode only: Hardcode resolution to 4K30 on 4K TV,
+		 * otherwise to 1080p60
+		 */
+		if (sinkCaps & ((1 << VPP_HDMI_SINKCAP_BITMASK_FULL4K) |
+				(1 << VPP_HDMI_SINKCAP_BITMASK_4K30))) {
+			vpp_config_param->disp1_res_id =
+				(sinkCaps & (1 << VPP_HDMI_SINKCAP_BITMASK_PREF50FPS)) ?
+				HDMI_MAX_RES_ENABLED_50_25 : HDMI_MAX_RES_ENABLED_60_30;
+		} else if (sinkCaps & ((1 << VPP_HDMI_SINKCAP_BITMASK_FHD)))
+			vpp_config_param->disp1_res_id =
+				(sinkCaps & (1 << VPP_HDMI_SINKCAP_BITMASK_PREF50FPS)) ?
+				RES_1080P50 : RES_1080P60;
+		else
+			vpp_config_param->disp1_res_id =
+				(sinkCaps & (1 << VPP_HDMI_SINKCAP_BITMASK_PREF50FPS)) ?
+				RES_720P50 : RES_720P60;
+
+		debug("HDMI_HPD detected, setting res to resId:%d\n",
+		      vpp_config_param->disp1_res_id);
+	} else {
+		debug("HDMI_HPD not detected, fall back to dts resolution - %d",
+		      vpp_config_param->disp1_res_id);
+	}
+}
+
 int TZ_MV_VPP_Set_Format(struct berlin_fb_priv *priv)
 {
-	return MV_VPPOBJ_SetFormat(&priv->vpp_config_param);
+	struct vpp_config_params *vpp_config_param = &priv->vpp_config_param;
+
+	if (IS_MODE_HDMI(vpp_config_param->display_mode))
+		TZ_MV_GetHDMIPreferredRes(vpp_config_param);
+
+	return MV_VPPOBJ_SetFormat(vpp_config_param);
 }
 
 int TZ_MV_VPP_Config_Display(struct berlin_fb_priv *priv)

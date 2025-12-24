@@ -66,7 +66,7 @@ int VppPassVbufInfoPar(unsigned int *Vbuf, unsigned int VbufSize,
 		       int PlaneID, int ClutValid, VPP_SHM_ID ShmID);
 int VppRecycleFrame(int PlaneId);
 int VppSetFormat(int handle, int cpcbID, VPP_DISP_OUT_PARAMS *pDispParams);
-int VppInvokePassShm_Helper(void *pBuffer, VPP_SHM_ID shmCmdId, UINT32 sBufferSize);
+int vpp_invoke_pass_shm_helper(void *buffer, VPP_SHM_ID shm_cmd_id, UINT32 buffer_size);
 int Vppstop(void);
 int VppDestroy(void);
 int VppIsrHandler(unsigned int MsgId, unsigned int IntSts);

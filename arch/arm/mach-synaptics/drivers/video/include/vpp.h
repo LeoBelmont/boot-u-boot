@@ -27,10 +27,22 @@
 
 #include "vpp_api.h"
 
-#define IS_MODE_MIPI(mode)		(((mode) == VOUT_DISP_SINGLE_MODE_SEC) || \
-					 (mode == VOUT_DISP_DUAL_MODE_PIP))
+static inline IS_MODE_HDMI(u32 mode)
+{
+	return ((mode == VOUT_DISP_SINGLE_MODE_PRI) ||
+		(mode == VOUT_DISP_DUAL_MODE_PIP));
+}
 
-#define IS_MODE_DUAL(mode)		((mode) == VOUT_DISP_DUAL_MODE_PIP)
+static inline IS_MODE_MIPI(u32 mode)
+{
+	return ((mode == VOUT_DISP_SINGLE_MODE_SEC) ||
+		(mode == VOUT_DISP_DUAL_MODE_PIP));
+}
+
+static inline IS_MODE_DUAL(u32 mode)
+{
+	return (mode == VOUT_DISP_DUAL_MODE_PIP);
+}
 
 int MV_VPP_Init(struct berlin_fb_priv *priv);
 int MV_VPP_Config_Display(struct berlin_fb_priv *priv);

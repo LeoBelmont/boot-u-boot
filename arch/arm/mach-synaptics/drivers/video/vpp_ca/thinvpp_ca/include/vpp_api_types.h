@@ -824,6 +824,18 @@ typedef struct VPP_HDMI_RAW_EDID_T {
 	UINT8    IsValid;
 } VPP_HDMI_RAW_EDID;
 
+#define HDMI_MAX_RES_ENABLED_60_30  61
+#define HDMI_MAX_RES_ENABLED_50_25  59
+
+/*move to full VPP_HDMI_SINK_CAPS in vpp if requirement arise*/
+enum vpp_hdmi_sinkcap_bitmask {
+	VPP_HDMI_SINKCAP_BITMASK_HDMIMODE,
+	VPP_HDMI_SINKCAP_BITMASK_FULL4K,
+	VPP_HDMI_SINKCAP_BITMASK_4K30,
+	VPP_HDMI_SINKCAP_BITMASK_FHD,
+	VPP_HDMI_SINKCAP_BITMASK_PREF50FPS,
+};
+
 typedef struct VPP_HDMI_SINK_CAPS_T {
 	// EDID Valid
 	BOOL    validEdid;

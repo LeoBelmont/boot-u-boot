@@ -394,12 +394,12 @@ int MV_VPPOBJ_Stop(int handle)
 	return Vppstop();
 }
 
-int MV_VPPOBJ_LoadMipiConfig(VPP_MIPI_LOAD_CONFIG *pConfigParams)
+int MV_VPPOBJ_LoadMipiConfig(VPP_MIPI_LOAD_CONFIG *config_params)
 {
-	if (!pConfigParams)
+	if (!config_params)
 		return MV_VPP_EBADPARAM;
 
-	return VppInvokePassShm_Helper(pConfigParams, VPP_MIPI_CONFIG,
+	return vpp_invoke_pass_shm_helper(config_params, VPP_MIPI_CONFIG,
 					sizeof(VPP_MIPI_LOAD_CONFIG));
 }
 
@@ -437,11 +437,13 @@ INT MV_VPPOBJ_Destroy(INT handle)
  *         MV_EBADPARAM - invalid parameters
  *         MV_EUNCONFIG - VPP not configured
  ***************************************************/
-INT MV_VPPOBJ_GetHDMISinkFeatureMap(INT handle, VPP_HDMI_SINK_CAPS *p_sink_feature_map)
+INT MV_VPPOBJ_GetHDMISinkFeatureMap(INT handle,
+				    VPP_HDMI_SINK_CAPS *p_sink_feature_map)
 {
 	if (!p_sink_feature_map)
 		return MV_VPP_EBADPARAM;
 
-	return VppInvokePassShm_Helper(p_sink_feature_map, GET_HDMI_SINKCAPS,
-					sizeof(VPP_HDMI_SINK_CAPS));
+	return vpp_invoke_pass_shm_helper(p_sink_feature_map,
+				       GET_HDMI_SINKFEATUREMAP,
+				       sizeof(VPP_HDMI_SINK_CAPS));
 }
