@@ -67,15 +67,6 @@
 			states = <1800000 0x0 3300000 0x1>;
 			gpios = <&porta 17 GPIO_ACTIVE_HIGH>;
 		};
-
-		hdmi_5v: regulator-hdmi-5v {
-			status = "okay";
-			compatible = "regulator-fixed";
-			pinctrl-0 = <&hdmi_pwr_pmux>;
-			pinctrl-names = "default";
-			regulator-name = "hdmi-5v";
-			regulator-boot-on;
-		};
 	};
 
 	firmware {
@@ -89,6 +80,18 @@
 		compatible = "gpio-backlight";
 		gpios = <&expander0 1 GPIO_ACTIVE_HIGH>;
 		status = "okay";
+	};
+};
+
+&portb {
+	pinctrl-names = "default";
+	pinctrl-0 = <&hdmi_pwr_pmux>;
+
+	hdmi_5v_en {
+		gpio-hog;
+		gpios = <3 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "hdmi-5v-en";
 	};
 };
 

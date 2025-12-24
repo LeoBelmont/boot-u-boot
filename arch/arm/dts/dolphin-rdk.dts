@@ -55,15 +55,6 @@
 			enable-active-high;
 			gpio = <&portb 12 GPIO_ACTIVE_HIGH>;
 		};
-
-		hdmi_5v: regulator-hdmi-5v {
-			status = "okay";
-			compatible = "regulator-fixed";
-			pinctrl-0 = <&hdmitx5v_pmux>;
-			pinctrl-names = "default";
-			regulator-name = "hdmi-5v";
-			regulator-boot-on;
-		};
 	};
 
 	firmware {
@@ -89,6 +80,18 @@
 	gmac_reset_pmux: gmac_reset_pmux {
 		groups = "SM_TDO";
 		function = "gpio";
+	};
+};
+
+&portb {
+	pinctrl-names = "default";
+	pinctrl-0 = <&hdmitx5v_pmux>;
+
+	hdmi_5v_en {
+		gpio-hog;
+		gpios = <23 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "hdmi-5v-en";
 	};
 };
 
