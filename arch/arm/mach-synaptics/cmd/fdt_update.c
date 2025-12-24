@@ -85,7 +85,7 @@ static void setup_cma_param(char *bootargs)
 	/* Notice: strict check for the cma_pool_addr should be non-zero */
 	if (get_cma_size() && get_cma_addr()) {
 		memset(tmp_buf, 0x0, sizeof(tmp_buf));
-		snprintf(tmp_buf, (sizeof(tmp_buf) - 1), "cma=%d@%d",
+		snprintf(tmp_buf, (sizeof(tmp_buf) - 1), "cma=%u@%u",
 			 get_cma_size(), get_cma_addr());
 		strcat(bootargs, tmp_buf);
 	}
