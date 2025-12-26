@@ -90,7 +90,7 @@ u32 get_fastlogo_status(void)
 }
 
 typedef struct cmd_tbl_s	cmd_tbl_t;
-struct gpio_desc enable_gpio;
+
 /* Functional hook provided to set status manually
  * Usage: when dtbo env variable set, status can be set to 0
  * So that linux can bootup independent of u-boot
@@ -389,15 +389,6 @@ int syna_read_config(struct udevice *dev)
 	if (!ofnode_valid(node)) {
 		printf("Failed to find /soc/drm node\n");
 		return -ENOENT;
-	}
-	ret = gpio_request_by_name_nodev(node, "hdtx5v-gpio", 0, &enable_gpio, GPIOD_IS_OUT);
-	if (ret) {
-		debug("%s: Could not get reset-GPIO (err = %d)\n",
-		      dev->name, ret);
-	} else {
-		ret = dm_gpio_set_value(&enable_gpio, 1);
-		if (ret)
-			debug("%s: Error while setting reset-GPIO (err = %d)\n", dev->name, ret);
 	}
 
 	ret = syna_parse_lcdc_dt(dev);
