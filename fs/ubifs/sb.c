@@ -660,6 +660,7 @@ int ubifs_read_superblock(struct ubifs_info *c)
 	c->main_lebs = c->leb_cnt - UBIFS_SB_LEBS - UBIFS_MST_LEBS;
 	c->main_lebs -= c->log_lebs + c->lpt_lebs + c->orph_lebs;
 	c->main_first = c->leb_cnt - c->main_lebs;
+	c->hash_len = UBIFS_HASH_SZ;
 
 	err = validate_sb(c, sup);
 out:

@@ -11,3 +11,8 @@ config UBIFS_SILENCE_DEBUG_DUMP
 	help
 	  Make the debug dumps from UBIFS stop printing.
 	  This decreases size of U-Boot binary.
+
+config UBIFS_FS_AUTHENTICATED
+	bool "authenticated UBIFS mounting support"
+	help
+	  Enable mounting authenticated UBIFS.

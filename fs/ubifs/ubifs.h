@@ -56,6 +56,12 @@ extern unsigned int ubifs_tst_flags;
 
 #define pgoff_t		unsigned long
 
+#ifdef CONFIG_UBIFS_FS_AUTHENTICATED
+#define UBIFS_HASH_SZ 32
+#else
+#define UBIFS_HASH_SZ 0
+#endif
+
 /*
  * We "simulate" the Linux page struct much simpler here
  */
@@ -1917,6 +1923,7 @@ struct ubifs_info {
 	uint32_t (*key_hash)(const char *str, int len);
 	int key_fmt;
 	int key_len;
+	int hash_len;
 	int fanout;
 
 	int min_io_size;
