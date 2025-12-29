@@ -8,6 +8,10 @@ config CMD_SYNA_BOOTSPI
 	bool "Enable boot Linux from SPI NOR"
 	depends on SYNA_SPI_SUBOOT
 
+config CMD_SYNA_BOOTSPINAND
+	bool "Enable boot Linux from SPI NAND"
+	depends on SYNA_SPINAND_SUBOOT
+
 config CMD_SYNA_FDT_UPDATE
 	bool "Enable FDT update before booting Kernel"
 	depends on SYNA_SUBOOT
@@ -22,7 +26,7 @@ config CMD_SYNA_OTP
 
 config CMD_SYNA_MTDPARTS
 	bool "Enable MTD parts in version table format"
-	depends on SYNA_SPI_SUBOOT
+	depends on (SYNA_SPI_SUBOOT || SYNA_SPINAND_SUBOOT)
 
 config CMD_SYNA_FLASH
 	default y

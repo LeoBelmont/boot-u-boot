@@ -45,7 +45,7 @@ int get_subimg_blks(int idx);
 struct mtd_info *xspi_nand_init(void);
 int syna_spinand_read(u32 offset, u32 size, u32 addr);
 int syna_spinand_write(u32 offset, u32 size, u32 addr);
-int detect_randomized_blks(enum xspi_ops ops, uint32_t wbuf);
+int detect_randomized_blks(enum xspi_ops ops, u32 wbuf);
 void spinand_boot_prepare(void);
-void spi_nand_image_read(const char *cmd, void *read_buffer, unsigned int read_bytes);
+int spi_nand_image_read(const char *cmd, void *read_buffer, u32 read_bytes);
 #endif

@@ -81,6 +81,11 @@ config SYNA_SPI_SUBOOT
 	help
 	  Enable boot Linux from SPI NOR
 
+config SYNA_SPINAND_SUBOOT
+	bool "synaptics SPI NAND SU-Boot support"
+	help
+	  Enable boot Linux from SPI NAND
+
 config SYNA_USB_SUBOOT
 	bool "synaptics USB SU-Boot support"
 	help

@@ -505,15 +505,16 @@ int load_image_from_ubifs(const char *file, void *read_buffer, u32 read_bytes)
 	return 0;
 }
 
-void spi_nand_image_read(const char *cmd, void *read_buffer, u32 read_bytes)
+int spi_nand_image_read(const char *cmd, void *read_buffer, u32 read_bytes)
 {
 	const char *pt_ubifs = NULL;
+	int ret = -1;
 
 	if ((strcmp(cmd, KERNEL_A_NAME) == 0) || (strcmp(cmd, KERNEL_B_NAME) == 0)) {
 		pt_ubifs = strcmp(cmd, KERNEL_A_NAME) == 0 ? ROOTFS_A : ROOTFS_B;
 		if (mount_ubifs(pt_ubifs) == 0) {
-			load_image_from_ubifs(KERNEL_UBIFS_NAME,
-					      read_buffer, read_bytes);
+			ret = load_image_from_ubifs(KERNEL_UBIFS_NAME,
+						    read_buffer, read_bytes);
 		} else {
 			printf("Mount %s fail\n", pt_ubifs);
 			run_command("reset", 0);
@@ -522,4 +523,6 @@ void spi_nand_image_read(const char *cmd, void *read_buffer, u32 read_bytes)
 		printf("Unknown image name %s\n", cmd);
 		run_command("reset", 0);
 	}
+
+	return ret;
 }

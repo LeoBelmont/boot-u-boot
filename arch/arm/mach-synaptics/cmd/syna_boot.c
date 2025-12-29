@@ -26,11 +26,11 @@
 #include <image.h>
 #include <genimg.h>
 #include <android_image.h>
+#include <linux/mtd/mtd.h>
 #include "fastboot_syna.h"
 #include "mem_init.h"
 #include "tee_client.h"
-
-#include <linux/mtd/mtd.h>
+#include "spinand_drv.h"
 
 #ifdef CONFIG_SYNA_GENX_V3
 #define GENX_IMAGE_HEADER_LINUX_SIZE 0
@@ -59,6 +59,7 @@ enum boot_type_t {
 	BOOT_TYPE_MMC,
 	BOOT_TYPE_SPI,
 	BOOT_TYPE_RAM,
+	BOOT_TYPE_SPINAND,
 	BOOT_TYPE_INVALID = -1,
 };
 
@@ -77,6 +78,12 @@ static int read_image(enum boot_type_t boot_type, const char *pt_name,
 	case BOOT_TYPE_MMC:
 		fb_mmc_flash_read(pt_name, buff, read_bytes);
 		ret = 0;
+		break;
+#endif
+
+#ifdef CONFIG_MTD_SPI_NAND
+	case BOOT_TYPE_SPINAND:
+		ret = spi_nand_image_read(pt_name, buff, read_bytes);
 		break;
 #endif
 
@@ -215,6 +222,9 @@ static enum boot_type_t get_boot_type(const char *name)
 	if (strcmp(name, "ram") == 0)
 		return BOOT_TYPE_RAM;
 
+	if (strcmp(name, "spinand") == 0)
+		return BOOT_TYPE_SPINAND;
+
 	return BOOT_TYPE_INVALID;
 }
 
@@ -238,6 +248,7 @@ static int do_syna_boot(struct cmd_tbl *cmdtp, int flag, int argc, char * const 
 
 	switch (boot_type) {
 	case BOOT_TYPE_MMC:
+	case BOOT_TYPE_SPINAND:
 		ab_mode = get_current_slot();
 		if (ab_mode != BOOTSEL_A && ab_mode != BOOTSEL_B) {
 			printf("No bootable slots found for image loading, spinning...!!\n");
@@ -328,6 +339,13 @@ static int do_bootspi(struct cmd_tbl *cmdtp, int flag, int argc, char * const ar
 }
 #endif
 
+#ifdef CONFIG_CMD_SYNA_BOOTSPINAND
+static int do_bootspinand(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
+{
+	return run_command("syna_boot spinand", 0);
+}
+#endif
+
 static int do_bootram(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 {
 	char cmd[32];
@@ -355,6 +373,13 @@ U_BOOT_CMD(bootspi, 1, 0, do_bootspi,
 );
 #endif
 
+#ifdef CONFIG_CMD_SYNA_BOOTSPINAND
+U_BOOT_CMD(bootspinand, 1, 0, do_bootspinand,
+	   "u-boot boot linux from SPI NAND\n",
+	   ""
+);
+#endif
+
 U_BOOT_CMD(bootram, 2, 0, do_bootram,
 	   "u-boot boot linux from RAM\n",
 	   ""
@@ -362,7 +387,7 @@ U_BOOT_CMD(bootram, 2, 0, do_bootram,
 
 U_BOOT_CMD(syna_boot, 3, 0, do_syna_boot,
 	   "Syna u-boot boot linux\n",
-	   "mmc\n"
+	   "mmc/spinand\n"
 	   "syna_boot spi/ram offset\n"
 );
 

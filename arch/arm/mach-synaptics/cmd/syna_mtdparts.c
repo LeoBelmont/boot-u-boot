@@ -27,6 +27,7 @@
 #include <u-boot/zlib.h>
 #include <version_table.h>
 #include "fastboot_syna.h"
+#include "spinand_drv.h"
 
 #define CMD_MTD_PARTS_LEN 512
 #define MTD_PART_LEN 64
@@ -42,6 +43,8 @@
 #define SPI_VT_OFFSET 0x7F800
 #define SPI_BOOT_PART_NUM 2
 #define SPI_BOOT_PART_SIZE 0x200000
+
+#define NAND_PREBOOT_COPIES 8
 
 struct ver_table_t {
 	int num;
@@ -126,14 +129,30 @@ static int get_partition_info(struct mtd_info *mtd)
 	size_t read;
 	int ret = -1, i = 0;
 	u8 *buff = malloc(CLEAR_VT_SIZE);
+	loff_t start;
+	loff_t boot_part_size;
+	u8 boot_part;
 
 	if (!buff)
 		goto out;
 
-	for (i = 0; i < SPI_BOOT_PART_NUM; i++) {
-		ret = mtd_read(mtd, i * SPI_BOOT_PART_SIZE + SPI_VT_OFFSET,
+	if (IS_ENABLED(CONFIG_MTD_SPI_NAND)) {
+		start = NAND_BLOCK0_SIZE + NAND_BOOT_PARTITION_SIZE - CLEAR_VT_SIZE;
+		boot_part_size = NAND_BOOT_PARTITION_SIZE;
+		boot_part = NAND_PREBOOT_COPIES;
+	} else if (IS_ENABLED(CONFIG_SPI_FLASH_MTD)) {
+		start = SPI_VT_OFFSET;
+		boot_part_size = SPI_BOOT_PART_SIZE;
+		boot_part = SPI_BOOT_PART_NUM;
+	} else {
+		ret = -1;
+		goto out;
+	}
+
+	for (i = 0; i < boot_part; i++) {
+		ret = mtd_read(mtd, start + i * boot_part_size,
 			       CLEAR_VT_SIZE, &read, buff);
-		if (ret) {
+		if (ret || read != CLEAR_VT_SIZE) {
 			debug("read partition info error\n");
 			continue;
 		}
@@ -225,12 +244,13 @@ int syna_init_mtdparts(void)
 	struct mtd_info *mtd = NULL;
 	int ret = -1;
 
-#ifdef CONFIG_SPI_FLASH_MTD
-	/* setup spi device */
-	fb_spi_setup_mtd_dev();
+	if (IS_ENABLED(CONFIG_MTD_SPI_NAND)) {
+		mtd = xspi_nand_init();
+	} else if (IS_ENABLED(CONFIG_SPI_FLASH_MTD)) {
+		/* setup spi device */
+		mtd = fb_spi_setup_mtd_dev();
+	}
 
-	mtd = get_mtd_device(NULL, 0);
-#endif
 	if (IS_ERR_OR_NULL(mtd))
 		goto out;
 
@@ -243,8 +263,6 @@ int syna_init_mtdparts(void)
 	ret = 0;
 
 out:
-	if (!IS_ERR_OR_NULL(mtd))
-		put_mtd_device(mtd);
 
 	return ret;
 }

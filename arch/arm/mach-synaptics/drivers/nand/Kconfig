@@ -1,9 +1,4 @@
-config SYNA_SPI_NAND
-	bool "Enable syna spi nand driver"
-	depends on MTD_SPI_NAND
-	default n
-
 config NAND_RANDOMIZER
 	bool "Enable nand randomizer when do nand read/write"
-	depends on SYNA_SPI_NAND
+	depends on MTD_SPI_NAND
 	default n

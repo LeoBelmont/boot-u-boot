@@ -48,7 +48,8 @@
 #define POOL_ATTRIBUTES "pool-attributes"
 #define MAX_SYSTEM_SLOT (MAX_SYSTEM_POOL_NUM + 1) /* max_system_pool_num + 1 */
 
-#define ROOTFS_CONFIG_LINE "root=/dev/mmcblk"
+#define ROOTFS_CONFIG_LINE (IS_ENABLED(CONFIG_SYNA_MMC_SUBOOT) ? \
+		"root=/dev/mmcblk" : "rootfstype=ubifs ubi.mtd=%s")
 #define ROOTFS_A "rootfs_a"
 #define ROOTFS_B "rootfs_b"
 
@@ -333,6 +334,17 @@ static void setup_rootfs(char *bootargs)
 		strcat(bootargs, " ro");
 	}
 }
+#elif defined(CONFIG_MTD_SPI_NAND)
+static void setup_rootfs(char *bootargs)
+{
+	const char *pt_ubifs = NULL;
+	char rootfs_cmdline[128];
+
+	pt_ubifs = get_current_slot() == BOOTSEL_A ? ROOTFS_A : ROOTFS_B;
+
+	snprintf(rootfs_cmdline, sizeof(rootfs_cmdline), ROOTFS_CONFIG_LINE, pt_ubifs);
+	strcat(bootargs, rootfs_cmdline);
+}
 #endif
 
 #ifdef CONFIG_TARGET_PLATYPUS
@@ -371,7 +383,7 @@ int setup_bootargs(void *fdt)
 	strcpy(newbootargs, bootargs);
 	strcat(newbootargs, " ");
 
-#ifdef CONFIG_SYNA_MMC_SUBOOT
+#if defined(CONFIG_SYNA_MMC_SUBOOT) || defined(CONFIG_MTD_SPI_NAND)
 	setup_rootfs(newbootargs);
 	strcat(newbootargs, " ");
 #endif
