@@ -37,7 +37,8 @@ obj-y += plat/	\
 	tee/		\
 	pwm/		\
 	regulator/	\
-	usbconsole/
+	usbconsole/	\
+	nand/
 
 
 obj-${CONFIG_VIDEO_SYNA} += video/

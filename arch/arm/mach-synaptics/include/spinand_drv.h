@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright (C) 2016~2023 Synaptics Incorporated. All rights reserved.
+ * Copyright (C) 2016~2026 Synaptics Incorporated. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
@@ -22,24 +22,30 @@
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
  */
 
-#include <part.h>
+#ifndef _SPINAND_DRV_H_
+#define _SPINAND_DRV_H_
+#include <linux/types.h>
 
-#define BOOTSEL_A			0x0
-#define BOOTSEL_B			0x1
-#define BOOTSEL_DEFAULT			BOOTSEL_A
-#define BOOTSEL_INVALID			0xff
+#define RANDOMIZER_BUFF_SIZE 4096
+#define MAX_PAGE_SIZE 8192
+#define IMG_HDR_MAGIC_NUMBER 0xD2ADA3F1
+#define NAND_BLOCK0_SIZE 0x20000
+#define NAND_BOOT_PARTITION_SIZE 0x80000
+#define VT_OFFSET_FROM_BOTTOM 2048
+enum xspi_ops {
+	XSPI_READ,
+	XSPI_WRITE,
+};
 
-int get_current_slot(void);
-int try_abmode(int abmode_sel);
+extern struct mtd_info *mtd_nand;
 
-void fb_mmc_flash_read_from_offset(const char *cmd, void *read_buffer, unsigned int read_bytes,
-				   unsigned int offset);
-void fb_mmc_flash_read(const char *cmd, void *read_buffer, unsigned int read_bytes);
-int f_mmc_save_part_table(int mmc_dev);
-int f_mmc_get_hwpart_from_table(const char *part_name);
-int f_mmc_get_part_from_table(const char *part_name);
-int f_mmc_get_part_index(int mmc_dev, const char *part_name);
+int parse_version_table(u8 *buff);
+int get_subimg_blks(int idx);
 
-struct mtd_info *fb_spi_setup_mtd_dev(void);
-int syna_mtdparts_get_info_by_name(struct mtd_info *mtd, const char *name,
-				   struct disk_partition *info);
+struct mtd_info *xspi_nand_init(void);
+int syna_spinand_read(u32 offset, u32 size, u32 addr);
+int syna_spinand_write(u32 offset, u32 size, u32 addr);
+int detect_randomized_blks(enum xspi_ops ops, uint32_t wbuf);
+void spinand_boot_prepare(void);
+void spi_nand_image_read(const char *cmd, void *read_buffer, unsigned int read_bytes);
+#endif

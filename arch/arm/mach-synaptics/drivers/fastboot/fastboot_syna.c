@@ -25,31 +25,25 @@
 #include <config.h>
 #include <div64.h>
 #include <malloc.h>
-#include "misc_syna.h"
-#include "fastboot_syna.h"
 #include <command.h>
 #include <dm/device.h>
 #include <dm/device-internal.h>
-
-#ifdef CONFIG_MMC
-#include "mmc.h"
-#define CONFIG_MISC_IN_MMC 1
-#endif
-
-#ifdef CONFIG_SPI_FLASH_MTD
+#include <mmc.h>
 #include <linux/mtd/mtd.h>
 #include <spi.h>
 #include <spi_flash.h>
-#undef CONFIG_MISC_IN_MMC
-#define CONFIG_MISC_IN_SPI 1
-#endif
+#include <mtd.h>
+#include "spinand_drv.h"
+#include "genimg.h"
+#include "misc_syna.h"
+#include "fastboot_syna.h"
 
-#define BOOTCTRL_MAGIC				0x42424100
+#define BOOTCTRL_MAGIC			0x42424100
 #define BOOT_CONTROL_VERSION		1
 #define ANDROID_AB_COMMAND_KEY		"bootctrl.metadata"
 #define BOOTCTRL_HAL_FTS_LENGH		0x20
-#define MISC_BOOT_CONTROL_VERSION  2
-#define MAX_GPT_ENTRY 64
+#define MISC_BOOT_CONTROL_VERSION	2
+#define MAX_GPT_ENTRY			64
 
 typedef struct syna_slot_metadata {
 	uint8_t priority : 4;
@@ -88,9 +82,7 @@ struct emmc_part {
 	struct disk_partition info;
 };
 
-#ifdef CONFIG_MMC
 static struct emmc_part *emmc_part_table;
-#endif
 
 static bool is_valid_bootctrl(void *p_bootctrl)
 {
@@ -105,172 +97,262 @@ static bool slot_is_bootable(misc_slot_metadata_t *p_slot)
 	return p_slot->priority > 0 && (p_slot->successful_boot || (p_slot->tries_remaining > 0));
 }
 
+static loff_t get_bootslot_offset(void)
+{
+	if (IS_ENABLED(CONFIG_MTD_SPI_NAND)) {
+		struct mtd_info *mtd;
+		char *partition_name = NULL;
+		struct disk_partition info;
+		u32 read_len;
+		struct img_info img_info;
+		loff_t misc_offset;
+		loff_t bootslot_offset;
+		u32 img_size = 0;
+		u32 blks = 0;
+		u32 offset = 0;
+		int i;
+		int retry = 0;
+
+		mtd = xspi_nand_init();
+		if (!mtd) {
+			printf("%s xspi nand init failed\n", __func__);
+			return -1;
+		}
+
+retry_ab:
+		if (retry > 1)
+			return -1;
+
+		partition_name = retry == 0 ? "cmboot_a" : "cmboot_b";
+		retry++;
+
+		if (syna_mtdparts_get_info_by_name(mtd, partition_name, (void *)&info) == -1) {
+			printf("cannot find partition: '%s'\n", partition_name);
+			goto retry_ab;
+		}
+		mtd_read(mtd, info.start * info.blksz, sizeof(struct img_info),
+			 (size_t *)&read_len, (u8 *)&img_info);
+
+		/* Find out image size */
+		img_size = img_info.image_size;
+
+		if ((img_size + img_info.image_offset) < img_size) {
+			printf("ERROR: Image offset is invalid\n");
+			goto retry_ab;
+		}
+		img_size += img_info.image_offset;
+		blks = img_size / info.blksz;
+		if (img_size % info.blksz)
+			blks += 1;
+
+		/* Find 1 good blk after cmboot data */
+		blks += 1;
+		for (i = 0; i < blks; offset++) {
+			if (mtd_block_isbad(mtd, (info.start + offset) * info.blksz) == 0)
+				i++;
+		}
+		offset--;
+
+		if (offset < info.blksz) {
+			misc_offset = info.start + offset;
+			bootslot_offset = (misc_offset * mtd->erasesize) + 4096;
+			return bootslot_offset;
+		}
+
+		goto retry_ab;
+	} else if (IS_ENABLED(CONFIG_SPI_FLASH_MTD)) {
+		int ret = -1;
+		struct disk_partition info;
+		loff_t start;
+
+		struct mtd_info *mtd = get_mtd_device(NULL, 0);
+
+		if (IS_ERR_OR_NULL(mtd)) {
+			puts("\nno devices available\n");
+			goto out;
+		}
+
+		char *partition_name = "misc";
+
+		if (syna_mtdparts_get_info_by_name(mtd, partition_name, &info) == -1) {
+			printf("cannot find partition: '%s'\n", partition_name);
+			goto out;
+		}
+		start = (info.start * info.blksz) + 4096;
+		return start;
+out:
+		if (!IS_ERR_OR_NULL(mtd))
+			put_mtd_device(mtd);
+
+		return ret;
+	}
+
+	return -1;
+}
+
 static int write_bootctrl_metadata(void *p_bootctrl)
 {
-#ifdef CONFIG_MISC_IN_MMC
 	if (!p_bootctrl) {
 		printf("ERROR: invalid bootctrl metadata for write !\n");
 		return -1;
 	}
 
-	struct blk_desc *dev_desc;
-	struct disk_partition info;
-	lbaint_t strat_blk, size_blk;
-	int mmc_dev = get_mmc_boot_dev();
-	struct mmc *mmc = find_mmc_device(mmc_dev);
-	char *partition_name = "misc";
+	if (IS_ENABLED(CONFIG_MMC)) {
+		struct blk_desc *dev_desc;
+		struct disk_partition info;
+		lbaint_t strat_blk, size_blk;
+		int mmc_dev = get_mmc_boot_dev();
+		struct mmc *mmc = find_mmc_device(mmc_dev);
+		char *partition_name = "misc";
 
-	if (!mmc) {
-		printf("invalid mmc device\n");
-		return -1;
-	}
+		if (!mmc) {
+			printf("invalid mmc device\n");
+			return -1;
+		}
 
-	dev_desc = blk_get_dev("mmc", mmc_dev);
-	if (!dev_desc || dev_desc->type == DEV_TYPE_UNKNOWN) {
-		printf("invalid mmc device\n");
-		return -1;
-	}
+		dev_desc = blk_get_dev("mmc", mmc_dev);
+		if (!dev_desc || dev_desc->type == DEV_TYPE_UNKNOWN) {
+			printf("invalid mmc device\n");
+			return -1;
+		}
 
-	blk_dselect_hwpart(dev_desc, get_mmc_part_by_name(mmc_dev, partition_name));
+		blk_dselect_hwpart(dev_desc, get_mmc_part_by_name(mmc_dev, partition_name));
 
-	if (part_get_info_by_name(dev_desc, partition_name, &info) == -1) {
-		printf("cannot find partition: '%s'\n", partition_name);
-		return -1;
-	}
-	strat_blk = info.start + 4096 / dev_desc->blksz;
-	size_blk = (sizeof(misc_boot_ctrl_t) + dev_desc->blksz) / dev_desc->blksz;
-	blk_dwrite(dev_desc, strat_blk, size_blk, p_bootctrl);
+		if (part_get_info_by_name(dev_desc, partition_name, &info) == -1) {
+			printf("cannot find partition: '%s'\n", partition_name);
+			return -1;
+		}
+		strat_blk = info.start + 4096 / dev_desc->blksz;
+		size_blk = (sizeof(misc_boot_ctrl_t) + dev_desc->blksz) / dev_desc->blksz;
+		blk_dwrite(dev_desc, strat_blk, size_blk, p_bootctrl);
 
-	return 0;
-#else
-	struct disk_partition info;
-	loff_t start;
-	size_t write_len;
-	size_t write;
-	int ret = -1;
-	struct erase_info erase_op = {};
-	struct mtd_info *mtd = get_mtd_device(NULL, 0);
+		return 0;
+	} else if (IS_ENABLED(CONFIG_MTD)) {
+		loff_t start;
+		size_t write_len;
+		size_t write;
+		int ret = -1;
+		struct erase_info erase_op = {};
+		struct mtd_info *mtd = get_mtd_device(NULL, 0);
 
-	if (IS_ERR_OR_NULL(mtd)) {
-		puts("\nno devices available\n");
-		goto out;
-	}
+		if (IS_ERR_OR_NULL(mtd)) {
+			puts("\nno devices available\n");
+			goto out;
+		}
 
-	char *partition_name = "misc";
+		start = get_bootslot_offset();
+		if (start < 0) {
+			printf("Invalid boot slot offset\n");
+			goto out;
+		}
+		write_len = sizeof(misc_boot_ctrl_t);
 
-	if (syna_mtdparts_get_info_by_name(mtd, partition_name, &info) == -1) {
-		printf("cannot find partition: '%s'\n", partition_name);
-		goto out;
-	}
-	start = (info.start * info.blksz) + 4096;
-	write_len = sizeof(misc_boot_ctrl_t);
+		erase_op.mtd = mtd;
+		erase_op.addr = start & (~(mtd->erasesize - 1));
+		erase_op.len = mtd->erasesize;
 
-	erase_op.mtd = mtd;
-	erase_op.addr = (start & (~(mtd->erasesize - 1)));
-	erase_op.len = mtd->erasesize;
-	erase_op.scrub = 0;
+		ret = mtd_erase(mtd, &erase_op);
+		if (ret) {
+			printf("%s: erase() failed for block at 0x%llx: %d\n",
+			       mtd->name, erase_op.addr, ret);
+			goto out;
+		}
 
-	ret = mtd_erase(mtd, &erase_op);
-	if (ret) {
-		printf("%s: erase() failed for block at 0x%llx: %d\n",
-		       mtd->name, erase_op.addr, ret);
-		goto out;
-	}
-
-	ret = mtd_write(mtd, start, write_len, &write, p_bootctrl);
-	if (ret || write != write_len) {
-		printf("%s: write() failed for block at 0x%llx: %d\n",
-		       mtd->name, start, ret);
-		goto out;
-	}
-	ret = 0;
+		ret = mtd_write(mtd, start, write_len, &write, p_bootctrl);
+		if (ret || write != write_len) {
+			printf("%s: write() failed for block at 0x%llx: %d\n",
+			       mtd->name, start, ret);
+			goto out;
+		}
+		ret = 0;
 
 out:
-	if (!IS_ERR_OR_NULL(mtd))
-		put_mtd_device(mtd);
+		if (!IS_ERR_OR_NULL(mtd))
+			put_mtd_device(mtd);
 
-	return ret;
-#endif
+		return ret;
+	}
+
+	return -1;
 }
 
 static int get_bootctrl_metadata(void *p_bootctrl)
 {
-#ifdef CONFIG_MISC_IN_MMC
 	if (!p_bootctrl) {
 		printf("Error: invalid parameter p_bootctrl !\n");
 		return -1;
 	}
 
-	struct blk_desc *dev_desc;
-	struct disk_partition info;
-	lbaint_t strat_blk;
-	int mmc_dev = get_mmc_boot_dev();
-	struct mmc *mmc = find_mmc_device(mmc_dev);
-	char *misc_bootctrl;
-	char *partition_name = "misc";
+	if (IS_ENABLED(CONFIG_MMC)) {
+		struct blk_desc *dev_desc;
+		struct disk_partition info;
+		lbaint_t strat_blk;
+		int mmc_dev = get_mmc_boot_dev();
+		struct mmc *mmc = find_mmc_device(mmc_dev);
+		char *misc_bootctrl;
+		char *partition_name = "misc";
 
-	if (!mmc) {
-		printf("invalid mmc device\n");
-		return -1;
-	}
+		if (!mmc) {
+			printf("invalid mmc device\n");
+			return -1;
+		}
 
-	dev_desc = blk_get_dev("mmc", mmc_dev);
-	if (!dev_desc || dev_desc->type == DEV_TYPE_UNKNOWN) {
-		printf("invalid mmc device\n");
-		return -1;
-	}
+		dev_desc = blk_get_dev("mmc", mmc_dev);
+		if (!dev_desc || dev_desc->type == DEV_TYPE_UNKNOWN) {
+			printf("invalid mmc device\n");
+			return -1;
+		}
 
-	blk_dselect_hwpart(dev_desc, get_mmc_part_by_name(mmc_dev, partition_name));
+		blk_dselect_hwpart(dev_desc, get_mmc_part_by_name(mmc_dev, partition_name));
 
-	if (part_get_info_by_name(dev_desc, partition_name, &info) == -1) {
-		printf("cannot find partition: '%s'\n", partition_name);
-		return -1;
-	}
+		if (part_get_info_by_name(dev_desc, partition_name, &info) == -1) {
+			printf("cannot find partition: '%s'\n", partition_name);
+			return -1;
+		}
 
-	misc_bootctrl = (void *)malloc(dev_desc->blksz);
-	strat_blk = info.start + 4096 / dev_desc->blksz;
-	blk_dread(dev_desc, strat_blk, 1, misc_bootctrl);
-	memcpy(p_bootctrl, (void *)misc_bootctrl, sizeof(misc_boot_ctrl_t));
+		misc_bootctrl = (void *)malloc(dev_desc->blksz);
+		strat_blk = info.start + 4096 / dev_desc->blksz;
+		blk_dread(dev_desc, strat_blk, 1, misc_bootctrl);
+		memcpy(p_bootctrl, (void *)misc_bootctrl, sizeof(misc_boot_ctrl_t));
 
-	free(misc_bootctrl);
+		free(misc_bootctrl);
 
-	return 0;
-#else
-	struct disk_partition info;
-	loff_t start;
-	int ret = -1;
-	struct mtd_info *mtd = get_mtd_device(NULL, 0);
-	size_t read;
+		return 0;
+	} else if (IS_ENABLED(CONFIG_MTD)) {
+		loff_t start;
+		int ret = -1;
+		struct mtd_info *mtd = get_mtd_device(NULL, 0);
+		size_t read;
 
-	if (IS_ERR_OR_NULL(mtd)) {
-		puts("\nno devices available\n");
-		return 1;
-	}
+		if (IS_ERR_OR_NULL(mtd)) {
+			puts("\nno devices available\n");
+			return 1;
+		}
 
-	char *partition_name = "misc";
+		start = get_bootslot_offset();
+		if (start < 0) {
+			printf("Invalid boot slot offset\n");
+			goto out;
+		}
 
-	if (syna_mtdparts_get_info_by_name(mtd, partition_name, &info) == -1) {
-		printf("cannot find partition: '%s'\n", partition_name);
-		goto out;
-	}
+		ret = mtd_read(mtd, start, sizeof(misc_boot_ctrl_t), &read, p_bootctrl);
 
-	start = (info.start * info.blksz) + 4096;
-	ret = mtd_read(mtd, start, sizeof(misc_boot_ctrl_t), &read, p_bootctrl);
+		if ((ret && ret != -EUCLEAN) || read != sizeof(misc_boot_ctrl_t)) {
+			printf("%s: read() failed for block at 0x%llx: %d\n",
+			       mtd->name, start, ret);
+			goto out;
+		}
 
-	if ((ret && ret != -EUCLEAN) || read != sizeof(misc_boot_ctrl_t)) {
-		printf("%s: read() failed for block at 0x%llx: %d\n",
-		       mtd->name, start, ret);
-		goto out;
-	}
-
-	ret = 0;
+		ret = 0;
 
 out:
-	if (!IS_ERR_OR_NULL(mtd))
-		put_mtd_device(mtd);
+		if (!IS_ERR_OR_NULL(mtd))
+			put_mtd_device(mtd);
 
-	return ret;
-#endif
+		return ret;
+	}
+
+	return -1;
 }
 
 static int init_bootctrl(misc_boot_ctrl_t *p_bootctrl, int default_slot)
@@ -425,7 +507,6 @@ int try_abmode(int abmode_sel)
 	return 1;
 }
 
-#ifdef CONFIG_MMC
 static struct part_driver *f_part_driver_lookup_type(struct blk_desc *dev_desc)
 {
 	struct part_driver *drv =
@@ -682,10 +763,8 @@ void fb_mmc_flash_read(const char *cmd, void *read_buffer,
 {
 	fb_mmc_flash_read_from_offset(cmd, read_buffer, read_bytes, 0);
 }
-#endif
 
-#ifdef CONFIG_SPI_FLASH_MTD
-
+#if IS_ENABLED(CONFIG_SPI_FLASH_MTD)
 static struct spi_flash *flash;
 
 struct mtd_info *fb_spi_setup_mtd_dev(void)

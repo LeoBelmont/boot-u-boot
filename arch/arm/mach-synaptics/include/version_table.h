@@ -25,7 +25,11 @@
 #ifndef _VERSION_TABLE_H_
 #define _VERSION_TABLE_H_
 
+#include <linux/types.h>
+
 #define PART_NAME_MAX_LEN	15
+#define BLOCK0	"block0"
+#define IMG2_NAME	"pre-bootloader"
 
 struct version_t {
 	union {
@@ -36,6 +40,42 @@ struct version_t {
 		u64 version;
 	};
 } __packed __aligned(4);
+
+enum data_type_t_ {
+	DATA_TYPE_NORMAL,
+	DATA_TYPE_OOB,
+	DATA_TYPE_RAW
+};
+
+struct sub_img_info_t {
+	char name[PART_NAME_MAX_LEN + 1];
+	u64 size;
+	u32 crc;
+	struct version_t version;
+
+	u32 reserved_blocks; /* refer to Notes* */
+	u32 chip_start_blkind;
+	u32 chip_num_blocks;
+	u32 data_type;
+	u8 reserved[12]; /* 64 bytes aligned */
+};
+
+struct img_hdr_t {
+	u32 magic;
+	struct version_t version;
+
+	u32 page_size;
+	u32 oob_size;
+	u32 pages_per_block;
+	u32 blks_per_chip;
+
+	u32 num_sub_images;
+	u8 ddr_type		: 4;
+	u8 ddr_channel	: 4;
+	u8 cpu_type[2];
+	u8 reserved[29]; /* 64 bytes aligned */
+	struct sub_img_info_t sub_image[];
+};
 
 struct ver_table_entry_t {
 	char name[PART_NAME_MAX_LEN + 1];

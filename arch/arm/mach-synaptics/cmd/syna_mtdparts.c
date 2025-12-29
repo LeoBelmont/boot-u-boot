@@ -215,6 +215,11 @@ int syna_mtdparts_get_info_by_name(struct mtd_info *mtd, const char *name,
 	return -1;
 }
 
+int get_subimg_blks(int idx)
+{
+	return vts.vt[idx].part1_blks;
+}
+
 int syna_init_mtdparts(void)
 {
 	struct mtd_info *mtd = NULL;
