@@ -373,7 +373,7 @@ static const struct syna_desc_group klamath_soc_pinctrl_groups[] = {
 	SYNA_PINCTRL_GROUP("GPIO21", 0x14, 0x3, 0x18,
 			   SYNA_PINCTRL_FUNC(0x0, "gpio"), /* GPIO21 */
 			   SYNA_PINCTRL_FUNC(0x1, "spi2"), /* SCLK */
-			   SYNA_PINCTRL_FUNC(0x2, "sdio2"), /* CLK */
+			   SYNA_PINCTRL_FUNC(0x3, "sdio2"), /* CLK */
 			   SYNA_PINCTRL_FUNC(0x5, "clkout")),
 	SYNA_PINCTRL_GROUP("GPIO22", 0x14, 0x3, 0x1b,
 			   SYNA_PINCTRL_FUNC(0x0, "gpio"), /* GPIO22 */
@@ -567,8 +567,7 @@ static const struct syna_desc_group klamath_sysmgr_pinctrl_groups[] = {
 			   SYNA_PINCTRL_FUNC(0x0, "gpio"), /* SM GPIO16 */
 			   SYNA_PINCTRL_FUNC(0x1, "uart1"), /* SM UART1 RXD */
 			   SYNA_PINCTRL_FUNC(0x2, "can0"), /* SM CAN0 RX */
-			   SYNA_PINCTRL_FUNC(0x3, "pwm"), /* SM PWM7 */
-			   SYNA_PINCTRL_FUNC(0x6, "uart1")), /* SM UART0 RXD */
+			   SYNA_PINCTRL_FUNC(0x3, "pwm")), /* SM PWM7 */
 	SYNA_PINCTRL_GROUP("SM_GPIO13", 0xc, 0x3, 0x06,
 			   SYNA_PINCTRL_FUNC(0x0, "gpio"), /* SM GPIO13 */
 			   SYNA_PINCTRL_FUNC(0x1, "tw0"), /* SM TW0 SDA */
