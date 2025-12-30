@@ -111,12 +111,18 @@ extern u32 get_fastlogo_status(void);
 
 static void setup_fastlogo_param(char *bootargs)
 {
-	char tmp_buf[64];
+	char tmp_buf[128];
 	u32 fl_status = get_fastlogo_status();
 
 	if (fl_status) {
 		memset(tmp_buf, 0x0, sizeof(tmp_buf));
 		snprintf(tmp_buf, (sizeof(tmp_buf) - 1), "avio.fastlogo_status=%d", fl_status);
+		strcat(bootargs, tmp_buf);
+	}
+
+	if (get_fastlogo_addr(tmp_buf)) {
+		if (fl_status)
+			strcat(bootargs, " ");
 		strcat(bootargs, tmp_buf);
 	}
 }

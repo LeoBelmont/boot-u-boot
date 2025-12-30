@@ -62,6 +62,17 @@
 
 #define LOGO_HEADER_SIZE	(1024 + GENX_IMAGE_HEADER_FASTLOGO_SIZE)
 
+struct fl_logo_info {
+	unsigned long addr;
+	unsigned int width;
+	unsigned int height;
+	unsigned int stride;
+};
+
+/* Global array to store multiple logo info (one per display) */
+static struct fl_logo_info g_logo_info[MAX_NUM_DISPLAY];
+static int g_logo_info_cnt;
+
 struct pt_info {
 	__le64 part;
 	__le64 start_lba;
@@ -280,6 +291,12 @@ int syna_load_logo_info(int width, int height, VBUF_INFO *p_vpp_buf, FASTLOGO_IN
 	flush_dcache_range((unsigned long)img_buff, (unsigned long)(img_buff + read_size));
 	memcpy(read_buffer, logo_buffer, logo_size);
 
+	g_logo_info[g_logo_info_cnt].addr = (unsigned long)read_buffer;
+	g_logo_info[g_logo_info_cnt].width = fl_header->width;
+	g_logo_info[g_logo_info_cnt].height = fl_header->height;
+	g_logo_info[g_logo_info_cnt].stride = fl_header->stride;
+	g_logo_info_cnt++;  /* Increment for next display */
+
 	p_vpp_buf->m_srcfmt = LOGO_SRC_FMT;
 	p_vpp_buf->m_bytes_per_pixel = (LOGO_SRC_FMT == SRCFMT_YUV422) ? 2 : 3;
 	p_vpp_buf->m_pbuf_start = read_buffer;
@@ -301,4 +318,26 @@ error_out1:
 		free_ion_cacheable(logo_header);
 
 	return ret;
+}
+
+int get_fastlogo_addr(char *fl_args)
+{
+	int i;
+
+	fl_args[0] = '\0';
+	/* logo parameter: syna_drm.logo_info=addr0@w0xh0-s0,addr1@w1xh1-s1 */
+	for (i = 0; i < g_logo_info_cnt; i++) {
+		if (g_logo_info[i].addr) {
+			/* Add prefix on first entry, comma on subsequent entries */
+			fl_args += sprintf(fl_args, i ? "," : "syna_drm.logo_info=");
+			fl_args += sprintf(fl_args, "%08lx@%xx%x-%x",
+				 g_logo_info[i].addr, g_logo_info[i].width,
+				 g_logo_info[i].height, g_logo_info[i].stride);
+
+			debug("U-Boot: Display[%d] logo: %08lx@%xx%x-%x\n",
+			      i, g_logo_info[i].addr, g_logo_info[i].width,
+			      g_logo_info[i].height, g_logo_info[i].stride);
+		}
+	}
+	return i;
 }
