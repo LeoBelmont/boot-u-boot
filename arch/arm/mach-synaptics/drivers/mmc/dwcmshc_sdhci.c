@@ -27,6 +27,8 @@
 #include <reset.h>
 #include <sdhci.h>
 #include <clk.h>
+#include <mux.h>
+#include <mux-internal.h>
 #include <linux/delay.h>
 
 #include "dwcmshc_sdhci.h"
@@ -443,8 +445,16 @@ static int dwcmshc_probe(struct udevice *dev)
 	int ret = 0;
 	struct clk clk;
 	unsigned long clock;
+	struct mux_control *mux;
+	unsigned int state;
 
 	dwcmshc_reset_host(plat);
+
+	mux = devm_mux_control_get(dev, "mux-0");
+	if (!IS_ERR(mux)) {
+		state = dev_read_u32_default(dev, "mux-0-value", 0);
+		mux_control_select(mux, state);
+	}
 
 	ret = clk_get_by_index(dev, 0, &clk);
 	if (ret < 0) {
