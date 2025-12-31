@@ -111,6 +111,12 @@
 		clock-frequency = <200000000>;
 	};
 
+	sdioclk: sdioclk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <200000000>;
+	};
+
 	gmac1clk: gmac1clk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
@@ -217,6 +223,17 @@
 			status = "disabled";
 		};
 
+		sdhci2: sdhci@f7a02000 {
+			compatible = "snps,dwcmshc-sdhci";
+			reg = <0xf7a02000 0x1000>;
+			interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&sdioclk>, <&sdioclk>;
+			clock-names = "core", "bus";
+			resets = <&reset 0x350 7 0 1>;
+			bus-width = <4>;
+			status = "disabled";
+		};
+
 		gmac1: ethernet@f7a06000 {
 			compatible = "synaptics,klamath-dwmac-eqos";
 			reg = <0xf7a06000 0x2000>;
@@ -286,6 +303,14 @@
 			compatible = "synaptics,chipctrl-reset";
 			reg = <0xf7e10000 0x400>;
 			#reset-cells = <4>;
+		};
+
+		mux0: mux-controller@f7e10040 {
+			compatible = "reg-mux";
+			reg = <0xf7e10040 0x4>;
+			#mux-control-cells = <1>;
+			mux-reg-masks = <0x0 0x30>;
+			status = "disabled";
 		};
 
 		pinctrl: pinctrl@f7e18000 {
