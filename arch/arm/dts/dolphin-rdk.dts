@@ -236,8 +236,6 @@
 	disp1-res-id = <13>;
 	disp2-res-id = <102>;
 
-	hdtx5v-gpio = <&portb 23 GPIO_ACTIVE_HIGH>;
-
 	dsi_panel {
 		status= "okay";
 

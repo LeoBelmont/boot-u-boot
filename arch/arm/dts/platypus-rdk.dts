@@ -237,8 +237,6 @@
 	disp-mode = <0>;
 	disp1-res-id = <13>;
 
-	hdtx5v-gpio = <&portb 3 GPIO_ACTIVE_HIGH>; /* SOC GPIO 35 */
-
 	dsi_panel {
 		status= "okay";
 
