@@ -244,5 +244,10 @@ int syna_lcdc_init(struct berlin_fb_priv *priv)
 
 	dsi_register_device(lcdc_config_data->dsi_dev);
 
+	if (!priv->vpp_config_param.mipidsi_enable) {
+		mipi_dphy_shutdown(&lcdc_config_data->dsi_dev->phy, 1);
+		mipi_dsih_close(lcdc_config_data->dsi_dev);
+	}
+
 	return 0;
 }

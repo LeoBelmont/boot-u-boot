@@ -38,5 +38,6 @@ void mipi_dphy_pll_clksel(dphy_t *phy, int clksel);
 void mipi_dphy_pll_shadow_control_en(dphy_t *phy, int en);
 void mipi_dphy_CfgClkFreqRange(dphy_t *phy, int range);
 void mipi_dphy_stopstate_wait(dphy_t *phy, int lanes);
+void mipi_dphy_shutdown(dphy_t *phy, int shutdown);
 
 #endif
