@@ -27,19 +27,19 @@
 
 #include "vpp_api.h"
 
-static inline IS_MODE_HDMI(u32 mode)
+static inline int IS_MODE_HDMI(u32 mode)
 {
 	return ((mode == VOUT_DISP_SINGLE_MODE_PRI) ||
 		(mode == VOUT_DISP_DUAL_MODE_PIP));
 }
 
-static inline IS_MODE_MIPI(u32 mode)
+static inline int IS_MODE_MIPI(u32 mode)
 {
 	return ((mode == VOUT_DISP_SINGLE_MODE_SEC) ||
 		(mode == VOUT_DISP_DUAL_MODE_PIP));
 }
 
-static inline IS_MODE_DUAL(u32 mode)
+static inline int IS_MODE_DUAL(u32 mode)
 {
 	return (mode == VOUT_DISP_DUAL_MODE_PIP);
 }
