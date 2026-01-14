@@ -438,12 +438,12 @@ INT MV_VPPOBJ_Destroy(INT handle)
  *         MV_EUNCONFIG - VPP not configured
  ***************************************************/
 INT MV_VPPOBJ_GetHDMISinkFeatureMap(INT handle,
-				    VPP_HDMI_SINK_CAPS *p_sink_feature_map)
+				    VPP_HDMI_SINKCAP_BITMASK *p_sink_feature_map)
 {
 	if (!p_sink_feature_map)
 		return MV_VPP_EBADPARAM;
 
 	return vpp_invoke_pass_shm_helper(p_sink_feature_map,
 				       GET_HDMI_SINKFEATUREMAP,
-				       sizeof(VPP_HDMI_SINK_CAPS));
+				       sizeof(VPP_HDMI_SINKCAP_BITMASK));
 }

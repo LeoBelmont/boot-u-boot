@@ -4351,7 +4351,7 @@ int MV_VPPOBJ_SetNgptvParams(int handle, int iPlaneId, UINT32 *params, UINT32 pa
 
 int MV_VPPOBJ_SetOfflineParams(int handle, int iPlaneId, int bpp, int srcfmt);
 
-int MV_VPPOBJ_GetHDMISinkFeatureMap(int handle, VPP_HDMI_SINK_CAPS *p_sink_feature_map);
+int MV_VPPOBJ_GetHDMISinkFeatureMap(int handle, VPP_HDMI_SINKCAP_BITMASK *p_sink_feature_map);
 #ifdef __cplusplus
 }
 #endif

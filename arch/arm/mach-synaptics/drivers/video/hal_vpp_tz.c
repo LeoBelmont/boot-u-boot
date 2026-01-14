@@ -45,7 +45,7 @@ int TZ_MV_VPP_Config(const int *pvinport_cfg, const int *pdv_cfg,
 
 static void TZ_MV_GetHDMIPreferredRes(struct vpp_config_params *vpp_config_param)
 {
-	u32 sinkCaps;
+	VPP_HDMI_SINKCAP_BITMASK sinkCaps;
 	int retVal;
 
 	retVal = MV_VPPOBJ_GetHDMISinkFeatureMap(0, &sinkCaps);
