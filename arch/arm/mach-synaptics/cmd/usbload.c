@@ -68,12 +68,11 @@ static u32 request_img_from_usbs_by_name(char *image_name, u32 uboot_img_load_ad
 static int do_usbload(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 {
 	u32 load_addr, ret;
-	u8 buff[1024];
-	char image_name[256] = "07_IMAGE";
-	u64 buff_addr = 0;
+	char imgsize_name[16] = "07_IMAGE";
+	u32 dat;
 	#define BM_LOAD_RERTY_INITIAL	3
 	u32 retry_bm = BM_LOAD_RERTY_INITIAL;
-	u32 img_size;
+	u32 imgsize;
 
 	if (argc < 3)
 		return -1;
@@ -82,7 +81,18 @@ static int do_usbload(struct cmd_tbl *cmdtp, int flag, int argc, char * const ar
 		printf("%s, file name %s is too long.\n", __func__, argv[1]);
 		return -1;
 	}
+
 	load_addr = simple_strtoull(argv[2], NULL, 16);
+	if (load_addr & 3) {
+		printf("%s, load address 0x%x should be 4 byte alignment\n", __func__, load_addr);
+		return -1;
+	}
+	if (load_addr >= 0x40000000) {
+		printf("%s, address error 0x%x, image should be loaded below 0x40000000\n",
+		       __func__, load_addr);
+		return -1;
+	}
+
 	flush_dcache_all();
 	printf("%s, loading image %s to addr %x.\n", __func__, argv[1], load_addr);
 	ret = request_img_from_usbs_by_name(argv[1], load_addr);
@@ -91,33 +101,38 @@ static int do_usbload(struct cmd_tbl *cmdtp, int flag, int argc, char * const ar
 		return ret;
 	}
 
-	ret = request_img_from_usbs_by_name(image_name, (u32)(u64)buff);
+	dat = *(u32 *)load_addr;
+	*(u32 *)load_addr = 0;
+	flush_cache(load_addr, sizeof(u32));
+
+	ret = request_img_from_usbs_by_name(imgsize_name, load_addr);
 	if (ret != 0) {
 		printf("can not get image size from usb.\n");
 		return ret;
 	}
+	invalidate_dcache_range(load_addr, load_addr + sizeof(u32));
+	imgsize = *(u32 *)load_addr;
 
-	invalidate_dcache_range((unsigned long)buff, (unsigned long)buff + sizeof(u32));
-	buff_addr = (u64)buff;
-	img_size = *(u32 *)buff_addr;
-	while (!img_size && retry_bm) {
+	while (!imgsize && retry_bm) {
 		mdelay(1);
-		ret = request_img_from_usbs_by_name(image_name, (u32)(u64)buff);
+		ret = request_img_from_usbs_by_name(imgsize_name, load_addr);
 		if (ret != 0) {
 			printf("can not get image size from usb.\n");
 			return ret;
 		}
-		buff_addr = (u64)buff;
-		img_size = *(u32 *)buff_addr;
+		invalidate_dcache_range(load_addr, load_addr + sizeof(u32));
+		imgsize = *(u32 *)load_addr;
 
 		retry_bm--;
 	}
 	printf("usbload done, get size %d by retry %d.\n",
-	       img_size, (BM_LOAD_RERTY_INITIAL - retry_bm));
+	       imgsize, (BM_LOAD_RERTY_INITIAL - retry_bm));
+
+	*(u32 *)load_addr = dat;
 
 	/* set the parameters to env */
 	env_set_hex("fileaddr", load_addr);
-	env_set_hex("filesize", img_size);
+	env_set_hex("filesize", imgsize);
 
 	return 0;
 }
