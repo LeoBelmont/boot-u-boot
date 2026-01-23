@@ -184,6 +184,7 @@ struct dwcmshc_sdhci_plat {
 	u32 dll_delay_offset;
 	enum mmc_voltage phy_voltage;
 	int fixed_voltage;
+	int skip_phy;
 };
 
 struct phy_gen_setting gen_setting_1v8 = {

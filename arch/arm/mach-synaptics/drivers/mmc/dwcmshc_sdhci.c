@@ -33,14 +33,20 @@
 
 #include "dwcmshc_sdhci.h"
 
-static void dwcmshc_reset_phy(struct sdhci_host *host, int rst)
+static int dwcmshc_reset_phy(struct sdhci_host *host, int rst)
 {
 	volatile u16 valw;
+	struct dwcmshc_sdhci_plat *plat = dev_get_plat(host->mmc->dev);
+
+	if (plat->skip_phy)
+		return 0;
 
 	valw = sdhci_readw(host, PHY_CNFG_REG);
 	valw &= ~PHY_RSTN;
 	valw |= rst;
 	sdhci_writew(host, valw, PHY_CNFG_REG);
+
+	return 0;
 }
 
 static void dwcmshc_reset_device(struct sdhci_host *host)
@@ -70,9 +76,13 @@ static void dwcmshc_reset_host(struct dwcmshc_sdhci_plat *plat)
 	reset_deassert_bulk(&plat->reset_ctl);
 }
 
-static void dwcmshc_setup_phy_datapath(struct sdhci_host *host)
+static int dwcmshc_setup_phy_datapath(struct sdhci_host *host)
 {
 	u8 valb;
+	struct dwcmshc_sdhci_plat *plat = dev_get_plat(host->mmc->dev);
+
+	if (plat->skip_phy)
+		return 0;
 
 	valb = sdhci_readb(host, PHY_COMMDL_CNFG_REG);
 	valb &= ~DLSTEP_SEL;
@@ -100,11 +110,17 @@ static void dwcmshc_setup_phy_datapath(struct sdhci_host *host)
 	valb &= ~AINPSEL_CNFG_MSK;
 	valb |= (3 << AINPSEL_CNFG_SFT);
 	sdhci_writeb(host, valb, PHY_ATDL_CNFG_REG);
+
+	return 0;
 }
 
-static void dwcmshc_setup_phy_delayline(struct sdhci_host *host, u8 delay)
+static int dwcmshc_setup_phy_delayline(struct sdhci_host *host, u8 delay)
 {
 	u8 valb;
+	struct dwcmshc_sdhci_plat *plat = dev_get_plat(host->mmc->dev);
+
+	if (plat->skip_phy)
+		return 0;
 
 	valb = sdhci_readb(host, PHY_SDCLKDL_CNFG_REG);
 	valb |= UPDATE_DC;
@@ -118,11 +134,17 @@ static void dwcmshc_setup_phy_delayline(struct sdhci_host *host, u8 delay)
 	valb = sdhci_readb(host, PHY_SDCLKDL_CNFG_REG);
 	valb &= ~UPDATE_DC;
 	sdhci_writeb(host, valb, PHY_SDCLKDL_CNFG_REG);
+
+	return 0;
 }
 
-static void dwcmshc_setup_phy_tuning(struct sdhci_host *host)
+static int dwcmshc_setup_phy_tuning(struct sdhci_host *host)
 {
 	u32 offset, val;
+	struct dwcmshc_sdhci_plat *plat = dev_get_plat(host->mmc->dev);
+
+	if (plat->skip_phy)
+		return 0;
 
 	offset = sdhci_readl(host, SDHCI_P_VENDOR_SPECIFIC_AREA);
 	offset &= SDHCI_P_VENDOR_SPECIFIC_AREA_MASK;
@@ -134,6 +156,8 @@ static void dwcmshc_setup_phy_tuning(struct sdhci_host *host)
 	val &= ~PRE_CHANGE_DLY_MSK;
 	val |= TUNE_CLK_STOP_EN | (3 << POST_CHANGE_DLY_SFT) | (3 << PRE_CHANGE_DLY_SFT);
 	sdhci_writel(host, val, offset);
+
+	return 0;
 }
 
 static int dwcmshc_setup_phy_configure(struct sdhci_host *host)
@@ -146,6 +170,9 @@ static int dwcmshc_setup_phy_configure(struct sdhci_host *host)
 	volatile u16 valw;
 	volatile u32 val;
 	int timeout = 100;
+
+	if (plat->skip_phy)
+		return 0;
 
 	if (host->mmc->signal_voltage == MMC_SIGNAL_VOLTAGE_330) {
 		gen_setting = &gen_setting_3v3;
@@ -195,6 +222,9 @@ static int dwcmshc_setup_hs400_phy_dll(struct sdhci_host *host)
 	u16 valw;
 	u8 valb;
 	char *ep = NULL;
+
+	if (plat->skip_phy)
+		return 0;
 
 	/* prepare DLL configuration */
 	valw = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
@@ -264,6 +294,9 @@ static int dwcmshc_setup_hs400_phy_dll(struct sdhci_host *host)
 static int dwcmshc_setup_phy(struct sdhci_host *host)
 {
 	struct dwcmshc_sdhci_plat *plat = dev_get_plat(host->mmc->dev);
+
+	if (plat->skip_phy)
+		return 0;
 
 	dwcmshc_setup_phy_datapath(host);
 	dwcmshc_setup_phy_delayline(host,
@@ -478,6 +511,9 @@ static int dwcmshc_probe(struct udevice *dev)
 
 	if (dev_read_bool(dev, "fixed-voltage"))
 		plat->fixed_voltage = 1;
+
+	if (dev_read_bool(dev, "skip-phy"))
+		plat->skip_phy = 1;
 
 	if (dev_read_bool(dev, "sdhci-sdio"))
 		plat->mmc_type = SD_VERSION_SD;
