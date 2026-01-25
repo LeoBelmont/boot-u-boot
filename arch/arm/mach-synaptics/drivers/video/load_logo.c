@@ -287,7 +287,7 @@ int syna_load_logo_info(int width, int height, VBUF_INFO *p_vpp_buf, FASTLOGO_IN
 	       width, height, fl_header->width, fl_header->height);
 	logo_buffer = fl_header->offset + header;
 	logo_size = (fl_header->stride * fl_header->height) + pad_size;
-	read_buffer = (UINT8 *)malloc(logo_size);
+	read_buffer = (UINT8 *)malloc_ion_cacheable(logo_size);
 	flush_dcache_range((unsigned long)img_buff, (unsigned long)(img_buff + read_size));
 	memcpy(read_buffer, logo_buffer, logo_size);
 

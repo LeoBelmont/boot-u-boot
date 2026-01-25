@@ -116,6 +116,9 @@ void *mmgr_alloc_by_type(MEM_TYPE type, int size)
 	Memmgr *mmgr = g_mmgr[type];
 	Mnode *p = NULL;
 	unsigned int alloc_size = 0x0;
+	int use_topdown = 0;
+
+	use_topdown = (type == MEM_ION_CACHEABLE);
 
 	if (!mmgr) {
 		printf("mmgr has not been initialized\n");
@@ -151,6 +154,9 @@ void *mmgr_alloc_by_type(MEM_TYPE type, int size)
 			Mnode *new = find_valid_node_from_pool(mmgr, mmgr->pool);
 
 			new->base = p->base;
+			//Allocate from end of the block for topdown approach
+			if (use_topdown)
+				new->base += (p->size - alloc_size);
 			new->size = alloc_size;
 			//put to the head of allocated list
 			new->next = mmgr->p_alloc;
@@ -175,8 +181,11 @@ void *mmgr_alloc_by_type(MEM_TYPE type, int size)
 				}
 				return_node_2_pool(mmgr, p);
 			} else {
-				//keep the node and decrease the size
-				p->base += alloc_size;
+				//keep the node and decrease the size,
+				//no base change for top down approach
+				if (!use_topdown)
+					p->base += alloc_size;
+
 				p->size -= alloc_size;
 			}
 
