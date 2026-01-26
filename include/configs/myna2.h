@@ -22,32 +22,6 @@
  * TO ANY PARTY SHALL NOT EXCEED ONE HUNDRED U.S. DOLLARS.
  */
 
-#ifdef CONFIG_ENV_IS_IN_SPI_FLASH
-/* Environment in SPI NOR flash */
-#define SPI_FLASH_BL_END		(2 << 20) /* 2MiB */
-#ifndef CONFIG_ENV_OFFSET
-#define CONFIG_ENV_OFFSET		(SPI_FLASH_BL_END - CONFIG_ENV_SIZE)
-#endif
-#endif
-
-#define COUNTER_FREQUENCY			25000000 /* 25MHz */
-
-#define CONFIG_SYS_MAX_NAND_DEVICE     1
-
-//max malloc length
-#ifndef CONFIG_SYS_MALLOC_LEN
-#define CONFIG_SYS_MALLOC_LEN		(1450 << 20)
-#endif
-
-#define CONFIG_SYS_FLASH_BASE		0xF0000000
-#define CONFIG_SYS_MAX_FLASH_BANKS		1
-
-#define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_TEXT_BASE - (2 << 20))
-
-#ifndef CONFIG_SYS_BOOTM_LEN
-#define CONFIG_SYS_BOOTM_LEN	(32 << 20)
-#endif
-
 #define CONFIG_GICV2
 #define GICD_BASE       0xf7901000
 #define GICC_BASE       0xf7902000
