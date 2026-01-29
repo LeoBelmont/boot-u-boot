@@ -2246,6 +2246,7 @@ typedef struct RESOLUTION_INFO_T {
 	int flag_3d;   /* 1 for 3D, 0 for 2D */
 	int freq;   /* pixel frequency */
 	int pts_per_cnt_4;   /* time interval in term of PTS for every 4 frames */
+	int rgbswap;
 } RESOLUTION_INFO;
 
 extern RESOLUTION_INFO m_resinfo_table[MAX_NUM_RESS];

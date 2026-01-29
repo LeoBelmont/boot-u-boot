@@ -113,6 +113,7 @@ int syna_parse_lcdc_dt(struct udevice *dev)
 		printf("No memory for lcdc_config_data\n");
 		return -ENOMEM;
 	}
+	memset(priv->lcdc_config_data, 0, sizeof(struct lcdc_config));
 
 	/* After overlay, use fdt_ API's to work on the "live" FDT in memory*/
 	if ((parent_offset = fdt_path_offset(blob, "/soc/drm")) < 0) {
@@ -259,6 +260,7 @@ int syna_parse_vpp_dsi_dt(struct udevice *dev)
 	READ_OF_8_NODE(pResCfg->initparams.data_lane_polarity, Data_Lane_Polarity);
 	READ_OF_8_NODE(pResCfg->initparams.virtual_channel, virtual_chan);
 	READ_OF_8_NODE(pResCfg->initparams.clk_lane_polarity, Clk_Lane_Polarity);
+	READ_OF_NODE(pResCfg->infoparams.resInfo.rgbswap, rgbswap);
 
 	pResCfg->infoparams.resInfo.height = pResCfg->infoparams.resInfo.active_height +
 				pResCfg->infoparams.resInfo.vfrontporch +
