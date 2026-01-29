@@ -23,3 +23,4 @@
 #
 
 obj-$(CONFIG_SYNA_RESET) += reset_syna.o
+obj-$(CONFIG_SYNA_SMC_RESET) += reset_syna_smc.o

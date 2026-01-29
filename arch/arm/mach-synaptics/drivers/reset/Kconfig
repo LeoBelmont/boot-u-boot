@@ -1,3 +1,7 @@
 config SYNA_RESET
         bool "Reset controller driver for Synaptcis SoCs"
         depends on DM_RESET && ARCH_SYNAPTICS
+
+config SYNA_SMC_RESET
+        bool "SMC(Secure Monitor Call) Reset driver for Synaptcis SoCs"
+        depends on DM_RESET && ARCH_SYNAPTICS && ARM_SMCCC
