@@ -255,7 +255,8 @@ static void insert_node_2_free(Memmgr *mmgr, Mnode *p)
 
 	//check and merge
 	pf = check_prevnode_and_merge(mmgr, p);
-	check_prevnode_and_merge(mmgr, pf->next);
+	if (pf && pf->next)
+		check_prevnode_and_merge(mmgr, pf->next);
 }
 
 void mmgr_free_by_type(MEM_TYPE type, void *m)
