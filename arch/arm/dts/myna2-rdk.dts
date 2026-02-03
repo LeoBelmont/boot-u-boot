@@ -334,5 +334,6 @@
 		Chunks = <0>;
 		Null_Pkt = <0>;
 		Byte_clk = <148500>;
+		rgbswap = <0>;
 	};
 };
