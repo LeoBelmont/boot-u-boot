@@ -41,7 +41,6 @@
 #include "misc_syna.h"
 #include "pmic.h"
 
-#define DTB_SPACE (0x20000 - 0x100)
 #define BERLIN_HEAP_COMPATIBLE_NAME "syna,berlin-heaps"
 #define POOL_NUM "pool-num"
 #define ATTR_NUM_PER_POOL "attributes-num-per-pool"

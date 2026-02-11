@@ -24,6 +24,9 @@
 
 #ifndef __MISC_SYNA_H__
 #define __MISC_SYNA_H__
+
+#define DTB_SPACE (0x20000 - 0x100)
+
 enum {
 	DEV_EMMC = 0,
 	DEV_SD,

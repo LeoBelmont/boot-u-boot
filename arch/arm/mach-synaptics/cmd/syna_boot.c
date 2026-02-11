@@ -31,6 +31,7 @@
 #include "mem_init.h"
 #include "tee_client.h"
 #include "spinand_drv.h"
+#include "misc_syna.h"
 
 #ifdef CONFIG_SYNA_GENX_V3
 #define GENX_IMAGE_HEADER_LINUX_SIZE 0
@@ -177,6 +178,7 @@ static int boot_android_image(unsigned char *buff)
 {
 	int result = 0;
 	u32 mkbootimg_page;
+	unsigned char *fdt_buff;
 	struct andr_boot_img_hdr_v0 *bootimg_hdr = (void *)buff;
 	char cmd[32];
 
@@ -197,8 +199,22 @@ static int boot_android_image(unsigned char *buff)
 		printf("didn't find dtb!!!\n");
 		return -1;
 	}
-	bootimg_hdr->second_addr = (u32)((uintptr_t)buff + mkbootimg_page +
-					 gih->chunk[result].offset);
+
+	if (gih->chunk[result].size >= DTB_SPACE) {
+		printf("dtb size is too big!\n");
+		return -1;
+	}
+
+	fdt_buff = malloc(DTB_SPACE);
+	if (!fdt_buff) {
+		printf("dtb buffer allocate failed!\n");
+		return -1;
+	}
+
+	memcpy(fdt_buff,
+	       (void *)((uintptr_t)buff + mkbootimg_page + gih->chunk[result].offset),
+	       gih->chunk[result].size);
+	bootimg_hdr->second_addr = (u32)(uintptr_t)fdt_buff;
 	bootimg_hdr->second_size = gih->chunk[result].size;
 
 	sprintf(cmd, "bootm %p", buff);
