@@ -53,7 +53,6 @@
 #define ROOTFS_B "rootfs_b"
 
 #define FDTO_SIZE 0x2000
-#define FDT_RESIZE_SIZE  0x2000
 
 enum {
 	FDT_UPDATE_TZ = BIT(0),
@@ -204,9 +203,7 @@ static int setup_ion_mem(void *fdt, struct mem_region *ion_mem, int ion_num)
 		mem_region_property[memcount++] = cpu_to_fdt32(TEE_MR_ION_ALG(ion_mem + i));
 		mem_region_property[memcount++] = cpu_to_fdt32(TEE_MR_ION_ATTRIB(ion_mem + i));
 	}
-	fdt_setprop(fdt, offset, POOL_ATTRIBUTES, mem_region_property, 4 * memcount);
-
-	return fdt_pack(fdt);
+	return fdt_setprop(fdt, offset, POOL_ATTRIBUTES, mem_region_property, 4 * memcount);
 }
 
 static int setup_system_mem(void *fdt, struct mem_region *system_mem, int system_num)
@@ -215,15 +212,9 @@ static int setup_system_mem(void *fdt, struct mem_region *system_mem, int system
 	int memcount = 0;
 	int offset = 0;
 	int len = 0, i = 0;
-	int ret;
 
 	if (system_num > MAX_SYSTEM_SLOT || system_num <= 0)
 		return -1;
-
-	/* let's give it all the room it could need */
-	ret = fdt_open_into(fdt, fdt, DTB_SPACE);
-	if (ret < 0)
-		return ret;
 
 	offset = fdt_path_offset(fdt, "/memory");
 	fdt_get_property(fdt, offset, "reg", &len);
@@ -258,9 +249,7 @@ static int setup_system_mem(void *fdt, struct mem_region *system_mem, int system
 		mem_region_property[memcount++] = cpu_to_fdt32(system_mem[i].size);
 	}
 
-	fdt_setprop(fdt, offset, "reg", mem_region_property, 4 * memcount);
-
-	return fdt_pack(fdt);
+	return fdt_setprop(fdt, offset, "reg", mem_region_property, 4 * memcount);
 }
 
 int setup_tz_mem(void *fdt)
@@ -606,11 +595,10 @@ static int setup_mac(void *fdt)
 
 	p = fdt_getprop(fdt, offset, "mac-address", &len);
 	if (p)
-		fdt_setprop(fdt, offset, "mac-address", (const void *)mac, ARP_HLEN);
+		return fdt_setprop(fdt, offset, "mac-address", (const void *)mac, ARP_HLEN);
 	else
-		fdt_appendprop(fdt, offset, "mac-address", (const void *)mac, ARP_HLEN);
+		return fdt_appendprop(fdt, offset, "mac-address", (const void *)mac, ARP_HLEN);
 
-	return fdt_pack(fdt);
 }
 
 #ifdef CONFIG_OF_LIBFDT_OVERLAY
@@ -638,14 +626,6 @@ static int setup_fdt_overlay(void *fdt)
 	if (!fdto_addr) {
 		printf("failed to malloc memory for fdto_addr!\n");
 		ret = -ENOMEM;
-		goto err;
-	}
-
-	sprintf(cmd, "fdt resize %x", FDT_RESIZE_SIZE);
-	ret = run_command(cmd, 0);
-	if (ret) {
-		printf("failed to fdt resize!\n");
-		ret = -EIO;
 		goto err;
 	}
 
@@ -694,6 +674,12 @@ int fdt_update(struct fdt_header *fdt)
 {
 	char *s = env_get("skip_fdt_update");
 	int skip = s ? (int)simple_strtol(s, NULL, 16) : 0;
+	int ret;
+
+	/* let's give it all the room it could need */
+	ret = fdt_open_into(fdt, fdt, DTB_SPACE);
+	if (ret < 0)
+		return ret;
 
 	if (!(skip & FDT_UPDATE_TZ))
 		setup_tz_mem(fdt);
@@ -711,6 +697,8 @@ int fdt_update(struct fdt_header *fdt)
 	if (!(skip & FDT_UPDATE_OVERLAY))
 		setup_fdt_overlay(fdt);
 #endif
+
+	fdt_pack(fdt);
 
 	return 0;
 }
